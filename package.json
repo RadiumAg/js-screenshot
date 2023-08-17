@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@raag/eslint-config-vue": "^1.1.4",
+    "@rollup/plugin-terser": "^0.4.3",
     "@rollup/plugin-typescript": "^11.1.2",
     "@types/node": "^20.5.0",
     "esno": "^0.17.0",
