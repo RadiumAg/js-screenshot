@@ -1,1 +1,1 @@
-export * from './cutou-box/CutoutBox';
+export * from './cutou-box/cutoutBox';

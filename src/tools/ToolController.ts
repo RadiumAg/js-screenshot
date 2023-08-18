@@ -1,3 +1,0 @@
-class ToolController {}
-
-export { ToolController };

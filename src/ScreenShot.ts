@@ -5,8 +5,8 @@ import {
   setVideoElement,
   sourceCanvasElement,
   videoElement,
-} from './tools/Canvas';
-import CutoutBox from './tools/cutou-box/CutoutBox';
+} from './tools/canvas';
+import CutoutBox from './tools/cutou-box/cutoutBox';
 
 function createCanvas(width: number, height: number) {
   const canvas = document.createElement('canvas');

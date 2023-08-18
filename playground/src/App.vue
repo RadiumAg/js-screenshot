@@ -17,3 +17,4 @@ const handleStartShot = () => {
 </template>
 
 <style scoped></style>
+@screenshots/screenShot
