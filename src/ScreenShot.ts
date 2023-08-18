@@ -8,12 +8,11 @@ import {
 } from './tools/Canvas';
 import CutoutBox from './tools/cutou-box/CutoutBox';
 
-function createCanvas() {
+function createCanvas(width: number, height: number) {
   const canvas = document.createElement('canvas');
 
-  // init size
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
 
   // init position
   canvas.style.position = 'fixed';
@@ -30,39 +29,31 @@ async function displayMediaMode() {
     resolveFn = resolve;
   });
 
-  setSourceCanvasElement(createCanvas());
-  setCanvasElement(createCanvas());
-  setVideoElement(document.createElement('video'));
-
   const captureStream = await navigator.mediaDevices.getDisplayMedia({
-    video: true,
+    video: {
+      displaySurface: 'window',
+    },
   });
 
+  const { width, height } = captureStream.getVideoTracks()[0].getSettings();
+
+  setSourceCanvasElement(createCanvas(width || 0, height || 0));
+  setCanvasElement(createCanvas(window.innerWidth, window.innerHeight));
+  setVideoElement(document.createElement('video'));
+
   videoElement.srcObject = captureStream;
+
   videoElement.addEventListener('loadedmetadata', () => {
     videoElement.play();
 
-    const context = canvasElement.getContext('2d');
     const sourceContext = sourceCanvasElement.getContext('2d');
 
-    context?.drawImage(
-      videoElement,
-      0,
-      0,
-      canvasElement.width,
-      canvasElement.height,
-    );
+    setTimeout(() => {
+      sourceContext?.drawImage(videoElement, 0, 0);
+      document.body.append(canvasElement);
 
-    sourceContext?.drawImage(
-      videoElement,
-      0,
-      0,
-      canvasElement.width,
-      canvasElement.height,
-    );
-
-    document.body.append(canvasElement);
-    resolveFn('init');
+      resolveFn('init');
+    }, 1000);
   });
 
   return promise;

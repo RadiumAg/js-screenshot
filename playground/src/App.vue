@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ScreenShot from '@screenshots/ScreenShot';
 
-const screenShot = new ScreenShot();
+const screenShot = new ScreenShot({});
 
 const handleStartShot = () => {
   screenShot.shot();
@@ -9,7 +9,11 @@ const handleStartShot = () => {
 </script>
 
 <template>
-  <button @click="handleStartShot">截屏</button>
+  <div>
+    <button @click="handleStartShot">截屏</button>
+
+    <img src="./assets/R.jfif" />
+  </div>
 </template>
 
 <style scoped></style>
