@@ -7,6 +7,7 @@ class CutoutBox extends BaseBox {
     super();
   }
 
+  startY = window.outerHeight - window.innerHeight;
   dotControllerArray: DotController[] = [];
 
   setMask() {
@@ -18,14 +19,31 @@ class CutoutBox extends BaseBox {
 
   initDotControllerArray() {
     this.dotControllerArray = [
-      new DotController('nwse-resize'),
-      new DotController('ns-resize'),
-      new DotController('nesw-resize'),
-      new DotController('ew-resize'),
-      new DotController('nwse-resize'),
-      new DotController('ns-resize'),
-      new DotController('nesw-resize'),
-      new DotController('ew-resize'),
+      new DotController('nwse-resize', (x, y, oldX, oldY) => {
+        if (this.sourceContext === null || this.context === null) return;
+
+        this.x = x;
+        this.y = y;
+
+        this.updateBackGround();
+
+        const imgData = this.sourceContext.getImageData(
+          this.x,
+          this.y + this.startY,
+          this.width + (oldX - x),
+          this.height + (oldY - y),
+        );
+
+        this.context.putImageData(imgData, this.x, this.y);
+        // this.updateDotControllerArray();
+      }),
+      new DotController('ns-resize', (x, y) => {}),
+      new DotController('nesw-resize', (x, y) => {}),
+      new DotController('ew-resize', (x, y) => {}),
+      new DotController('nwse-resize', (x, y) => {}),
+      new DotController('ns-resize', (x, y) => {}),
+      new DotController('nesw-resize', (x, y) => {}),
+      new DotController('ew-resize', (x, y) => {}),
     ];
   }
 
@@ -115,7 +133,39 @@ class CutoutBox extends BaseBox {
 
   update() {
     if (this.sourceContext === null || this.context === null) return;
+    this.updateBackGround();
 
+    const imgData = this.sourceContext.getImageData(
+      this.x,
+      this.y + this.startY,
+      this.width,
+      this.height,
+    );
+
+    this.context.putImageData(imgData, this.x, this.y);
+
+    // update dotControllerArray
+    this.dotControllerArray[0].update(this.x, this.y);
+    this.dotControllerArray[1].update(this.x + this.width / 2, this.y);
+    this.dotControllerArray[2].update(this.x + this.width, this.y);
+    this.dotControllerArray[3].update(
+      this.x + this.width,
+      this.y + this.height / 2,
+    );
+    this.dotControllerArray[4].update(
+      this.x + this.width,
+      this.y + this.height,
+    );
+    this.dotControllerArray[5].update(
+      this.x + this.width / 2,
+      this.y + this.height,
+    );
+    this.dotControllerArray[6].update(this.x, this.y + this.height);
+    this.dotControllerArray[7].update(this.x, this.y + this.height / 2);
+  }
+
+  updateBackGround() {
+    if (this.sourceContext === null || this.context === null) return;
     const startY = window.outerHeight - window.innerHeight;
 
     // clear all
@@ -130,18 +180,6 @@ class CutoutBox extends BaseBox {
 
     this.context.putImageData(documentArea, 0, 0);
     this.setMask();
-
-    const imgData = this.sourceContext.getImageData(
-      this.x,
-      this.y + startY,
-      this.width,
-      this.height,
-    );
-
-    this.context.putImageData(imgData, this.x, this.y);
-
-    // update dotControllerArray
-    this.updateDotControllerArray();
   }
 
   initCutoutBox() {
