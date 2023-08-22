@@ -1,18 +1,26 @@
+import { animateThrottleFn } from '@screenshots/utils/animate-throttle';
 import BaseBox from '../baseBox';
 import { canvasElement } from '../canvas';
+import CutoutBox from './cutoutBox';
 
 type UpdateAxisCallback = (
   x: number,
   y: number,
   oldX: number,
   oldY: number,
+  oldCutoBox: CutoutBox,
 ) => void;
 
 class DotController extends BaseBox {
-  constructor(cursor: string, updateAxiscallback: UpdateAxisCallback) {
+  constructor(
+    cursor: string,
+    cutoBox: CutoutBox,
+    updateAxiscallback: UpdateAxisCallback,
+  ) {
     super();
 
     this.cursor = cursor;
+    this.cutoBox = cutoBox;
     this.initEvent();
     this.updateAxiscallback = updateAxiscallback;
   }
@@ -22,19 +30,22 @@ class DotController extends BaseBox {
   protected width = 10;
   protected height = 10;
   private cursor = '';
+  private cutoBox: CutoutBox;
+  private oldCutoBox: CutoutBox;
   private updateAxiscallback: UpdateAxisCallback;
 
   protected initEvent() {
     let oldClientX = 0;
     let oldClientY = 0;
     let isMouseDown = false;
+    const updateAxis = animateThrottleFn(this.updateAxis.bind(this));
 
     canvasElement.addEventListener('mousemove', event => {
       if (isMouseDown) {
         this.x = this.oldX + event.clientX - oldClientX;
         this.y = this.oldY + event.clientY - oldClientY;
 
-        this.updateAxis();
+        updateAxis();
       }
 
       if (this.isCurrentArea(event.clientX, event.clientY)) {
@@ -50,6 +61,11 @@ class DotController extends BaseBox {
         oldClientX = event.clientX;
         oldClientY = event.clientY;
 
+        this.oldCutoBox = {
+          ...this.cutoBox,
+          ...Object.getPrototypeOf(this.cutoBox),
+        };
+
         isMouseDown = true;
       }
     });
@@ -59,7 +75,7 @@ class DotController extends BaseBox {
     });
   }
 
-  update(x: number, y: number) {
+  updatePosition(x: number, y: number) {
     if (this.context === null) return;
 
     this.x = x - this.width / 2;
@@ -70,8 +86,15 @@ class DotController extends BaseBox {
   }
 
   updateAxis() {
-    this.updateAxiscallback(this.x, this.y, this.oldX, this.oldY);
+    this.updateAxiscallback(
+      this.x,
+      this.y,
+      this.oldX,
+      this.oldY,
+      this.oldCutoBox,
+    );
   }
 }
 
 export default DotController;
+export type { UpdateAxisCallback };

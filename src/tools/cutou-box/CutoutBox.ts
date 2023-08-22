@@ -1,3 +1,4 @@
+import { animateThrottleFn } from '@screenshots/utils/animate-throttle';
 import BaseBox from '../baseBox';
 import { canvasElement } from '../canvas';
 import DotController from './dotController';
@@ -19,52 +20,141 @@ class CutoutBox extends BaseBox {
 
   initDotControllerArray() {
     this.dotControllerArray = [
-      new DotController('nwse-resize', (x, y, oldX, oldY) => {
+      new DotController('nwse-resize', this, (x, y, oldX, oldY, oldCutoBox) => {
         if (this.sourceContext === null || this.context === null) return;
 
-        this.x = x;
-        this.y = y;
-
         this.updateBackGround();
+        const imageWith = oldCutoBox.width + (oldX - x);
+        const imageHeight = oldCutoBox.height + (oldY - y);
+
+        this.width = Math.abs(imageWith);
+        this.height = Math.abs(imageHeight);
+
+        if (imageWith >= 0) {
+          this.x = x;
+        } else {
+          this.x = oldCutoBox.x + oldCutoBox.width;
+        }
+
+        if (imageHeight >= 0) {
+          this.y = y;
+        } else {
+          this.y = oldCutoBox.y + oldCutoBox.height;
+        }
 
         const imgData = this.sourceContext.getImageData(
           this.x,
           this.y + this.startY,
-          this.width + (oldX - x),
-          this.height + (oldY - y),
+          this.width,
+          this.height,
         );
 
         this.context.putImageData(imgData, this.x, this.y);
-        // this.updateDotControllerArray();
+
+        this.updateDotControllerArrayPosition();
       }),
-      new DotController('ns-resize', (x, y) => {}),
-      new DotController('nesw-resize', (x, y) => {}),
-      new DotController('ew-resize', (x, y) => {}),
-      new DotController('nwse-resize', (x, y) => {}),
-      new DotController('ns-resize', (x, y) => {}),
-      new DotController('nesw-resize', (x, y) => {}),
-      new DotController('ew-resize', (x, y) => {}),
+      new DotController('ns-resize', this, (x, y, oldX, oldY, oldCutoBox) => {
+        if (this.sourceContext === null || this.context === null) return;
+
+        this.updateBackGround();
+        const imageHeight = oldCutoBox.height + (oldY - y);
+
+        this.height = Math.abs(imageHeight);
+
+        if (imageHeight >= 0) {
+          this.y = y;
+        } else {
+          this.y = oldCutoBox.y + oldCutoBox.height;
+        }
+
+        const imgData = this.sourceContext.getImageData(
+          this.x,
+          this.y + this.startY,
+          this.width,
+          this.height,
+        );
+
+        this.context.putImageData(imgData, this.x, this.y);
+
+        this.updateDotControllerArrayPosition();
+      }),
+      new DotController('nesw-resize', this, (x, y, oldX, oldY, oldCutoBox) => {
+        if (this.sourceContext === null || this.context === null) return;
+
+        this.updateBackGround();
+        const imageWith = oldCutoBox.width + (x - oldX);
+        const imageHeight = oldCutoBox.height + (oldY - y);
+
+        if (imageWith < 0) {
+          this.x = x;
+        }
+
+        if (imageHeight > 0) {
+          this.y = y;
+        }
+
+        this.width = Math.abs(imageWith);
+        this.height = Math.abs(imageHeight);
+
+        const imgData = this.sourceContext.getImageData(
+          this.x,
+          this.y + this.startY,
+          this.width,
+          this.height,
+        );
+
+        this.context.putImageData(imgData, this.x, this.y);
+
+        this.updateDotControllerArrayPosition();
+      }),
+      new DotController('ew-resize', this, (x, y, oldX, oldY, oldCutoBox) => {
+        if (this.sourceContext === null || this.context === null) return;
+
+        this.updateBackGround();
+        const imageWith = oldCutoBox.width + (x - oldX);
+
+        if (imageWith < 0) {
+          this.x = x;
+        }
+
+        this.width = Math.abs(imageWith);
+
+        const imgData = this.sourceContext.getImageData(
+          this.x,
+          this.y + this.startY,
+          this.width,
+          this.height,
+        );
+
+        this.context.putImageData(imgData, this.x, this.y);
+
+        this.updateDotControllerArrayPosition();
+      }),
+      new DotController('nwse-resize', this, (x, y) => {}),
+      new DotController('ns-resize', this, (x, y) => {}),
+      new DotController('nesw-resize', this, (x, y) => {}),
+      new DotController('ew-resize', this, (x, y) => {}),
     ];
   }
 
-  updateDotControllerArray() {
-    this.dotControllerArray[0].update(this.x, this.y);
-    this.dotControllerArray[1].update(this.x + this.width / 2, this.y);
-    this.dotControllerArray[2].update(this.x + this.width, this.y);
-    this.dotControllerArray[3].update(
+  updateDotControllerArrayPosition() {
+    this.dotControllerArray[0].updatePosition(this.x, this.y);
+    this.dotControllerArray[1].updatePosition(this.x + this.width / 2, this.y);
+    this.dotControllerArray[2].updatePosition(this.x + this.width, this.y);
+    this.dotControllerArray[3].updatePosition(
       this.x + this.width,
       this.y + this.height / 2,
     );
-    this.dotControllerArray[4].update(
+    this.dotControllerArray[4].updatePosition(
       this.x + this.width,
       this.y + this.height,
     );
-    this.dotControllerArray[5].update(
+    this.dotControllerArray[5].updatePosition(
       this.x + this.width / 2,
       this.y + this.height,
     );
-    this.dotControllerArray[6].update(this.x, this.y + this.height);
-    this.dotControllerArray[7].update(this.x, this.y + this.height / 2);
+    this.dotControllerArray[6].updatePosition(this.x, this.y + this.height);
+    this.dotControllerArray[7].updatePosition(this.x, this.y + this.height / 2);
   }
 
   initEvent() {
@@ -73,7 +163,8 @@ class CutoutBox extends BaseBox {
     let oldY = this.y;
     let oldClientX = 0;
     let oldClientY = 0;
-    let isUpdateFinish = true;
+
+    const updatePosition = animateThrottleFn(this.updatePosition.bind(this));
 
     canvasElement.addEventListener('mousedown', event => {
       if (
@@ -114,13 +205,7 @@ class CutoutBox extends BaseBox {
           this.y = canvasElement.height - this.height;
         }
 
-        if (isUpdateFinish) {
-          isUpdateFinish = false;
-          requestAnimationFrame(() => {
-            this.update();
-            isUpdateFinish = true;
-          });
-        }
+        updatePosition();
       }
 
       if (this.isCurrentArea(event.clientX, event.clientY)) {
@@ -131,7 +216,7 @@ class CutoutBox extends BaseBox {
     });
   }
 
-  update() {
+  updatePosition() {
     if (this.sourceContext === null || this.context === null) return;
     this.updateBackGround();
 
@@ -145,23 +230,23 @@ class CutoutBox extends BaseBox {
     this.context.putImageData(imgData, this.x, this.y);
 
     // update dotControllerArray
-    this.dotControllerArray[0].update(this.x, this.y);
-    this.dotControllerArray[1].update(this.x + this.width / 2, this.y);
-    this.dotControllerArray[2].update(this.x + this.width, this.y);
-    this.dotControllerArray[3].update(
+    this.dotControllerArray[0].updatePosition(this.x, this.y);
+    this.dotControllerArray[1].updatePosition(this.x + this.width / 2, this.y);
+    this.dotControllerArray[2].updatePosition(this.x + this.width, this.y);
+    this.dotControllerArray[3].updatePosition(
       this.x + this.width,
       this.y + this.height / 2,
     );
-    this.dotControllerArray[4].update(
+    this.dotControllerArray[4].updatePosition(
       this.x + this.width,
       this.y + this.height,
     );
-    this.dotControllerArray[5].update(
+    this.dotControllerArray[5].updatePosition(
       this.x + this.width / 2,
       this.y + this.height,
     );
-    this.dotControllerArray[6].update(this.x, this.y + this.height);
-    this.dotControllerArray[7].update(this.x, this.y + this.height / 2);
+    this.dotControllerArray[6].updatePosition(this.x, this.y + this.height);
+    this.dotControllerArray[7].updatePosition(this.x, this.y + this.height / 2);
   }
 
   updateBackGround() {
@@ -188,7 +273,7 @@ class CutoutBox extends BaseBox {
 
     this.initEvent();
     this.initDotControllerArray();
-    this.update();
+    this.updatePosition();
   }
 }
 

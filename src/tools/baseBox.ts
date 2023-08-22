@@ -22,7 +22,7 @@ abstract class BaseBox {
     );
   }
 
-  abstract update(...args: any[]): void;
+  abstract updatePosition(...args: any[]): void;
   protected abstract initEvent(): void;
 }
 
