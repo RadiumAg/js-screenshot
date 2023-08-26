@@ -1,6 +1,11 @@
 import { animateThrottleFn } from '@screenshots/utils/animate-throttle';
 import BaseBox from '../baseBox';
-import { canvasElement } from '../canvas';
+import {
+  canvasElement,
+  dotControllerSize,
+  isFirstInit,
+  setFirstInit,
+} from '../canvas';
 import DotController from './dotController';
 
 class CutoutBox extends BaseBox {
@@ -45,8 +50,8 @@ class CutoutBox extends BaseBox {
         const imgData = this.sourceContext.getImageData(
           this.x,
           this.y + this.startY,
-          this.width,
-          this.height,
+          this.width || 1,
+          this.height || 1,
         );
 
         this.context.putImageData(imgData, this.x, this.y);
@@ -70,8 +75,8 @@ class CutoutBox extends BaseBox {
         const imgData = this.sourceContext.getImageData(
           this.x,
           this.y + this.startY,
-          this.width,
-          this.height,
+          this.width || 1,
+          this.height || 1,
         );
 
         this.context.putImageData(imgData, this.x, this.y);
@@ -99,8 +104,8 @@ class CutoutBox extends BaseBox {
         const imgData = this.sourceContext.getImageData(
           this.x,
           this.y + this.startY,
-          this.width,
-          this.height,
+          this.width || 1,
+          this.height || 1,
         );
 
         this.context.putImageData(imgData, this.x, this.y);
@@ -122,8 +127,8 @@ class CutoutBox extends BaseBox {
         const imgData = this.sourceContext.getImageData(
           this.x,
           this.y + this.startY,
-          this.width,
-          this.height,
+          this.width || 1,
+          this.height || 1,
         );
 
         this.context.putImageData(imgData, this.x, this.y);
@@ -151,8 +156,8 @@ class CutoutBox extends BaseBox {
         const imgData = this.sourceContext.getImageData(
           this.x,
           this.y + this.startY,
-          this.width,
-          this.height,
+          this.width || 1,
+          this.height || 1,
         );
 
         this.context.putImageData(imgData, this.x, this.y);
@@ -174,8 +179,8 @@ class CutoutBox extends BaseBox {
         const imgData = this.sourceContext.getImageData(
           this.x,
           this.y + this.startY,
-          this.width,
-          this.height,
+          this.width || 1,
+          this.height || 1,
         );
 
         this.context.putImageData(imgData, this.x, this.y);
@@ -205,8 +210,8 @@ class CutoutBox extends BaseBox {
         const imgData = this.sourceContext.getImageData(
           this.x,
           this.y + this.startY,
-          this.width,
-          this.height,
+          this.width || 1,
+          this.height || 1,
         );
 
         this.context.putImageData(imgData, this.x, this.y);
@@ -230,8 +235,8 @@ class CutoutBox extends BaseBox {
         const imgData = this.sourceContext.getImageData(
           this.x,
           this.y + this.startY,
-          this.width,
-          this.height,
+          this.width || 1,
+          this.height || 1,
         );
 
         this.context.putImageData(imgData, this.x, this.y);
@@ -272,8 +277,12 @@ class CutoutBox extends BaseBox {
 
     canvasElement.addEventListener('mousedown', event => {
       if (
-        this.isCurrentArea(event.clientX, event.clientY) &&
-        event.button === 0
+        this.isCurrentArea(
+          event.clientX + dotControllerSize / 2,
+          event.clientY + 5 + dotControllerSize / 2,
+        ) &&
+        event.button === 0 &&
+        !isFirstInit
       ) {
         oldClientX = event.clientX;
         oldClientY = event.clientY;
@@ -281,6 +290,15 @@ class CutoutBox extends BaseBox {
         oldY = this.y;
 
         isMouseDown = true;
+      } else if (isFirstInit) {
+        setFirstInit(false);
+
+        this.width = 1;
+        this.height = 1;
+        this.x = event.clientX;
+        this.y = event.clientY;
+
+        updatePosition();
       }
     });
 
@@ -312,7 +330,12 @@ class CutoutBox extends BaseBox {
         updatePosition();
       }
 
-      if (this.isCurrentArea(event.clientX, event.clientY)) {
+      if (
+        this.isCurrentArea(
+          event.clientX + dotControllerSize / 2,
+          event.clientY + 5 + dotControllerSize / 2,
+        )
+      ) {
         canvasElement.style.cursor = 'move';
       } else {
         canvasElement.style.cursor = '';
@@ -327,8 +350,8 @@ class CutoutBox extends BaseBox {
     const imgData = this.sourceContext.getImageData(
       this.x,
       this.y + this.startY,
-      this.width,
-      this.height,
+      this.width || 1,
+      this.height || 1,
     );
 
     this.context.putImageData(imgData, this.x, this.y);

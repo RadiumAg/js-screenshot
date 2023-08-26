@@ -1,6 +1,6 @@
 import { animateThrottleFn } from '@screenshots/utils/animate-throttle';
 import BaseBox from '../baseBox';
-import { canvasElement } from '../canvas';
+import { canvasElement, dotControllerSize } from '../canvas';
 import CutoutBox from './cutoutBox';
 
 type UpdateAxisCallback = (
@@ -27,8 +27,8 @@ class DotController extends BaseBox {
 
   private oldX = 0;
   private oldY = 0;
-  protected width = 10;
-  protected height = 10;
+  protected width = dotControllerSize;
+  protected height = dotControllerSize;
   private cursor = '';
   private cutoBox: CutoutBox;
   private oldCutoBox: CutoutBox;
