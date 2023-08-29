@@ -5,6 +5,7 @@ import {
   dotControllerSize,
   isFirstInit,
   setFirstInit,
+  sourceCanvasElement,
 } from '../canvas';
 import DotController from './dotController';
 
@@ -297,12 +298,17 @@ class CutoutBox extends BaseBox {
       } else if (isFirstInit) {
         setFirstInit(false);
 
-        this.width = 1;
-        this.height = 1;
-        this.x = event.clientX;
-        this.y = event.clientY;
+        this.width = dotControllerSize * 2;
+        this.height = dotControllerSize * 2;
+        this.x = event.clientX - dotControllerSize * 2;
+        this.y = event.clientY - dotControllerSize * 2;
 
         updatePosition();
+
+        setTimeout(() => {
+          canvasElement.style.cursor = 'nwse-resize';
+          canvasElement.dispatchEvent(new MouseEvent('mousedown', event));
+        });
       }
     });
 

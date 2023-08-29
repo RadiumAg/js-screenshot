@@ -83,7 +83,6 @@ class DotController extends BaseBox {
           ...this.cutoBox,
           ...Object.getPrototypeOf(this.cutoBox),
         };
-
         isMouseDown = true;
       }
     });
