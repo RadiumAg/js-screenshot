@@ -13,13 +13,15 @@ abstract class BaseBox {
     willReadFrequently: true,
   });
 
-  isCurrentArea(clientX: number, clientY: number) {
-    return (
-      clientX > this.x &&
-      clientX < this.x + this.width &&
-      clientY > this.y &&
-      clientY < this.y + this.height
-    );
+  isCurrentArea(
+    minX: number,
+    maxX: number,
+    minY: number,
+    maxY: number,
+    x: number,
+    y: number,
+  ) {
+    return x >= minX && x <= maxX && y >= minY && y <= maxY;
   }
 
   abstract updatePosition(...args: any[]): void;

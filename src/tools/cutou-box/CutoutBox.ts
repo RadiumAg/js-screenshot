@@ -278,8 +278,12 @@ class CutoutBox extends BaseBox {
     canvasElement.addEventListener('mousedown', event => {
       if (
         this.isCurrentArea(
-          event.clientX + dotControllerSize / 2,
-          event.clientY + 5 + dotControllerSize / 2,
+          this.x + dotControllerSize / 2,
+          this.x + this.width - dotControllerSize / 2,
+          this.y + dotControllerSize / 2,
+          this.y + this.height - dotControllerSize / 2,
+          event.clientX,
+          event.clientY,
         ) &&
         event.button === 0 &&
         !isFirstInit
@@ -318,7 +322,6 @@ class CutoutBox extends BaseBox {
         if (this.y < 0) {
           this.y = 0;
         }
-
         if (this.x + this.width > canvasElement.width) {
           this.x = canvasElement.width - this.width;
         }
@@ -332,8 +335,12 @@ class CutoutBox extends BaseBox {
 
       if (
         this.isCurrentArea(
-          event.clientX + dotControllerSize / 2,
-          event.clientY + 5 + dotControllerSize / 2,
+          this.x + dotControllerSize / 2,
+          this.x + this.width - dotControllerSize / 2,
+          this.y + dotControllerSize / 2,
+          this.y + this.height - dotControllerSize / 2,
+          event.clientX,
+          event.clientY,
         )
       ) {
         canvasElement.style.cursor = 'move';

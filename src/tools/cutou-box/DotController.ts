@@ -48,13 +48,31 @@ class DotController extends BaseBox {
         updateAxis();
       }
 
-      if (this.isCurrentArea(event.clientX, event.clientY)) {
+      if (
+        this.isCurrentArea(
+          this.x,
+          this.x + this.width,
+          this.y,
+          this.y + this.height,
+          event.clientX,
+          event.clientY,
+        )
+      ) {
         canvasElement.style.cursor = this.cursor;
       }
     });
 
     canvasElement.addEventListener('mousedown', event => {
-      if (this.isCurrentArea(event.clientX, event.clientY)) {
+      if (
+        this.isCurrentArea(
+          this.x,
+          this.x + this.width,
+          this.y,
+          this.y + this.height,
+          event.clientX,
+          event.clientY,
+        )
+      ) {
         this.oldX = this.x;
         this.oldY = this.y;
 
