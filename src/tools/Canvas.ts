@@ -1,7 +1,12 @@
+import CutoutBox from './cutou-box/cutoutBox';
+import DotController from './cutou-box/dotController';
+
+let isFirstInit = true;
 let videoElement: HTMLVideoElement;
 let canvasElement: HTMLCanvasElement;
 let sourceCanvasElement: HTMLCanvasElement;
-let isFirstInit = true;
+let activeTarget: CutoutBox | DotController | null;
+
 const dotControllerSize = 10;
 
 function setVideoElement(videoElementObject: HTMLVideoElement) {
@@ -20,7 +25,12 @@ function setFirstInit(value: boolean) {
   isFirstInit = value;
 }
 
+function setActiveTarget(target: CutoutBox | DotController | null) {
+  activeTarget = target;
+}
+
 export {
+  activeTarget,
   isFirstInit,
   videoElement,
   canvasElement,
@@ -29,5 +39,6 @@ export {
   setFirstInit,
   setVideoElement,
   setCanvasElement,
+  setActiveTarget,
   setSourceCanvasElement,
 };

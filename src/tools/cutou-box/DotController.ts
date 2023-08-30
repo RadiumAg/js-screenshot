@@ -1,6 +1,11 @@
 import { animateThrottleFn } from '@screenshots/utils/animate-throttle';
 import BaseBox from '../baseBox';
-import { canvasElement, dotControllerSize } from '../canvas';
+import {
+  activeTarget,
+  canvasElement,
+  dotControllerSize,
+  setActiveTarget,
+} from '../canvas';
 import CutoutBox from './cutoutBox';
 
 type UpdateAxisCallback = (
@@ -20,20 +25,20 @@ class DotController extends BaseBox {
     super();
 
     this.cursor = cursor;
-    this.cutoBox = cutoBox;
+    this.cutouBox = cutoBox;
     this.initEvent();
     this.updateAxiscallback = updateAxiscallback;
   }
 
+  width = dotControllerSize;
+  height = dotControllerSize;
+
   private oldX = 0;
   private oldY = 0;
-  protected width = dotControllerSize;
-  protected height = dotControllerSize;
   private cursor = '';
-  private cutoBox: CutoutBox;
-  private oldCutoBox: CutoutBox;
+  private cutouBox: CutoutBox;
+  private oldCutouBox: CutoutBox;
   private updateAxiscallback: UpdateAxisCallback;
-
   protected initEvent() {
     let oldClientX = 0;
     let oldClientY = 0;
@@ -41,6 +46,8 @@ class DotController extends BaseBox {
     const updateAxis = animateThrottleFn(this.updateAxis.bind(this));
 
     canvasElement.addEventListener('mousemove', event => {
+      if (activeTarget !== null && activeTarget !== this) return;
+
       if (isMouseDown) {
         this.x = this.oldX + event.clientX - oldClientX;
         this.y = this.oldY + event.clientY - oldClientY;
@@ -63,6 +70,8 @@ class DotController extends BaseBox {
     });
 
     canvasElement.addEventListener('mousedown', event => {
+      const isFirstMoveDown = Reflect.get(event.target || {}, 'isFirstInit');
+
       if (
         this.isCurrentArea(
           this.x,
@@ -71,7 +80,8 @@ class DotController extends BaseBox {
           this.y + this.height,
           event.clientX,
           event.clientY,
-        )
+        ) ||
+        isFirstMoveDown
       ) {
         this.oldX = this.x;
         this.oldY = this.y;
@@ -79,16 +89,20 @@ class DotController extends BaseBox {
         oldClientX = event.clientX;
         oldClientY = event.clientY;
 
-        this.oldCutoBox = {
-          ...this.cutoBox,
-          ...Object.getPrototypeOf(this.cutoBox),
+        this.oldCutouBox = {
+          ...this.cutouBox,
+          ...Object.getPrototypeOf(this.cutouBox),
         };
+
         isMouseDown = true;
+        setActiveTarget(this);
+        Reflect.deleteProperty(event.target || {}, 'isFirstInit');
       }
     });
 
     canvasElement.addEventListener('mouseup', () => {
       isMouseDown = false;
+      setActiveTarget(null);
     });
   }
 
@@ -108,7 +122,7 @@ class DotController extends BaseBox {
       this.y,
       this.oldX,
       this.oldY,
-      this.oldCutoBox,
+      this.oldCutouBox,
     );
   }
 }

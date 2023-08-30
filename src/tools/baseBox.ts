@@ -1,10 +1,10 @@
 import { canvasElement, sourceCanvasElement } from './canvas';
 
 abstract class BaseBox {
-  protected x = 0;
-  protected y = 0;
-  protected width = 0;
-  protected height = 0;
+  x = 0;
+  y = 0;
+  width = 0;
+  height = 0;
 
   protected context = canvasElement.getContext('2d', {
     willReadFrequently: true,
