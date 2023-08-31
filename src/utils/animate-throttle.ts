@@ -3,14 +3,21 @@ import { AnyFun } from './types';
 const animateThrottleFn = (fn: AnyFun) => {
   let isFinished = false;
 
-  return () => {
+  return (...args: any[]) => {
+    let resolveFn: (value: unknown) => void;
+    const promise = new Promise(resolve => {
+      resolveFn = resolve;
+    });
     if (isFinished) return;
     isFinished = true;
 
-    requestAnimationFrame(() => {
-      fn();
+    requestAnimationFrame(async () => {
+      await fn(...args);
+      resolveFn('finish');
       isFinished = false;
     });
+
+    return promise;
   };
 };
 

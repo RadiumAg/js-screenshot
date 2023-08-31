@@ -5,6 +5,7 @@ import {
   canvasElement,
   dotControllerSize,
   setActiveTarget,
+  setFirstInit,
 } from '../canvas';
 import CutoutBox from './cutoutBox';
 
@@ -13,19 +14,19 @@ type UpdateAxisCallback = (
   y: number,
   oldX: number,
   oldY: number,
-  oldCutoBox: CutoutBox,
+  oldCutoutBox: CutoutBox,
 ) => void;
 
 class DotController extends BaseBox {
   constructor(
     cursor: string,
-    cutoBox: CutoutBox,
+    cutoutBox: CutoutBox,
     updateAxiscallback: UpdateAxisCallback,
   ) {
     super();
 
     this.cursor = cursor;
-    this.cutouBox = cutoBox;
+    this.cutoutBox = cutoutBox;
     this.initEvent();
     this.updateAxiscallback = updateAxiscallback;
   }
@@ -36,8 +37,8 @@ class DotController extends BaseBox {
   private oldX = 0;
   private oldY = 0;
   private cursor = '';
-  private cutouBox: CutoutBox;
-  private oldCutouBox: CutoutBox;
+  private cutoutBox: CutoutBox;
+  private oldCutoutBox: CutoutBox;
   private updateAxiscallback: UpdateAxisCallback;
   protected initEvent() {
     let oldClientX = 0;
@@ -89,9 +90,9 @@ class DotController extends BaseBox {
         oldClientX = event.clientX;
         oldClientY = event.clientY;
 
-        this.oldCutouBox = {
-          ...this.cutouBox,
-          ...Object.getPrototypeOf(this.cutouBox),
+        this.oldCutoutBox = {
+          ...this.cutoutBox,
+          ...Object.getPrototypeOf(this.cutoutBox),
         };
 
         isMouseDown = true;
@@ -103,6 +104,7 @@ class DotController extends BaseBox {
     canvasElement.addEventListener('mouseup', () => {
       isMouseDown = false;
       setActiveTarget(null);
+      setFirstInit(false);
     });
   }
 
@@ -122,7 +124,7 @@ class DotController extends BaseBox {
       this.y,
       this.oldX,
       this.oldY,
-      this.oldCutouBox,
+      this.oldCutoutBox,
     );
   }
 }
