@@ -30,7 +30,7 @@ class ToolBox extends BaseBox {
     const pen = new Pen();
     pen.initPen();
 
-    this.el.append(pen.el);
+    pen.el && this.el.append(pen.el);
     document.body.append(this.el);
   }
 

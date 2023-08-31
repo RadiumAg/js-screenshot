@@ -38,7 +38,7 @@ class DotController extends BaseBox {
   private oldY = 0;
   private cursor = '';
   private cutoutBox: CutoutBox;
-  private oldCutoutBox: CutoutBox;
+  private oldCutoutBox: CutoutBox | null = null;
   private updateAxiscallback: UpdateAxisCallback;
   protected initEvent() {
     let oldClientX = 0;
@@ -124,7 +124,7 @@ class DotController extends BaseBox {
       this.y,
       this.oldX,
       this.oldY,
-      this.oldCutoutBox,
+      this.oldCutoutBox as CutoutBox,
     );
   }
 }

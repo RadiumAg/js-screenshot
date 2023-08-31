@@ -10,8 +10,8 @@ class Pen extends BaseBox {
     this.el.style.width = '10px';
   }
 
-  updatePosition(...args: any[]): void {}
-  protected initEvent(): void {}
+  updatePosition() {}
+  protected initEvent() {}
 }
 
 export default Pen;

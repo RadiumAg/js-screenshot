@@ -67,7 +67,11 @@ class ScreenShot {
   constructor(private screenShotOptions: ScreenShotOptions) {}
 
   async shot() {
-    await displayMediaMode();
+    if (this.screenShotOptions.mode === 'displayMedia') {
+      await displayMediaMode();
+    } else {
+      // html2Canvas
+    }
     new CutoutBox().initCutoutBox();
   }
 }

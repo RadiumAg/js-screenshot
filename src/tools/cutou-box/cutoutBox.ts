@@ -14,7 +14,7 @@ import DotController from './dotController';
 class CutoutBox extends BaseBox {
   startY = window.outerHeight - window.innerHeight;
   dotControllerArray: DotController[] = [];
-  toolBox: ToolBox;
+  toolBox: ToolBox | null = null;
 
   setMask() {
     if (this.context === null) return;
@@ -60,38 +60,45 @@ class CutoutBox extends BaseBox {
           this.context.putImageData(imgData, this.x, this.y);
 
           this.updateDotControllerArrayPosition();
-          this.toolBox.updatePosition(
+          this.toolBox?.updatePosition(
             this.x + this.width,
             this.y + this.height,
           );
         },
       ),
-      new DotController('ns-resize', this, (x, y, oldX, oldY, oldCutoutBox) => {
-        if (this.sourceContext === null || this.context === null) return;
+      new DotController(
+        'ns-resize',
+        this,
+        (_x, y, _oldX, oldY, oldCutoutBox) => {
+          if (this.sourceContext === null || this.context === null) return;
 
-        this.updateBackGround();
-        const imageHeight = oldCutoutBox.height + (oldY - y);
+          this.updateBackGround();
+          const imageHeight = oldCutoutBox.height + (oldY - y);
 
-        this.height = Math.abs(imageHeight);
+          this.height = Math.abs(imageHeight);
 
-        if (imageHeight > 0) {
-          this.y = y + dotControllerSize / 2;
-        } else {
-          this.y = oldCutoutBox.y + oldCutoutBox.height;
-        }
+          if (imageHeight > 0) {
+            this.y = y + dotControllerSize / 2;
+          } else {
+            this.y = oldCutoutBox.y + oldCutoutBox.height;
+          }
 
-        const imgData = this.sourceContext.getImageData(
-          this.x,
-          this.y + this.startY,
-          this.width || 1,
-          this.height || 1,
-        );
+          const imgData = this.sourceContext.getImageData(
+            this.x,
+            this.y + this.startY,
+            this.width || 1,
+            this.height || 1,
+          );
 
-        this.context.putImageData(imgData, this.x, this.y);
+          this.context.putImageData(imgData, this.x, this.y);
 
-        this.updateDotControllerArrayPosition();
-        this.toolBox.updatePosition(this.x + this.width, this.y + this.height);
-      }),
+          this.updateDotControllerArrayPosition();
+          this.toolBox?.updatePosition(
+            this.x + this.width,
+            this.y + this.height,
+          );
+        },
+      ),
       new DotController(
         'nesw-resize',
         this,
@@ -126,38 +133,45 @@ class CutoutBox extends BaseBox {
 
           this.context.putImageData(imgData, this.x, this.y);
           this.updateDotControllerArrayPosition();
-          this.toolBox.updatePosition(
+          this.toolBox?.updatePosition(
             this.x + this.width,
             this.y + this.height,
           );
         },
       ),
-      new DotController('ew-resize', this, (x, y, oldX, oldY, oldCutoutBox) => {
-        if (this.sourceContext === null || this.context === null) return;
+      new DotController(
+        'ew-resize',
+        this,
+        (x, _y, oldX, _oldY, oldCutoutBox) => {
+          if (this.sourceContext === null || this.context === null) return;
 
-        this.updateBackGround();
-        const imageWidth = oldCutoutBox.width + (x - oldX);
+          this.updateBackGround();
+          const imageWidth = oldCutoutBox.width + (x - oldX);
 
-        if (imageWidth > 0) {
-          this.x = oldCutoutBox.x;
-        } else {
-          this.x = x + dotControllerSize / 2;
-        }
+          if (imageWidth > 0) {
+            this.x = oldCutoutBox.x;
+          } else {
+            this.x = x + dotControllerSize / 2;
+          }
 
-        this.width = Math.abs(imageWidth);
+          this.width = Math.abs(imageWidth);
 
-        const imgData = this.sourceContext.getImageData(
-          this.x,
-          this.y + this.startY,
-          this.width || 1,
-          this.height || 1,
-        );
+          const imgData = this.sourceContext.getImageData(
+            this.x,
+            this.y + this.startY,
+            this.width || 1,
+            this.height || 1,
+          );
 
-        this.context.putImageData(imgData, this.x, this.y);
+          this.context.putImageData(imgData, this.x, this.y);
 
-        this.updateDotControllerArrayPosition();
-        this.toolBox.updatePosition(this.x + this.width, this.y + this.height);
-      }),
+          this.updateDotControllerArrayPosition();
+          this.toolBox?.updatePosition(
+            this.x + this.width,
+            this.y + this.height,
+          );
+        },
+      ),
       new DotController(
         'nwse-resize',
         this,
@@ -192,37 +206,44 @@ class CutoutBox extends BaseBox {
 
           this.context.putImageData(imgData, this.x, this.y);
           this.updateDotControllerArrayPosition();
-          this.toolBox.updatePosition(
+          this.toolBox?.updatePosition(
             this.x + this.width,
             this.y + this.height,
           );
         },
       ),
-      new DotController('ns-resize', this, (x, y, oldX, oldY, oldCutoutBox) => {
-        if (this.sourceContext === null || this.context === null) return;
+      new DotController(
+        'ns-resize',
+        this,
+        (_x, y, _oldX, oldY, oldCutoutBox) => {
+          if (this.sourceContext === null || this.context === null) return;
 
-        this.updateBackGround();
-        const imageHeight = oldCutoutBox.height + (y - oldY);
+          this.updateBackGround();
+          const imageHeight = oldCutoutBox.height + (y - oldY);
 
-        this.height = Math.abs(imageHeight);
+          this.height = Math.abs(imageHeight);
 
-        if (imageHeight > 0) {
-          this.y = oldCutoutBox.y;
-        } else {
-          this.y = y + dotControllerSize / 2;
-        }
+          if (imageHeight > 0) {
+            this.y = oldCutoutBox.y;
+          } else {
+            this.y = y + dotControllerSize / 2;
+          }
 
-        const imgData = this.sourceContext.getImageData(
-          this.x,
-          this.y + this.startY,
-          this.width || 1,
-          this.height || 1,
-        );
+          const imgData = this.sourceContext.getImageData(
+            this.x,
+            this.y + this.startY,
+            this.width || 1,
+            this.height || 1,
+          );
 
-        this.context.putImageData(imgData, this.x, this.y);
-        this.updateDotControllerArrayPosition();
-        this.toolBox.updatePosition(this.x + this.width, this.y + this.height);
-      }),
+          this.context.putImageData(imgData, this.x, this.y);
+          this.updateDotControllerArrayPosition();
+          this.toolBox?.updatePosition(
+            this.x + this.width,
+            this.y + this.height,
+          );
+        },
+      ),
       new DotController(
         'nesw-resize',
         this,
@@ -257,36 +278,40 @@ class CutoutBox extends BaseBox {
 
           this.context.putImageData(imgData, this.x, this.y);
           this.updateDotControllerArrayPosition();
-          this.toolBox.updatePosition(
+          this.toolBox?.updatePosition(
             this.x + this.width,
             this.y + this.height,
           );
         },
       ),
-      new DotController('ew-resize', this, (x, y, oldX, oldY, oldCutoutBox) => {
-        if (this.sourceContext === null || this.context === null) return;
+      new DotController(
+        'ew-resize',
+        this,
+        (x, _y, oldX, _oldY, oldCutoutBox) => {
+          if (this.sourceContext === null || this.context === null) return;
 
-        this.updateBackGround();
-        const imageWith = oldCutoutBox.width + (oldX - x);
+          this.updateBackGround();
+          const imageWith = oldCutoutBox.width + (oldX - x);
 
-        this.width = Math.abs(imageWith);
+          this.width = Math.abs(imageWith);
 
-        if (imageWith > 0) {
-          this.x = x + dotControllerSize / 2;
-        } else {
-          this.x = oldCutoutBox.x + oldCutoutBox.width;
-        }
+          if (imageWith > 0) {
+            this.x = x + dotControllerSize / 2;
+          } else {
+            this.x = oldCutoutBox.x + oldCutoutBox.width;
+          }
 
-        const imgData = this.sourceContext.getImageData(
-          this.x,
-          this.y + this.startY,
-          this.width || 1,
-          this.height || 1,
-        );
+          const imgData = this.sourceContext.getImageData(
+            this.x,
+            this.y + this.startY,
+            this.width || 1,
+            this.height || 1,
+          );
 
-        this.context.putImageData(imgData, this.x, this.y);
-        this.updateDotControllerArrayPosition();
-      }),
+          this.context.putImageData(imgData, this.x, this.y);
+          this.updateDotControllerArrayPosition();
+        },
+      ),
     ];
   }
 
@@ -449,7 +474,7 @@ class CutoutBox extends BaseBox {
     this.dotControllerArray[7].updatePosition(this.x, this.y + this.height / 2);
 
     // update toolBox
-    this.toolBox.updatePosition(this.x + this.width, this.y + this.height);
+    this.toolBox?.updatePosition(this.x + this.width, this.y + this.height);
   }
 
   updateBackGround() {
