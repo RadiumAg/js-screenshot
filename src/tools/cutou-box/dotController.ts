@@ -4,6 +4,7 @@ import {
   activeTarget,
   canvasElement,
   dotControllerSize,
+  isLock,
   setActiveTarget,
   setFirstInit,
 } from '../canvas';
@@ -48,6 +49,7 @@ class DotController extends BaseBox {
 
     canvasElement.addEventListener('mousemove', event => {
       if (activeTarget !== null && activeTarget !== this) return;
+      if (isLock) return;
 
       if (isMouseDown) {
         this.x = this.oldX + event.clientX - oldClientX;

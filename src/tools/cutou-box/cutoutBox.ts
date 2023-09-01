@@ -5,6 +5,7 @@ import {
   canvasElement,
   dotControllerSize,
   isFirstInit,
+  isLock,
   setActiveTarget,
   setFirstInit,
 } from '../canvas';
@@ -378,7 +379,8 @@ class CutoutBox extends BaseBox {
           this.y + this.height - dotControllerSize / 2,
           event.clientX,
           event.clientY,
-        )
+        ) &&
+        !isLock
       ) {
         canvasElement.style.cursor = 'move';
       }
@@ -386,6 +388,7 @@ class CutoutBox extends BaseBox {
 
     canvasElement.addEventListener('mousemove', event => {
       if (activeTarget !== null && activeTarget !== this) return;
+      if (isLock) return;
 
       if (isFirstInit && isMouseDown) {
         const width = dotControllerSize * 2;

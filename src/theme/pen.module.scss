@@ -1,0 +1,13 @@
+/** @format */
+.pen {
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  background-color: #fff;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.pen:hover {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.1);
+}
