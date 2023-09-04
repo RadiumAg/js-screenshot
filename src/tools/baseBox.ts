@@ -6,12 +6,15 @@ abstract class BaseBox {
   width = 0;
   height = 0;
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   protected context = canvasElement.getContext('2d', {
     willReadFrequently: true,
-  });
+  })!;
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   protected sourceContext = sourceCanvasElement.getContext('2d', {
     willReadFrequently: true,
-  });
+  })!;
 
   isCurrentArea(
     minX: number,

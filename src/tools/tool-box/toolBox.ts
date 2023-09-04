@@ -1,10 +1,11 @@
 import { animateThrottleFn } from '@screenshots/utils/animate-throttle';
 import Style from '@screenshots/theme/tool-box.module.scss';
 import BaseBox from '../baseBox';
+import CutoutBox from '../cutou-box/cutoutBox';
 import Pen from './pen';
 
 class ToolBox extends BaseBox {
-  constructor() {
+  constructor(private cutoutBox: CutoutBox) {
     super();
     this.updatePosition = animateThrottleFn(this.updatePosition.bind(this));
   }
@@ -26,7 +27,7 @@ class ToolBox extends BaseBox {
     this.el.classList.add(Style.toolBox);
     this.el.style.zIndex = '4';
 
-    const pen = new Pen();
+    const pen = new Pen(this.cutoutBox);
     pen.initPen();
 
     pen.el && this.el.append(pen.el);

@@ -501,7 +501,7 @@ class CutoutBox extends BaseBox {
   initCutoutBox() {
     this.width = canvasElement.width;
     this.height = canvasElement.height;
-    this.toolBox = new ToolBox();
+    this.toolBox = new ToolBox(this);
     this.toolBox.initToolBox();
 
     this.initEvent();
