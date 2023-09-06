@@ -7,7 +7,7 @@ import {
   setActiveTarget,
   setIsLock,
 } from '../canvas';
-import CutoutBox from '../cutou-box/cutoutBox';
+import CutoutBox from '../cutout-box/cutoutBox';
 
 class Pen extends BaseBox {
   constructor(private cutoutBox: CutoutBox) {

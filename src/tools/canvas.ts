@@ -1,7 +1,7 @@
 /* eslint-disable import/no-mutable-exports */
-import CutoutBox from './cutou-box/cutoutBox';
-import DotController from './cutou-box/dotController';
 import Pen from './tool-box/pen';
+import CutoutBox from './cutout-box/cutoutBox';
+import DotController from './cutout-box/dotController';
 
 let isLock = false;
 let isFirstInit = true;
