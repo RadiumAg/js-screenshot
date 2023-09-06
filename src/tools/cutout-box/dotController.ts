@@ -1,4 +1,4 @@
-import { animateThrottleFn } from '@screenshots/utils/animate-throttle';
+import { animateThrottleFn } from '@screenshots/utils';
 import BaseBox from '../baseBox';
 import {
   activeTarget,

@@ -1,4 +1,4 @@
-import { animateThrottleFn } from '@screenshots/utils/animate-throttle';
+import { animateThrottleFn } from '@screenshots/utils';
 import Style from '@screenshots/theme/tool-box.module.scss';
 import BaseBox from '../baseBox';
 import CutoutBox from '../cutout-box/cutoutBox';
@@ -29,7 +29,7 @@ class ToolBox extends BaseBox {
     this.el.style.zIndex = '4';
 
     const pen = new Pen(this.cutoutBox);
-    const save = new Save();
+    const save = new Save(this.cutoutBox);
 
     pen.initPen();
     save.initSave();
