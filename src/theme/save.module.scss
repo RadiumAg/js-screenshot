@@ -1,10 +1,10 @@
 /** @format */
 @use "./common.scss" as common;
 
-.pen {
+.save {
   @include common.common;
 }
 
-.pen:hover {
+.save {
   @include common.hover;
 }
