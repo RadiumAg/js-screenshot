@@ -11,7 +11,7 @@ class Save extends BaseBox {
 
   el: HTMLDivElement | null = null;
 
-  updatePosition(...args: any[]) {}
+  updatePosition() {}
 
   protected initEvent() {
     const download = useDownLoad();
