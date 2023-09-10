@@ -1,4 +1,5 @@
 import { animateThrottleFn } from '@screenshots/utils';
+import Style from '@screenshots/theme/dot.controller.module.scss';
 import BaseBox from '../baseBox';
 import {
   activeTarget,
@@ -27,10 +28,12 @@ class DotController extends BaseBox {
 
     this.cursor = cursor;
     this.cutoutBox = cutoutBox;
+    this.initDotController();
+
     this.initEvent();
     this.updateAxiscallback = updateAxiscallback;
   }
-
+  el: HTMLDivElement | null = null;
   width = dotControllerSize;
   height = dotControllerSize;
 
@@ -40,6 +43,7 @@ class DotController extends BaseBox {
   private cutoutBox: CutoutBox;
   private oldCutoutBox: CutoutBox | null = null;
   private updateAxiscallback: UpdateAxisCallback;
+
   protected initEvent() {
     let oldClientX = 0;
     let oldClientY = 0;
@@ -55,22 +59,11 @@ class DotController extends BaseBox {
 
         updateAxis();
       }
-
-      if (
-        this.isCurrentArea(
-          this.x,
-          this.x + this.width,
-          this.y,
-          this.y + this.height,
-          event.clientX,
-          event.clientY,
-        )
-      ) {
-        canvasElement.style.cursor = this.cursor;
-      }
     });
 
-    canvasElement.addEventListener('mousedown', event => {
+    this.el?.addEventListener('mousedown', event => {
+      event.stopPropagation();
+
       const isFirstMoveDown = Reflect.get(event.target || {}, 'isFirstInit');
 
       if (
@@ -106,16 +99,22 @@ class DotController extends BaseBox {
       setActiveTarget(null);
       setFirstInit(false);
     });
+
+    this.el?.addEventListener('mouseup', () => {
+      isMouseDown = false;
+      setActiveTarget(null);
+      setFirstInit(false);
+    });
   }
 
   updatePosition(x: number, y: number) {
-    if (this.context === null) return;
+    if (this.context === null || this.el === null) return;
 
     this.x = x - this.width / 2;
     this.y = y - this.height / 2;
 
-    this.context.fillStyle = '#ffff00';
-    this.context.fillRect(this.x, this.y, this.width, this.height);
+    this.el.style.left = `${this.x}px`;
+    this.el.style.top = `${this.y}px`;
   }
 
   updateAxis() {
@@ -126,6 +125,17 @@ class DotController extends BaseBox {
       this.oldY,
       this.oldCutoutBox as CutoutBox,
     );
+  }
+
+  initDotController() {
+    this.el = document.createElement('div');
+
+    this.el.style.width = `${this.width}px`;
+    this.el.style.height = `${this.height}px`;
+    this.el.style.cursor = this.cursor;
+    this.el.classList.add(Style['dot-controller']);
+
+    document.body.append(this.el);
   }
 }
 
