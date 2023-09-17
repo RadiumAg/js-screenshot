@@ -32,7 +32,7 @@ class Pen extends BaseBox {
     let isMouseDown = false;
 
     this.el?.addEventListener('click', () => {
-      setIsLock(true);
+      setIsLock(!isLock);
     });
 
     canvasElement.addEventListener('mousemove', event => {
