@@ -346,6 +346,8 @@ class CutoutBox extends BaseBox {
     const updatePosition = animateThrottleFn(this.updatePosition.bind(this));
 
     canvasElement.addEventListener('mousedown', event => {
+      if (isLock) return;
+
       if (
         this.isCurrentArea(
           this.x,
@@ -367,6 +369,8 @@ class CutoutBox extends BaseBox {
     });
 
     canvasElement.addEventListener('mouseup', event => {
+      if (isLock) return;
+
       isMouseDown = false;
       setActiveTarget(null);
       setFirstInit(false);
