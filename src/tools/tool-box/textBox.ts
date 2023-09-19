@@ -1,11 +1,35 @@
+import Style from '@screenshots/theme/text-box.module.scss';
+import textBox from '@screenshots/assets/images/text-box.svg?raw';
 import BaseBox from '../baseBox';
+import CutoutBox from '../cutout-box/cutoutBox';
+import { activeTarget, canvasElement, isLock, setIsLock } from '../canvas';
 
 class TextBox extends BaseBox {
-  updatePosition(...args: any[]): void {
-    throw new Error('Method not implemented.');
+  constructor(private cutoutBox: CutoutBox) {
+    super();
   }
-  protected initEvent(): void {
-    throw new Error('Method not implemented.');
+
+  el: HTMLDivElement | null = null;
+
+  updatePosition(...args: any[]) {}
+
+  initTextBox() {
+    this.el = document.createElement('div');
+    this.el.classList.add(Style['text-box']);
+    this.el.innerHTML = textBox;
+
+    this.initEvent();
+  }
+
+  protected initEvent() {
+    this.el?.addEventListener('click', () => {
+      setIsLock(!isLock);
+    });
+
+    canvasElement.addEventListener('mousedown', event => {
+      if (activeTarget !== null && activeTarget !== this) return;
+      const textBoxInput = 
+    });
   }
 }
 

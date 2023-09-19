@@ -1,0 +1,10 @@
+/** @format */
+@use "./common.scss" as common;
+
+.text-box {
+  @include common.common;
+}
+
+.text-box:hover {
+  @include common.hover;
+}

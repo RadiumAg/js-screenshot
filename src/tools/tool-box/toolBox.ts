@@ -4,6 +4,7 @@ import BaseBox from '../baseBox';
 import CutoutBox from '../cutout-box/cutoutBox';
 import Pen from './pen';
 import Save from './save';
+import TextBox from './textBox';
 
 class ToolBox extends BaseBox {
   constructor(private cutoutBox: CutoutBox) {
@@ -30,11 +31,13 @@ class ToolBox extends BaseBox {
 
     const pen = new Pen(this.cutoutBox);
     const save = new Save(this.cutoutBox);
+    const textBox = new TextBox(this.cutoutBox);
 
     pen.initPen();
     save.initSave();
+    textBox.initTextBox();
 
-    this.el.append(...([pen.el, save.el] as HTMLElement[]));
+    this.el.append(...([textBox.el, pen.el, save.el] as HTMLElement[]));
     document.body.append(this.el);
   }
 

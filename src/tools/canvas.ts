@@ -8,7 +8,7 @@ let isFirstInit = true;
 let videoElement: HTMLVideoElement;
 let canvasElement: HTMLCanvasElement;
 let sourceCanvasElement: HTMLCanvasElement;
-let activeTarget: CutoutBox | DotController | Pen | null;
+let activeTarget: CutoutBox | DotController | Pen | TextBox | null;
 
 const dotControllerSize = 10;
 

@@ -26,7 +26,9 @@ class Pen extends BaseBox {
     this.initEvent();
   }
 
-  updatePosition() {}
+  updatePosition() {
+    /** pen */
+  }
 
   protected initEvent() {
     let isMouseDown = false;
