@@ -2,6 +2,7 @@
 import Pen from './tool-box/pen';
 import CutoutBox from './cutout-box/cutoutBox';
 import DotController from './cutout-box/dotController';
+import TextBox from './tool-box/textBox';
 
 let isLock = false;
 let isFirstInit = true;

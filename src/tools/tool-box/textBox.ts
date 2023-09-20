@@ -6,7 +6,6 @@ import {
   activeTarget,
   canvasElement,
   dotControllerSize,
-  isLock,
   setActiveTarget,
   setIsLock,
 } from '../canvas';
@@ -18,7 +17,9 @@ class TextBox extends BaseBox {
 
   el: HTMLDivElement | null = null;
 
-  updatePosition(...args: any[]) {}
+  updatePosition() {
+    /** empty  */
+  }
 
   initTextBox() {
     this.el = document.createElement('div');

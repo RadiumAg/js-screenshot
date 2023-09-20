@@ -5,7 +5,6 @@ import {
   activeTarget,
   canvasElement,
   dotControllerSize,
-  isLock,
   setActiveTarget,
   setIsLock,
 } from '../canvas';
