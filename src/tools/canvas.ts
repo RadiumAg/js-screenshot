@@ -2,13 +2,14 @@
 import Pen from './tool-box/pen';
 import CutoutBox from './cutout-box/cutoutBox';
 import DotController from './cutout-box/dotController';
+import TextBox from './tool-box/textBox';
 
 let isLock = false;
 let isFirstInit = true;
 let videoElement: HTMLVideoElement;
 let canvasElement: HTMLCanvasElement;
 let sourceCanvasElement: HTMLCanvasElement;
-let activeTarget: CutoutBox | DotController | Pen | null;
+let activeTarget: CutoutBox | DotController | Pen | TextBox | null;
 
 const dotControllerSize = 10;
 

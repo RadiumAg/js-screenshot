@@ -2,6 +2,7 @@ import Style from '@screenshots/theme/pen.module.scss';
 import pen from '@screenshots/assets/images/pen.svg?raw';
 import BaseBox from '../baseBox';
 import {
+  activeTarget,
   canvasElement,
   dotControllerSize,
   setActiveTarget,
@@ -24,7 +25,9 @@ class Pen extends BaseBox {
     this.initEvent();
   }
 
-  updatePosition() {}
+  updatePosition() {
+    /** pen */
+  }
 
   protected initEvent() {
     let isMouseDown = false;
@@ -32,10 +35,11 @@ class Pen extends BaseBox {
     this.el?.addEventListener('click', () => {
       setIsLock(true);
       setActiveTarget(this);
-      canvasElement.style.cursor = 'crosshair';
     });
 
     canvasElement.addEventListener('mousemove', event => {
+      if (activeTarget !== this) return;
+
       if (
         this.isCurrentArea(
           this.cutoutBox.x + dotControllerSize / 2,
@@ -44,22 +48,19 @@ class Pen extends BaseBox {
           this.cutoutBox.y + this.cutoutBox.height - dotControllerSize / 2,
           event.clientX,
           event.clientY,
-        )
+        ) &&
+        isMouseDown
       ) {
-        if (isMouseDown) {
-          this.context.lineWidth = 15;
-          this.context.lineCap = 'round';
-          this.context.lineTo(event.clientX, event.clientY);
-          this.context.stroke();
-
-          canvasElement.style.cursor = 'crosshair';
-        }
-      } else {
-        canvasElement.style.cursor = '';
+        this.context.lineWidth = 15;
+        this.context.lineCap = 'round';
+        this.context.lineTo(event.clientX, event.clientY);
+        this.context.stroke();
       }
     });
 
     canvasElement.addEventListener('mousedown', event => {
+      if (activeTarget !== this) return;
+
       if (
         this.isCurrentArea(
           this.cutoutBox.x + dotControllerSize / 2,
@@ -70,6 +71,7 @@ class Pen extends BaseBox {
           event.clientY,
         )
       ) {
+        setActiveTarget(this);
         isMouseDown = true;
 
         this.context.strokeStyle = 'blue';

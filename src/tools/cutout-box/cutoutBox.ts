@@ -346,12 +346,14 @@ class CutoutBox extends BaseBox {
     const updatePosition = animateThrottleFn(this.updatePosition.bind(this));
 
     canvasElement.addEventListener('mousedown', event => {
+      if (isLock) return;
+
       if (
         this.isCurrentArea(
-          this.x + dotControllerSize / 2,
-          this.x + this.width - dotControllerSize / 2,
-          this.y + dotControllerSize / 2,
-          this.y + this.height - dotControllerSize / 2,
+          this.x,
+          this.x + this.width,
+          this.y,
+          this.y + this.height,
           event.clientX,
           event.clientY,
         ) &&
@@ -367,16 +369,18 @@ class CutoutBox extends BaseBox {
     });
 
     canvasElement.addEventListener('mouseup', event => {
+      if (isLock) return;
+
       isMouseDown = false;
       setActiveTarget(null);
       setFirstInit(false);
 
       if (
         this.isCurrentArea(
-          this.x + dotControllerSize / 2,
-          this.x + this.width - dotControllerSize / 2,
-          this.y + dotControllerSize / 2,
-          this.y + this.height - dotControllerSize / 2,
+          this.x,
+          this.x + this.width,
+          this.y,
+          this.y + this.height,
           event.clientX,
           event.clientY,
         ) &&
@@ -391,6 +395,7 @@ class CutoutBox extends BaseBox {
       if (isLock) return;
 
       if (isFirstInit && isMouseDown) {
+        isMouseDown = false;
         const width = dotControllerSize * 2;
         const height = dotControllerSize * 2;
         this.width = width;
@@ -399,13 +404,14 @@ class CutoutBox extends BaseBox {
         this.y = event.clientY - height;
 
         updatePosition()?.then(() => {
-          canvasElement.style.cursor = 'nwse-resize';
           Reflect.set(event.target || {}, 'isFirstInit', true);
-          canvasElement.dispatchEvent(new MouseEvent('mousedown', event));
+          this.dotControllerArray
+            .at(4)
+            ?.el?.dispatchEvent(new MouseEvent('mousedown', event));
         });
       }
 
-      if (!isFirstInit && isMouseDown && isMouseDown) {
+      if (!isFirstInit && isMouseDown) {
         this.x = oldX + event.clientX - oldClientX;
         this.y = oldY + event.clientY - oldClientY;
 
@@ -429,10 +435,10 @@ class CutoutBox extends BaseBox {
 
       if (
         this.isCurrentArea(
-          this.x + dotControllerSize / 2,
-          this.x + this.width - dotControllerSize / 2,
-          this.y + dotControllerSize / 2,
-          this.y + this.height - dotControllerSize / 2,
+          this.x,
+          this.x + this.width,
+          this.y,
+          this.y + this.height,
           event.clientX,
           event.clientY,
         )
