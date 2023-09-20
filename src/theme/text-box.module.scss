@@ -8,3 +8,13 @@
 .text-box:hover {
   @include common.hover;
 }
+
+.text-box-input {
+  z-index: 77;
+  outline: none;
+  position: fixed;
+  min-width: 100px;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid red;
+}

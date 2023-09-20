@@ -2,7 +2,14 @@ import Style from '@screenshots/theme/text-box.module.scss';
 import textBox from '@screenshots/assets/images/text-box.svg?raw';
 import BaseBox from '../baseBox';
 import CutoutBox from '../cutout-box/cutoutBox';
-import { activeTarget, canvasElement, isLock, setIsLock } from '../canvas';
+import {
+  activeTarget,
+  canvasElement,
+  dotControllerSize,
+  isLock,
+  setActiveTarget,
+  setIsLock,
+} from '../canvas';
 
 class TextBox extends BaseBox {
   constructor(private cutoutBox: CutoutBox) {
@@ -23,12 +30,42 @@ class TextBox extends BaseBox {
 
   protected initEvent() {
     this.el?.addEventListener('click', () => {
-      setIsLock(!isLock);
+      setIsLock(true);
+      setActiveTarget(this);
     });
 
     canvasElement.addEventListener('mousedown', event => {
-      if (activeTarget !== null && activeTarget !== this) return;
-      const textBoxInput = 
+      if (activeTarget !== this) return;
+
+      if (
+        this.isCurrentArea(
+          this.cutoutBox.x + dotControllerSize / 2,
+          this.cutoutBox.x + this.cutoutBox.width - dotControllerSize / 2,
+          this.cutoutBox.y + dotControllerSize / 2,
+          this.cutoutBox.y + this.cutoutBox.height - dotControllerSize / 2,
+          event.clientX,
+          event.clientY,
+        )
+      ) {
+        const textBoxInput = document.createElement('div');
+        textBoxInput.setAttribute('autofocus', 'true');
+        textBoxInput.setAttribute('contenteditable', 'true');
+        textBoxInput.classList.add(Style['text-box-input']);
+
+        textBoxInput.style.top = `${event.clientY}px`;
+        textBoxInput.style.left = `${event.clientX}px`;
+
+        textBoxInput.addEventListener('blur', () => {
+          textBoxInput.remove();
+          this.context.fillText(
+            textBoxInput.textContent || '',
+            event.clientX,
+            event.clientY,
+          );
+        });
+
+        document.body.append(textBoxInput);
+      }
     });
   }
 }

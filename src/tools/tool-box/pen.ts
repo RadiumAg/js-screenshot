@@ -34,11 +34,12 @@ class Pen extends BaseBox {
     let isMouseDown = false;
 
     this.el?.addEventListener('click', () => {
-      setIsLock(!isLock);
+      setIsLock(true);
+      setActiveTarget(this);
     });
 
     canvasElement.addEventListener('mousemove', event => {
-      if (activeTarget !== null && activeTarget !== this) return;
+      if (activeTarget !== this) return;
 
       if (
         this.isCurrentArea(
@@ -59,7 +60,7 @@ class Pen extends BaseBox {
     });
 
     canvasElement.addEventListener('mousedown', event => {
-      if (!isLock) return;
+      if (activeTarget !== this) return;
 
       if (
         this.isCurrentArea(
