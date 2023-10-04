@@ -1,0 +1,10 @@
+/** @format */
+@use "./common.scss" as common;
+
+.refuse {
+  @include common.common;
+}
+
+.refuse:hover {
+  @include common.hover;
+}

@@ -8,6 +8,7 @@ import {
   isLock,
   setActiveTarget,
   setFirstInit,
+  setIsLock,
 } from '../canvas';
 import ToolBox from '../tool-box/toolBox';
 import DotController from './dotController';
@@ -515,6 +516,16 @@ class CutoutBox extends BaseBox {
     this.updatePosition();
 
     canvasElement.style.cursor = 'move';
+  }
+
+  destroy() {
+    canvasElement.remove();
+    this.toolBox?.el?.remove();
+    this.dotControllerArray.forEach(_ => _.el?.remove());
+
+    setIsLock(false);
+    setFirstInit(true);
+    setActiveTarget(null);
   }
 }
 

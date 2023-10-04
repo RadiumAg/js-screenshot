@@ -16,6 +16,7 @@ class TextBox extends BaseBox {
   }
 
   el: HTMLDivElement | null = null;
+  preTextInput: HTMLDivElement | null = null;
 
   updatePosition() {
     /** empty  */
@@ -48,6 +49,8 @@ class TextBox extends BaseBox {
           event.clientY,
         )
       ) {
+        this.preTextInput?.remove();
+
         const textBoxInput = document.createElement('div');
         textBoxInput.setAttribute('autofocus', 'true');
         textBoxInput.setAttribute('contenteditable', 'true');
@@ -58,12 +61,16 @@ class TextBox extends BaseBox {
 
         textBoxInput.addEventListener('blur', () => {
           textBoxInput.remove();
+          this.context.fillStyle = 'red';
+          this.context.font = '17px serif';
           this.context.fillText(
             textBoxInput.textContent || '',
             event.clientX,
             event.clientY,
           );
         });
+
+        this.preTextInput = textBoxInput;
 
         document.body.append(textBoxInput);
       }
