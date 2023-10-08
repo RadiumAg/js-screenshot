@@ -1,5 +1,5 @@
 import Style from '@screenshots/theme/pen.module.scss';
-import pen from '@screenshots/assets/images/pen.svg?raw';
+import pen from '@screenshots/assets/images/pen.svg';
 import BaseBox from '../baseBox';
 import {
   activeTarget,

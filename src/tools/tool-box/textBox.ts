@@ -1,5 +1,5 @@
 import Style from '@screenshots/theme/text-box.module.scss';
-import textBox from '@screenshots/assets/images/text-box.svg?raw';
+import textBox from '@screenshots/assets/images/text-box.svg';
 import BaseBox from '../baseBox';
 import CutoutBox from '../cutout-box/cutoutBox';
 import {
