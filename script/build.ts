@@ -3,7 +3,6 @@ import { rollup } from 'rollup';
 import alias from '@rollup/plugin-alias';
 import image from '@rollup/plugin-image';
 import postcss from 'rollup-plugin-postcss';
-import postcssModules from 'postcss-modules';
 import typescript from '@rollup/plugin-typescript';
 
 async function build() {
