@@ -1,5 +1,5 @@
 import Style from '@screenshots/theme/refuse.module.scss';
-import refuse from '@screenshots/assets/images/refuse.svg?raw';
+import refuse from '@screenshots/assets/images/refuse.svg';
 import BaseBox from '../baseBox';
 import CutoutBox from '../cutout-box/cutoutBox';
 
