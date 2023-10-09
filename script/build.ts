@@ -5,7 +5,7 @@ import image from '@rollup/plugin-image';
 import postcss from 'rollup-plugin-postcss';
 import typescript from '@rollup/plugin-typescript';
 
-async function build() {
+async function build(type: 'iife' | 'esm') {
   const bundle = await rollup({
     input: resolve(__dirname, '../src/screenShot.ts'),
     plugins: [
@@ -27,7 +27,7 @@ async function build() {
           strict: true,
           skipLibCheck: true,
           declaration: true,
-          declarationDir: resolve(__dirname, '../dist/esm'),
+          declarationDir: resolve(__dirname, `../dist/${type}`),
           rootDir: resolve(__dirname, '../src'),
         },
         exclude: ['node_modules'],
@@ -37,12 +37,13 @@ async function build() {
   });
 
   bundle.write({
-    format: 'esm',
-    dir: resolve(__dirname, '../dist/esm'),
+    format: type,
+    dir: resolve(__dirname, `../dist/${type}`),
     globals: { html2canvas: 'html2canvas' },
-    preserveModules: true,
+    preserveModules: type === 'esm' ? true : false,
     preserveModulesRoot: 'src',
   });
 }
 
-build();
+build('esm');
+build('iife');

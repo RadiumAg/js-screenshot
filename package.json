@@ -1,14 +1,15 @@
 {
   "name": "js-screenshot",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "一个浏览器截屏玩具",
+  "main": "./esm/screenshot.js",
+  "types":"./esm/screenSht.d.ts",
   "scripts": {
     "build": " esno ./script/build.ts",
     "playground-build": "pnpm run  build && pnpm run -C playground build"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["screenshot"],
+  "author": "radium",
   "license": "ISC",
   "dependencies": {
     "eslint": "^8.47.0",
