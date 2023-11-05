@@ -12,11 +12,13 @@
 .text-box-input {
   color: red;
   z-index: 77;
+  resize: none;
   outline: none;
-  font-size: 17px;
+  font-size: 20px;
   position: fixed;
-  min-width: 100px;
-  min-height: 17px;
-  padding: 6px 10px;
+  overflow: hidden;
+  text-wrap: nowrap;
+  font-family: system-ui;
   border: 1px solid red;
+  background-color: transparent;
 }
