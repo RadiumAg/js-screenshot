@@ -12,11 +12,14 @@ const handleStartShot = () => {
 
 <template>
   <div>
-    <button @click="handleStartShot">截屏</button>
+    <button class="shot-button" @click="handleStartShot">截屏</button>
 
     <img src="./assets/R.jfif" />
   </div>
 </template>
 
-<style scoped></style>
-@screenshots/screenShot
+<style lang="scss" scoped>
+.shot-button {
+  display: block;
+}
+</style>
