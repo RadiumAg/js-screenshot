@@ -18,16 +18,14 @@ class TextBox extends BaseBox {
   shifting = {
     x: 15,
     y: 15,
-
     minWidth: 100,
-    minHeight: 20,
-
     paddingTopBottom: 6,
     paddingLeftRight: 10,
   };
   el: HTMLDivElement | null = null;
   preTextarea: HTMLTextAreaElement | null = null;
   fontSize = 20;
+
   updatePosition() {
     /** empty  */
   }
@@ -57,6 +55,17 @@ class TextBox extends BaseBox {
     });
   }
 
+  setTextBox(textBoxTextarea: HTMLTextAreaElement) {
+    textBoxTextarea.setAttribute('autofocus', '');
+    textBoxTextarea.setAttribute('wrap', 'hard');
+    textBoxTextarea.setAttribute('contenteditable', '');
+    textBoxTextarea.classList.add(Style['text-box-input']);
+
+    // setStyle
+    textBoxTextarea.style.padding = `${this.shifting.paddingTopBottom}px ${this.shifting.paddingLeftRight}px`;
+    textBoxTextarea.style.height = `${this.fontSize}px`;
+  }
+
   protected initEvent() {
     this.el?.addEventListener('click', () => {
       setIsLock(true);
@@ -64,94 +73,100 @@ class TextBox extends BaseBox {
     });
 
     canvasElement.addEventListener('mousedown', event => {
-      let clientX = event.clientX;
+      const clientX = event.clientX;
       const clientY = event.clientY;
-      if (activeTarget !== this) return;
+      const actualClientX = event.clientX - this.shifting.x;
+      const actualClientY = event.clientY - this.shifting.y;
+      const textBoxTextarea = document.createElement('div');
+
+      textBoxTextarea.setAttribute('wrap', 'hard');
+      textBoxTextarea.setAttribute('autofocus', '');
+      textBoxTextarea.setAttribute('contenteditable', '');
+      textBoxTextarea.classList.add(Style['text-box-input']);
+      textBoxTextarea.style.height = `${
+        this.fontSize + this.shifting.paddingTopBottom * 2
+      }px`;
+      textBoxTextarea.style.minWidth = `${this.shifting.minWidth}px`;
+      textBoxTextarea.style.padding = `${this.shifting.paddingTopBottom}px ${this.shifting.paddingLeftRight}px`;
+
+      const isInLeft = !this.isOutLeft(
+        this.cutoutBox.x + dotControllerSize / 2,
+        actualClientX,
+      );
+
+      const isInRight = !this.isOutRight(
+        this.cutoutBox.x + this.cutoutBox.width - dotControllerSize / 2,
+        actualClientX,
+      );
+
+      const isInTop = !this.isOutTop(
+        this.cutoutBox.y + dotControllerSize / 2,
+        actualClientY,
+      );
+
+      const isInBottom = !this.isOutBottom(
+        this.cutoutBox.y + this.cutoutBox.height + dotControllerSize / 2,
+        actualClientY,
+      );
 
       if (
-        this.isCurrentArea(
-          this.cutoutBox.x + dotControllerSize / 2,
-          this.cutoutBox.x + this.cutoutBox.width - dotControllerSize / 2,
-          this.cutoutBox.y + dotControllerSize / 2,
-          this.cutoutBox.y + this.cutoutBox.height - dotControllerSize / 2,
+        activeTarget !== this ||
+        !this.isCurrentArea(
+          this.cutoutBox.x,
+          this.cutoutBox.x + this.cutoutBox.width,
+          this.cutoutBox.y,
+          this.cutoutBox.y + this.cutoutBox.height,
           clientX,
           clientY,
         )
-      ) {
-        this.preTextarea?.remove();
-        const textBoxTextarea = document.createElement('textarea');
+      )
+        return;
 
-        textBoxTextarea.setAttribute('autofocus', '');
-        textBoxTextarea.setAttribute('wrap', 'hard');
-        textBoxTextarea.setAttribute('contenteditable', '');
-        textBoxTextarea.classList.add(Style['text-box-input']);
-
-        // setStyle
-        textBoxTextarea.style.padding = `${this.shifting.paddingTopBottom}px ${this.shifting.paddingLeftRight}px`;
-        if (
-          this.isCurrentArea(
-            this.cutoutBox.x,
-            this.cutoutBox.x + this.cutoutBox.width,
-            this.cutoutBox.y,
-            this.cutoutBox.y + this.cutoutBox.height,
-            clientX - this.shifting.x,
-            clientY - this.shifting.y,
-          ) &&
-          this.isCurrentArea(
-            this.cutoutBox.x,
-            this.cutoutBox.x + this.cutoutBox.width,
-            this.cutoutBox.y,
-            this.cutoutBox.y + this.cutoutBox.height,
-            clientX - this.shifting.x + this.shifting.minWidth,
-            clientY - this.shifting.y + this.shifting.minHeight,
-          )
-        ) {
-          textBoxTextarea.style.minWidth = `${this.shifting.minWidth}px`;
-          textBoxTextarea.style.minHeight = `${this.shifting.minHeight}px`;
-        } else {
-          textBoxTextarea.style.maxWidth = `${this.shifting.minWidth}px`;
-          textBoxTextarea.style.maxHeight = `${this.shifting.minHeight}px`;
-
-          if (clientX - this.shifting.x < this.cutoutBox.x) {
-            clientX = clientX + this.shifting.x;
-          } else if (
-            clientX -
-              this.shifting.x +
-              this.shifting.minWidth -
-              this.shifting.paddingLeftRight * 2 >
-            this.cutoutBox.x + this.cutoutBox.width
-          ) {
-            clientX =
-              this.cutoutBox.x +
-              this.cutoutBox.width -
-              this.shifting.minWidth -
-              this.shifting.x;
-          }
-        }
-
-        textBoxTextarea.style.left = `${clientX - this.shifting.x}px`;
-        textBoxTextarea.style.top = `${clientY - this.shifting.y}px`;
-
-        textBoxTextarea.addEventListener('blur', () => {
-          textBoxTextarea.remove();
-          this.renderToCanvas(textBoxTextarea.value, clientX, clientY);
-        });
-
-        textBoxTextarea.addEventListener('input', event => {
-          const currentTarget = event.currentTarget as HTMLTextAreaElement;
-
-          currentTarget.style.height = `${
-            currentTarget.scrollHeight - this.shifting.paddingTopBottom * 2
-          }px`;
-
-          currentTarget.style.width = `${
-            currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2
-          }px`;
-        });
-
-        this.preTextarea = textBoxTextarea;
-        document.body.append(textBoxTextarea);
+      // 超出左侧
+      if (!isInLeft) {
+        textBoxTextarea.style.left = `${this.cutoutBox.x}px`;
+      } else {
+        textBoxTextarea.style.left = `${actualClientX}px`;
       }
+
+      // 超出上侧
+      if (!isInTop) {
+        textBoxTextarea.style.top = `${this.cutoutBox.y}px`;
+      } else {
+        textBoxTextarea.style.top = `${actualClientY}px`;
+      }
+
+      if (!isInRight) {
+        textBoxTextarea.style.left = `${
+          this.cutoutBox.x + this.cutoutBox.width - this.shifting.minWidth
+        }px`;
+      }
+
+      if (!isInBottom) {
+        textBoxTextarea.style.top = `${
+          this.cutoutBox.y + this.cutoutBox.height - this.shifting.minWidth
+        }px`;
+      }
+
+      textBoxTextarea.addEventListener('blur', () => {
+        // textBoxTextarea.remove();
+        this.renderToCanvas(textBoxTextarea.innerHTML, clientX, clientY);
+      });
+
+      textBoxTextarea.addEventListener('input', event => {
+        const currentTarget = event.currentTarget as HTMLTextAreaElement;
+
+        currentTarget.style.height = `${
+          currentTarget.scrollHeight - this.shifting.paddingTopBottom * 2
+        }px`;
+
+        currentTarget.style.width = `${
+          currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2
+        }px`;
+      });
+
+      this.preTextarea = textBoxTextarea;
+      document.body.append(textBoxTextarea);
     });
   }
 }
