@@ -23,7 +23,7 @@ class TextBox extends BaseBox {
     paddingLeftRight: 10,
   };
   el: HTMLDivElement | null = null;
-  preTextarea: HTMLTextAreaElement | null = null;
+  preTextarea: HTMLDivElement | null = null;
   fontSize = 20;
 
   updatePosition() {
@@ -96,7 +96,7 @@ class TextBox extends BaseBox {
 
       const isInRight = !this.isOutRight(
         this.cutoutBox.x + this.cutoutBox.width - dotControllerSize / 2,
-        actualClientX,
+        actualClientX + this.shifting.minWidth,
       );
 
       const isInTop = !this.isOutTop(
@@ -106,7 +106,7 @@ class TextBox extends BaseBox {
 
       const isInBottom = !this.isOutBottom(
         this.cutoutBox.y + this.cutoutBox.height + dotControllerSize / 2,
-        actualClientY,
+        actualClientY + this.fontSize + this.shifting.paddingTopBottom * 2,
       );
 
       if (
