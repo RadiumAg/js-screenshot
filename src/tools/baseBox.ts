@@ -16,6 +16,22 @@ abstract class BaseBox {
     willReadFrequently: true,
   })!;
 
+  isOutLeft(minX: number, x: number) {
+    return x < minX;
+  }
+
+  isOutRight(maxX: number, x: number) {
+    return x > maxX;
+  }
+
+  isOutTop(minY: number, y: number) {
+    return y < minY;
+  }
+
+  isOutBottom(maxY: number, y: number) {
+    return y > maxY;
+  }
+
   isCurrentArea(
     minX: number,
     maxX: number,
@@ -24,7 +40,12 @@ abstract class BaseBox {
     x: number,
     y: number,
   ) {
-    return x >= minX && x <= maxX && y >= minY && y <= maxY;
+    return (
+      !this.isOutLeft(minX, x) &&
+      !this.isOutRight(maxX, x) &&
+      !this.isOutTop(minY, y) &&
+      !this.isOutBottom(maxY, y)
+    );
   }
 
   abstract updatePosition(...args: any[]): void;
