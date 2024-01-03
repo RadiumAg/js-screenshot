@@ -42,17 +42,20 @@ class TextBox extends BaseBox {
     this.context.fillStyle = 'red';
     this.context.font = `${this.fontSize}px system-ui`;
 
-    textBoxValue.split(/[\n\r]/g).forEach((value, index) => {
-      this.context.fillText(
-        value,
-        clientX - this.shifting.x + this.shifting.paddingLeftRight,
-        clientY -
-          this.shifting.y +
-          index * 20 +
-          this.shifting.paddingTopBottom +
-          this.fontSize,
-      );
-    });
+    textBoxValue
+      .split(/<div>|<br>/)
+      .map(_ => _.replace('</div>', ''))
+      .forEach((value, index) => {
+        this.context.fillText(
+          value,
+          clientX - this.shifting.x + this.shifting.paddingLeftRight,
+          clientY -
+            this.shifting.y +
+            index * 20 +
+            this.shifting.paddingTopBottom +
+            this.fontSize,
+        );
+      });
   }
 
   setTextBox(textBoxTextarea: HTMLTextAreaElement) {
