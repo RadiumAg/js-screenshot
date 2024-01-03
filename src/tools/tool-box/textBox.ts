@@ -60,10 +60,93 @@ class TextBox extends BaseBox {
     textBoxTextarea.setAttribute('wrap', 'hard');
     textBoxTextarea.setAttribute('contenteditable', '');
     textBoxTextarea.classList.add(Style['text-box-input']);
-
     // setStyle
     textBoxTextarea.style.padding = `${this.shifting.paddingTopBottom}px ${this.shifting.paddingLeftRight}px`;
     textBoxTextarea.style.height = `${this.fontSize}px`;
+  }
+
+  private setPosition(textBoxTextarea: HTMLDivElement, event: MouseEvent) {
+    const clientX = event.clientX;
+    const clientY = event.clientY;
+    const actualClientX = event.clientX - this.shifting.x;
+    const actualClientY = event.clientY - this.shifting.y;
+    const isInLeft = !this.isOutLeft(
+      this.cutoutBox.x + dotControllerSize / 2,
+      actualClientX,
+    );
+
+    const isInRight = !this.isOutRight(
+      this.cutoutBox.x + this.cutoutBox.width - dotControllerSize / 2,
+      actualClientX +
+        this.shifting.minWidth +
+        this.shifting.paddingTopBottom * 2,
+    );
+
+    const isInTop = !this.isOutTop(
+      this.cutoutBox.y + dotControllerSize / 2,
+      actualClientY,
+    );
+
+    const isInBottom = !this.isOutBottom(
+      this.cutoutBox.y + this.cutoutBox.height + dotControllerSize / 2,
+      actualClientY + this.fontSize + this.shifting.paddingTopBottom * 2,
+    );
+
+    if (
+      activeTarget !== this ||
+      !this.isCurrentArea(
+        this.cutoutBox.x,
+        this.cutoutBox.x + this.cutoutBox.width,
+        this.cutoutBox.y,
+        this.cutoutBox.y + this.cutoutBox.height,
+        clientX,
+        clientY,
+      )
+    )
+      return;
+
+    // 超出左侧
+    if (!isInLeft) {
+      textBoxTextarea.style.left = `${this.cutoutBox.x}px`;
+    } else {
+      textBoxTextarea.style.left = `${actualClientX}px`;
+    }
+
+    // 超出上侧
+    if (!isInTop) {
+      textBoxTextarea.style.top = `${this.cutoutBox.y}px`;
+    } else {
+      textBoxTextarea.style.top = `${actualClientY}px`;
+    }
+
+    // 超出右侧
+    if (!isInRight) {
+      textBoxTextarea.style.left = `${
+        this.cutoutBox.x +
+        this.cutoutBox.width -
+        this.shifting.minWidth -
+        this.shifting.paddingLeftRight * 2
+      }px`;
+    }
+
+    if (!isInBottom) {
+      textBoxTextarea.style.top = `${
+        this.cutoutBox.y + this.cutoutBox.height - this.shifting.minWidth
+      }px`;
+    }
+  }
+
+  private setStyle(textBoxTextarea: HTMLDivElement) {
+    textBoxTextarea.setAttribute('wrap', 'hard');
+    textBoxTextarea.setAttribute('autofocus', '');
+    textBoxTextarea.setAttribute('contenteditable', '');
+    textBoxTextarea.classList.add(Style['text-box-input']);
+    textBoxTextarea.style.height = `${
+      this.fontSize + this.shifting.paddingTopBottom * 2
+    }px`;
+    textBoxTextarea.style.width = `${this.shifting.minWidth}px`;
+    textBoxTextarea.style.minWidth = `${this.shifting.minWidth}px`;
+    textBoxTextarea.style.padding = `${this.shifting.paddingTopBottom}px ${this.shifting.paddingLeftRight}px`;
   }
 
   protected initEvent() {
@@ -75,91 +158,23 @@ class TextBox extends BaseBox {
     canvasElement.addEventListener('mousedown', event => {
       const clientX = event.clientX;
       const clientY = event.clientY;
-      const actualClientX = event.clientX - this.shifting.x;
-      const actualClientY = event.clientY - this.shifting.y;
+
       const textBoxTextarea = document.createElement('div');
+      this.setStyle(textBoxTextarea);
+      this.setPosition(textBoxTextarea, event);
 
-      textBoxTextarea.setAttribute('wrap', 'hard');
-      textBoxTextarea.setAttribute('autofocus', '');
-      textBoxTextarea.setAttribute('contenteditable', '');
-      textBoxTextarea.classList.add(Style['text-box-input']);
-      textBoxTextarea.style.height = `${
-        this.fontSize + this.shifting.paddingTopBottom * 2
-      }px`;
-      textBoxTextarea.style.minWidth = `${this.shifting.minWidth}px`;
-      textBoxTextarea.style.padding = `${this.shifting.paddingTopBottom}px ${this.shifting.paddingLeftRight}px`;
-
-      const isInLeft = !this.isOutLeft(
-        this.cutoutBox.x + dotControllerSize / 2,
-        actualClientX,
-      );
-
-      const isInRight = !this.isOutRight(
-        this.cutoutBox.x + this.cutoutBox.width - dotControllerSize / 2,
-        actualClientX + this.shifting.minWidth,
-      );
-
-      const isInTop = !this.isOutTop(
-        this.cutoutBox.y + dotControllerSize / 2,
-        actualClientY,
-      );
-
-      const isInBottom = !this.isOutBottom(
-        this.cutoutBox.y + this.cutoutBox.height + dotControllerSize / 2,
-        actualClientY + this.fontSize + this.shifting.paddingTopBottom * 2,
-      );
-
-      if (
-        activeTarget !== this ||
-        !this.isCurrentArea(
-          this.cutoutBox.x,
-          this.cutoutBox.x + this.cutoutBox.width,
-          this.cutoutBox.y,
-          this.cutoutBox.y + this.cutoutBox.height,
-          clientX,
-          clientY,
-        )
-      )
-        return;
-
-      // 超出左侧
-      if (!isInLeft) {
-        textBoxTextarea.style.left = `${this.cutoutBox.x}px`;
-      } else {
-        textBoxTextarea.style.left = `${actualClientX}px`;
-      }
-
-      // 超出上侧
-      if (!isInTop) {
-        textBoxTextarea.style.top = `${this.cutoutBox.y}px`;
-      } else {
-        textBoxTextarea.style.top = `${actualClientY}px`;
-      }
-
-      if (!isInRight) {
-        textBoxTextarea.style.left = `${
-          this.cutoutBox.x + this.cutoutBox.width - this.shifting.minWidth
-        }px`;
-      }
-
-      if (!isInBottom) {
-        textBoxTextarea.style.top = `${
-          this.cutoutBox.y + this.cutoutBox.height - this.shifting.minWidth
-        }px`;
-      }
+      this.preTextarea?.remove();
 
       textBoxTextarea.addEventListener('blur', () => {
-        // textBoxTextarea.remove();
+        textBoxTextarea.remove();
         this.renderToCanvas(textBoxTextarea.innerHTML, clientX, clientY);
       });
 
       textBoxTextarea.addEventListener('input', event => {
         const currentTarget = event.currentTarget as HTMLTextAreaElement;
-
         currentTarget.style.height = `${
           currentTarget.scrollHeight - this.shifting.paddingTopBottom * 2
         }px`;
-
         currentTarget.style.width = `${
           currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2
         }px`;
