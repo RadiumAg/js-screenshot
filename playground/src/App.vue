@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import '../../dist/esm/screenShot.css';
-import ScreenShot from '../../dist/esm/screenShot';
+import ScreenShot from '@screenshots/screenShot';
 
 const screenShot = new ScreenShot({
   mode: 'displayMedia',
