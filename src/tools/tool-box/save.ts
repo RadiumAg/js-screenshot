@@ -1,5 +1,5 @@
 import Style from '@screenshots/theme/save.module.scss';
-import save from '@screenshots/assets/images/save.svg';
+import save from '@screenshots/assets/images/save.svg?raw';
 import { useDownLoad } from '@screenshots/utils';
 import BaseBox from '../baseBox';
 import CutoutBox from '../cutout-box/cutoutBox';

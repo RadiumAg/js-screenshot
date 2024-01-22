@@ -1,5 +1,5 @@
 import Style from '@screenshots/theme/text-box.module.scss';
-import textBox from '@screenshots/assets/images/text-box.svg';
+import textBox from '@screenshots/assets/images/text-box.svg?raw';
 import BaseBox from '../baseBox';
 import CutoutBox from '../cutout-box/cutoutBox';
 import {
@@ -34,6 +34,7 @@ class TextBox extends BaseBox {
     this.el = document.createElement('div');
     this.el.classList.add(Style['text-box']);
     this.el.innerHTML = textBox;
+    console.log(textBox)
 
     this.initEvent();
   }
