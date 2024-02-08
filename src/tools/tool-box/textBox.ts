@@ -25,6 +25,7 @@ class TextBox extends BaseBox {
   el: HTMLDivElement | null = null;
   preTextarea: HTMLDivElement | null = null;
   fontSize = 20;
+  renderIndex = 0;
 
   updatePosition() {
     /** empty  */
@@ -34,29 +35,77 @@ class TextBox extends BaseBox {
     this.el = document.createElement('div');
     this.el.classList.add(Style['text-box']);
     this.el.innerHTML = textBox;
-    console.log(textBox)
-
     this.initEvent();
   }
 
-  renderToCanvas(textBoxValue: string, clientX: number, clientY: number) {
+  mersureText(
+    textBoxValue: string | null,
+    maxWidth: number,
+    clientX: number,
+    clientY: number,
+    startIndex = 0,
+    endIndex = 1,
+  ) {
+    if (!textBoxValue) {
+      return;
+    }
+    const stringValue = textBoxValue.slice(startIndex, endIndex);
+    if (endIndex === textBoxValue.length) {
+      this.context.fillText(
+        stringValue,
+        clientX - this.shifting.x + this.shifting.paddingLeftRight,
+        clientY -
+          this.shifting.y +
+          this.renderIndex * 20 +
+          this.shifting.paddingTopBottom +
+          this.fontSize,
+      );
+      return;
+    }
+
+    if (this.context.measureText(stringValue).width > maxWidth) {
+      startIndex = --endIndex;
+      this.context.fillText(
+        stringValue,
+        clientX - this.shifting.x + this.shifting.paddingLeftRight,
+        clientY -
+          this.shifting.y +
+          this.renderIndex * 20 +
+          this.shifting.paddingTopBottom +
+          this.fontSize,
+      );
+      this.renderIndex++;
+      this.mersureText(
+        textBoxValue,
+        maxWidth,
+        clientX,
+        clientY,
+        startIndex,
+        endIndex,
+      );
+    } else {
+      endIndex++;
+      this.mersureText(
+        textBoxValue,
+        maxWidth,
+        clientX,
+        clientY,
+        startIndex,
+        endIndex,
+      );
+    }
+  }
+
+  renderToCanvas(
+    textBoxValue: string | null,
+    maxWidth: number,
+    clientX: number,
+    clientY: number,
+  ) {
     this.context.fillStyle = 'red';
     this.context.font = `${this.fontSize}px system-ui`;
-
-    textBoxValue
-      .split(/<div>|<br>/)
-      .map(_ => _.replace('</div>', ''))
-      .forEach((value, index) => {
-        this.context.fillText(
-          value,
-          clientX - this.shifting.x + this.shifting.paddingLeftRight,
-          clientY -
-            this.shifting.y +
-            index * 20 +
-            this.shifting.paddingTopBottom +
-            this.fontSize,
-        );
-      });
+    this.mersureText(textBoxValue, maxWidth, clientX, clientY);
+    this.renderIndex = 0;
   }
 
   setTextBox(textBoxTextarea: HTMLTextAreaElement) {
@@ -151,6 +200,7 @@ class TextBox extends BaseBox {
     textBoxTextarea.style.width = `${this.shifting.minWidth}px`;
     textBoxTextarea.style.minWidth = `${this.shifting.minWidth}px`;
     textBoxTextarea.style.padding = `${this.shifting.paddingTopBottom}px ${this.shifting.paddingLeftRight}px`;
+    textBoxTextarea.style.whiteSpace = 'nowrap';
   }
 
   protected initEvent() {
@@ -160,6 +210,7 @@ class TextBox extends BaseBox {
     });
 
     canvasElement.addEventListener('mousedown', event => {
+      let maxWidth = this.shifting.minWidth;
       const clientX = event.clientX;
       const clientY = event.clientY;
 
@@ -171,17 +222,36 @@ class TextBox extends BaseBox {
 
       textBoxTextarea.addEventListener('blur', () => {
         textBoxTextarea.remove();
-        this.renderToCanvas(textBoxTextarea.innerHTML, clientX, clientY);
+        this.renderToCanvas(
+          textBoxTextarea.textContent,
+          maxWidth,
+          clientX,
+          clientY,
+        );
       });
 
       textBoxTextarea.addEventListener('input', event => {
         const currentTarget = event.currentTarget as HTMLTextAreaElement;
+        const textboxTextReact = currentTarget.getBoundingClientRect();
+
         currentTarget.style.height = `${
           currentTarget.scrollHeight - this.shifting.paddingTopBottom * 2
         }px`;
-        currentTarget.style.width = `${
-          currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2
-        }px`;
+        currentTarget.style.width =
+          maxWidth !== this.shifting.minWidth
+            ? `${maxWidth}px`
+            : `${
+                currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2
+              }px`;
+
+        if (
+          maxWidth === this.shifting.minWidth &&
+          textboxTextReact.right >= this.cutoutBox.x + this.cutoutBox.width
+        ) {
+          maxWidth =
+            currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2;
+          currentTarget.style.whiteSpace = 'unset';
+        }
       });
 
       this.preTextarea = textBoxTextarea;
