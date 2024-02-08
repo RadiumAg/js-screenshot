@@ -25,6 +25,7 @@ class TextBox extends BaseBox {
   el: HTMLDivElement | null = null;
   preTextarea: HTMLDivElement | null = null;
   fontSize = 20;
+  renderIndex = 0;
 
   updatePosition() {
     /** empty  */
@@ -34,39 +35,83 @@ class TextBox extends BaseBox {
     this.el = document.createElement('div');
     this.el.classList.add(Style['text-box']);
     this.el.innerHTML = textBox;
-    console.log(textBox)
-
     this.initEvent();
   }
 
-  renderToCanvas(textBoxValue: string, clientX: number, clientY: number) {
+  mersureLineToCanvas(
+    textBoxValue: string | null,
+    maxWidth: number,
+    clientX: number,
+    clientY: number,
+    startIndex = 0,
+    endIndex = 1,
+  ) {
+    if (!textBoxValue) {
+      return;
+    }
+    const render = () =>
+      this.context.fillText(
+        stringValue,
+        clientX - this.shifting.x + this.shifting.paddingLeftRight * 2,
+        clientY -
+          this.shifting.y +
+          this.renderIndex * 20 +
+          this.shifting.paddingTopBottom +
+          this.fontSize,
+      );
+    const stringValue = textBoxValue.slice(startIndex, endIndex);
+
+    if (endIndex === textBoxValue.length) {
+      render();
+      return;
+    }
+
+    if (this.context.measureText(stringValue).width > maxWidth) {
+      startIndex = --endIndex;
+      render();
+      this.renderIndex++;
+      this.mersureLineToCanvas(
+        textBoxValue,
+        maxWidth,
+        clientX,
+        clientY,
+        startIndex,
+        endIndex,
+      );
+    } else {
+      endIndex++;
+      this.mersureLineToCanvas(
+        textBoxValue,
+        maxWidth,
+        clientX,
+        clientY,
+        startIndex,
+        endIndex,
+      );
+    }
+  }
+
+  // caulate the text
+  renderToCanvas(
+    textBoxValue: string | null,
+    maxWidth: number,
+    clientX: number,
+    clientY: number,
+  ) {
+    this.renderIndex = 0;
     this.context.fillStyle = 'red';
     this.context.font = `${this.fontSize}px system-ui`;
-
-    textBoxValue
-      .split(/<div>|<br>/)
-      .map(_ => _.replace('</div>', ''))
-      .forEach((value, index) => {
-        this.context.fillText(
-          value,
-          clientX - this.shifting.x + this.shifting.paddingLeftRight,
-          clientY -
-            this.shifting.y +
-            index * 20 +
-            this.shifting.paddingTopBottom +
-            this.fontSize,
-        );
-      });
+    this.mersureLineToCanvas(textBoxValue, maxWidth, clientX, clientY);
   }
 
   setTextBox(textBoxTextarea: HTMLTextAreaElement) {
     textBoxTextarea.setAttribute('autofocus', '');
     textBoxTextarea.setAttribute('wrap', 'hard');
+    textBoxTextarea.style.height = `${this.fontSize}px`;
     textBoxTextarea.setAttribute('contenteditable', '');
     textBoxTextarea.classList.add(Style['text-box-input']);
     // setStyle
     textBoxTextarea.style.padding = `${this.shifting.paddingTopBottom}px ${this.shifting.paddingLeftRight}px`;
-    textBoxTextarea.style.height = `${this.fontSize}px`;
   }
 
   private setPosition(textBoxTextarea: HTMLDivElement, event: MouseEvent) {
@@ -109,21 +154,21 @@ class TextBox extends BaseBox {
     )
       return;
 
-    // 超出左侧
+    // out left
     if (!isInLeft) {
       textBoxTextarea.style.left = `${this.cutoutBox.x}px`;
     } else {
       textBoxTextarea.style.left = `${actualClientX}px`;
     }
 
-    // 超出上侧
+    // out top
     if (!isInTop) {
       textBoxTextarea.style.top = `${this.cutoutBox.y}px`;
     } else {
       textBoxTextarea.style.top = `${actualClientY}px`;
     }
 
-    // 超出右侧
+    // out right
     if (!isInRight) {
       textBoxTextarea.style.left = `${
         this.cutoutBox.x +
@@ -151,6 +196,7 @@ class TextBox extends BaseBox {
     textBoxTextarea.style.width = `${this.shifting.minWidth}px`;
     textBoxTextarea.style.minWidth = `${this.shifting.minWidth}px`;
     textBoxTextarea.style.padding = `${this.shifting.paddingTopBottom}px ${this.shifting.paddingLeftRight}px`;
+    textBoxTextarea.style.whiteSpace = 'nowrap';
   }
 
   protected initEvent() {
@@ -160,6 +206,8 @@ class TextBox extends BaseBox {
     });
 
     canvasElement.addEventListener('mousedown', event => {
+      let maxHeight = 0;
+      let maxWidth = this.shifting.minWidth;
       const clientX = event.clientX;
       const clientY = event.clientY;
 
@@ -171,17 +219,48 @@ class TextBox extends BaseBox {
 
       textBoxTextarea.addEventListener('blur', () => {
         textBoxTextarea.remove();
-        this.renderToCanvas(textBoxTextarea.innerHTML, clientX, clientY);
+        this.renderToCanvas(
+          textBoxTextarea.textContent,
+          maxWidth,
+          clientX,
+          clientY,
+        );
       });
 
       textBoxTextarea.addEventListener('input', event => {
         const currentTarget = event.currentTarget as HTMLTextAreaElement;
-        currentTarget.style.height = `${
-          currentTarget.scrollHeight - this.shifting.paddingTopBottom * 2
-        }px`;
-        currentTarget.style.width = `${
-          currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2
-        }px`;
+        const textboxTextReact = currentTarget.getBoundingClientRect();
+
+        currentTarget.style.height = maxHeight
+          ? `${maxHeight}`
+          : `${
+              currentTarget.scrollHeight - this.shifting.paddingTopBottom * 2
+            }px`;
+
+        currentTarget.style.width =
+          maxWidth !== this.shifting.minWidth
+            ? `${maxWidth}px`
+            : `${
+                currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2
+              }px`;
+
+        if (
+          maxWidth === this.shifting.minWidth &&
+          textboxTextReact.right >= this.cutoutBox.x + this.cutoutBox.width
+        ) {
+          maxWidth =
+            currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2;
+          currentTarget.style.whiteSpace = 'unset';
+        }
+
+        if (
+          !maxHeight &&
+          this.shifting.minWidth &&
+          textboxTextReact.bottom >= this.cutoutBox.y + this.cutoutBox.height
+        ) {
+          maxHeight =
+            currentTarget.scrollHeight - this.shifting.paddingTopBottom * 2;
+        }
       });
 
       this.preTextarea = textBoxTextarea;
