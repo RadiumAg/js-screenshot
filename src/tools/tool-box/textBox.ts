@@ -187,6 +187,7 @@ class TextBox extends BaseBox {
 
   private setStyle(textBoxTextarea: HTMLDivElement) {
     textBoxTextarea.setAttribute('wrap', 'hard');
+    textBoxTextarea.style.whiteSpace = 'nowrap';
     textBoxTextarea.setAttribute('autofocus', '');
     textBoxTextarea.setAttribute('contenteditable', '');
     textBoxTextarea.classList.add(Style['text-box-input']);
@@ -196,7 +197,6 @@ class TextBox extends BaseBox {
     textBoxTextarea.style.width = `${this.shifting.minWidth}px`;
     textBoxTextarea.style.minWidth = `${this.shifting.minWidth}px`;
     textBoxTextarea.style.padding = `${this.shifting.paddingTopBottom}px ${this.shifting.paddingLeftRight}px`;
-    textBoxTextarea.style.whiteSpace = 'nowrap';
   }
 
   protected initEvent() {
@@ -207,6 +207,7 @@ class TextBox extends BaseBox {
 
     canvasElement.addEventListener('mousedown', event => {
       let maxHeight = 0;
+      const preString = '';
       let maxWidth = this.shifting.minWidth;
       const clientX = event.clientX;
       const clientY = event.clientY;
@@ -228,9 +229,8 @@ class TextBox extends BaseBox {
       });
 
       textBoxTextarea.addEventListener('input', event => {
-        const currentTarget = event.currentTarget as HTMLTextAreaElement;
+        const currentTarget = event.currentTarget as HTMLDivElement;
         const textboxTextReact = currentTarget.getBoundingClientRect();
-
         currentTarget.style.height = maxHeight
           ? `${maxHeight}`
           : `${
@@ -244,23 +244,31 @@ class TextBox extends BaseBox {
                 currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2
               }px`;
 
-        if (
-          maxWidth === this.shifting.minWidth &&
-          textboxTextReact.right >= this.cutoutBox.x + this.cutoutBox.width
-        ) {
-          maxWidth =
-            currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2;
-          currentTarget.style.whiteSpace = 'unset';
-        }
+        const sign = setTimeout(() => {
+          clearTimeout(sign);
 
-        if (
-          !maxHeight &&
-          this.shifting.minWidth &&
-          textboxTextReact.bottom >= this.cutoutBox.y + this.cutoutBox.height
-        ) {
-          maxHeight =
-            currentTarget.scrollHeight - this.shifting.paddingTopBottom * 2;
-        }
+          if (
+            maxWidth === this.shifting.minWidth &&
+            textboxTextReact.right >= this.cutoutBox.x + this.cutoutBox.width
+          ) {
+            maxWidth =
+              currentTarget.scrollWidth -
+              this.shifting.paddingLeftRight * 2 -
+              20;
+            currentTarget.style.whiteSpace = 'unset';
+          }
+
+          if (
+            !maxHeight &&
+            this.shifting.minWidth &&
+            textboxTextReact.bottom >= this.cutoutBox.y + this.cutoutBox.height
+          ) {
+            maxHeight =
+              currentTarget.scrollHeight -
+              this.shifting.paddingTopBottom * 2 -
+              60;
+          }
+        });
       });
 
       this.preTextarea = textBoxTextarea;
