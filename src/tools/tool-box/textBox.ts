@@ -207,7 +207,6 @@ class TextBox extends BaseBox {
 
     canvasElement.addEventListener('mousedown', event => {
       let maxHeight = 0;
-      const preString = '';
       let maxWidth = this.shifting.minWidth;
       const clientX = event.clientX;
       const clientY = event.clientY;
@@ -231,6 +230,26 @@ class TextBox extends BaseBox {
       textBoxTextarea.addEventListener('input', event => {
         const currentTarget = event.currentTarget as HTMLDivElement;
         const textboxTextReact = currentTarget.getBoundingClientRect();
+        if (
+          maxWidth === this.shifting.minWidth &&
+          textboxTextReact.right >= this.cutoutBox.x + this.cutoutBox.width
+        ) {
+          maxWidth =
+            currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2 - 20;
+          currentTarget.style.whiteSpace = 'unset';
+        }
+
+        if (
+          !maxHeight &&
+          this.shifting.minWidth &&
+          textboxTextReact.bottom >= this.cutoutBox.y + this.cutoutBox.height
+        ) {
+          maxHeight =
+            currentTarget.scrollHeight -
+            this.shifting.paddingTopBottom * 2 -
+            60;
+        }
+
         currentTarget.style.height = maxHeight
           ? `${maxHeight}`
           : `${
@@ -243,32 +262,6 @@ class TextBox extends BaseBox {
             : `${
                 currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2
               }px`;
-
-        const sign = setTimeout(() => {
-          clearTimeout(sign);
-
-          if (
-            maxWidth === this.shifting.minWidth &&
-            textboxTextReact.right >= this.cutoutBox.x + this.cutoutBox.width
-          ) {
-            maxWidth =
-              currentTarget.scrollWidth -
-              this.shifting.paddingLeftRight * 2 -
-              20;
-            currentTarget.style.whiteSpace = 'unset';
-          }
-
-          if (
-            !maxHeight &&
-            this.shifting.minWidth &&
-            textboxTextReact.bottom >= this.cutoutBox.y + this.cutoutBox.height
-          ) {
-            maxHeight =
-              currentTarget.scrollHeight -
-              this.shifting.paddingTopBottom * 2 -
-              60;
-          }
-        });
       });
 
       this.preTextarea = textBoxTextarea;
