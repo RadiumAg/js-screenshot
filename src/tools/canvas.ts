@@ -4,20 +4,19 @@ import CutoutBox from './cutout-box/cutoutBox';
 import DotController from './cutout-box/dotController';
 import TextBox from './tool-box/textBox';
 
-const operateHistory = {
-  currentIndex: 0,
+const operateHistory: ImageData[] = [];
 
-  history: [] as ImageData[],
+const pushOrign = operateHistory.push.bind(operateHistory);
+const popOrigin = operateHistory.pop.bind(operateHistory);
 
-  pop() {
-    this.currentIndex--;
-    return this.history[this.currentIndex];
-  },
+operateHistory['push'] = (...items: ImageData[]) => {
+  console.log(items);
+  return pushOrign(...items);
+};
 
-  push(history: ImageData) {
-    this.history[this.currentIndex] = history;
-    this.currentIndex++;
-  },
+operateHistory['pop'] = () => {
+  console.log([...operateHistory]);
+  return popOrigin();
 };
 
 let isLock = false;
