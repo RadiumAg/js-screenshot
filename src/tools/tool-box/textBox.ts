@@ -6,6 +6,7 @@ import {
   activeTarget,
   canvasElement,
   dotControllerSize,
+  operateHistory,
   setActiveTarget,
   setIsLock,
 } from '../canvas';
@@ -225,6 +226,13 @@ class TextBox extends BaseBox {
           clientX,
           clientY,
         );
+        const imageData = this.context.getImageData(
+          this.cutoutBox.x,
+          this.cutoutBox.y,
+          this.cutoutBox.width,
+          this.cutoutBox.height,
+        );
+        operateHistory.push(imageData);
       });
 
       textBoxTextarea.addEventListener('input', event => {

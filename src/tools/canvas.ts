@@ -4,6 +4,21 @@ import CutoutBox from './cutout-box/cutoutBox';
 import DotController from './cutout-box/dotController';
 import TextBox from './tool-box/textBox';
 
+const operateHistory: ImageData[] = [];
+
+const pushOrign = operateHistory.push.bind(operateHistory);
+const popOrigin = operateHistory.pop.bind(operateHistory);
+
+operateHistory['push'] = (...items: ImageData[]) => {
+  console.log(items);
+  return pushOrign(...items);
+};
+
+operateHistory['pop'] = () => {
+  console.log([...operateHistory]);
+  return popOrigin();
+};
+
 let isLock = false;
 let isFirstInit = true;
 let videoElement: HTMLVideoElement;
@@ -44,6 +59,7 @@ export {
   videoElement,
   canvasElement,
   dotControllerSize,
+  operateHistory,
   sourceCanvasElement,
   setIsLock,
   setFirstInit,
