@@ -5,6 +5,7 @@ import {
   activeTarget,
   canvasElement,
   dotControllerSize,
+  operateHistory,
   setActiveTarget,
   setIsLock,
 } from '../canvas';
@@ -83,6 +84,15 @@ class Pen extends BaseBox {
     });
 
     canvasElement.addEventListener('mouseup', () => {
+      if (isMouseDown) {
+        const imageData = this.context.getImageData(
+          this.cutoutBox.x,
+          this.cutoutBox.y,
+          this.cutoutBox.width,
+          this.cutoutBox.height,
+        );
+        operateHistory.push(imageData);
+      }
       isMouseDown = false;
     });
   }

@@ -8,6 +8,8 @@ import {
 } from './tools/canvas';
 import CutoutBox from './tools/cutout-box/cutoutBox';
 
+type ScreenShotOptions = {};
+
 function createCanvas(width: number, height: number) {
   const canvas = document.createElement('canvas');
 
@@ -59,19 +61,11 @@ async function displayMediaMode() {
   return promise;
 }
 
-type ScreenShotOptions = {
-  mode: 'displayMedia' | 'html2canvas';
-};
-
 class ScreenShot {
   constructor(private screenShotOptions: ScreenShotOptions) {}
 
   async shot() {
-    if (this.screenShotOptions.mode === 'displayMedia') {
-      await displayMediaMode();
-    } else {
-      // html2Canvas
-    }
+    await displayMediaMode();
     new CutoutBox().initCutoutBox();
   }
 }

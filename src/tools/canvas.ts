@@ -4,6 +4,22 @@ import CutoutBox from './cutout-box/cutoutBox';
 import DotController from './cutout-box/dotController';
 import TextBox from './tool-box/textBox';
 
+const operateHistory = {
+  currentIndex: 0,
+
+  history: [] as ImageData[],
+
+  pop() {
+    this.currentIndex--;
+    return this.history[this.currentIndex];
+  },
+
+  push(history: ImageData) {
+    this.history[this.currentIndex] = history;
+    this.currentIndex++;
+  },
+};
+
 let isLock = false;
 let isFirstInit = true;
 let videoElement: HTMLVideoElement;
@@ -44,6 +60,7 @@ export {
   videoElement,
   canvasElement,
   dotControllerSize,
+  operateHistory,
   sourceCanvasElement,
   setIsLock,
   setFirstInit,

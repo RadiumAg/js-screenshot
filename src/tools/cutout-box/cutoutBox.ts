@@ -6,6 +6,7 @@ import {
   dotControllerSize,
   isFirstInit,
   isLock,
+  operateHistory,
   setActiveTarget,
   setFirstInit,
   setIsLock,
@@ -447,6 +448,16 @@ class CutoutBox extends BaseBox {
         canvasElement.style.cursor = 'move';
       } else {
         canvasElement.style.cursor = '';
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.ctrlKey && event.key === 'z') {
+        const preImageData = operateHistory.pop();
+        if (!preImageData) return;
+
+        this.sourceContext.putImageData(preImageData, 0, 0);
+        this.context.putImageData(preImageData, this.x, this.y);
       }
     });
   }
