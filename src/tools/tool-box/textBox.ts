@@ -6,6 +6,7 @@ import {
   activeTarget,
   canvasElement,
   dotControllerSize,
+  isLock,
   operateHistory,
   setActiveTarget,
   setIsLock,
@@ -207,6 +208,7 @@ class TextBox extends BaseBox {
     });
 
     canvasElement.addEventListener('mousedown', event => {
+      if (!isLock) return;
       let maxHeight = 0;
       let maxWidth = this.shifting.minWidth;
       const clientX = event.clientX;

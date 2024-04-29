@@ -454,10 +454,20 @@ class CutoutBox extends BaseBox {
     document.addEventListener('keydown', event => {
       if (event.ctrlKey && event.key === 'z') {
         const preImageData = operateHistory.pop();
-        if (!preImageData) return;
-
-        this.sourceContext.putImageData(preImageData, 0, 0);
-        this.context.putImageData(preImageData, this.x, this.y);
+        if (preImageData) {
+          this.context.putImageData(preImageData, this.x, this.y);
+        } else {
+          this.context.putImageData(
+            this.sourceContext.getImageData(
+              this.x,
+              this.y,
+              this.width,
+              this.height,
+            ),
+            this.x,
+            this.y,
+          );
+        }
       }
     });
   }
