@@ -93,7 +93,13 @@ class TextBox extends BaseBox {
     }
   }
 
-  // caulate the text
+  /**
+   * caulate the text
+   * @param textBoxValue
+   * @param maxWidth
+   * @param clientX
+   * @param clientY
+   */
   renderToCanvas(
     textBoxValue: string | null,
     maxWidth: number,

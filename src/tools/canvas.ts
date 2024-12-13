@@ -4,20 +4,54 @@ import CutoutBox from './cutout-box/cutoutBox';
 import DotController from './cutout-box/dotController';
 import TextBox from './tool-box/textBox';
 
-const operateHistory: ImageData[] = [];
+class OperateHistory extends Array<ImageData> {
+  private currentHistoryIndex = -1;
 
-const pushOrign = operateHistory.push.bind(operateHistory);
-const popOrigin = operateHistory.pop.bind(operateHistory);
+  push(...items: any[]) {
+    console.log('push', items);
+    this.currentHistoryIndex++;
+    return super.push(...items);
+  }
 
-operateHistory['push'] = (...items: ImageData[]) => {
-  console.log(items);
-  return pushOrign(...items);
-};
+  prev() {
+    if (this.currentHistoryIndex === 0) {
+      return operateHistory[this.currentHistoryIndex];
+    }
 
-operateHistory['pop'] = () => {
-  console.log([...operateHistory]);
-  return popOrigin();
-};
+    this.currentHistoryIndex--;
+    return operateHistory[this.currentHistoryIndex];
+  }
+
+  next() {
+    if (this.currentHistoryIndex === this.length) {
+      return operateHistory[this.currentHistoryIndex];
+    }
+
+    this.currentHistoryIndex++;
+    return operateHistory[this.currentHistoryIndex];
+  }
+
+  clear() {
+    this.length = 0;
+    this.currentHistoryIndex = -1;
+  }
+
+  async getScreenShotUrl(index: number) {
+    const canvasElement = document.createElement('canvas') as HTMLCanvasElement;
+    const context = canvasElement.getContext('2d');
+    context?.putImageData(this[index], 0, 0);
+    const blob = await new Promise<Blob>(resolve => {
+      canvasElement.toBlob(data => {
+        if (data) resolve(data);
+      });
+    });
+
+    return URL.createObjectURL(blob);
+  }
+}
+
+const operateHistory: OperateHistory = new OperateHistory();
+window.operateHistory = operateHistory;
 
 let isLock = false;
 let isFirstInit = true;

@@ -5,6 +5,7 @@ import {
   activeTarget,
   canvasElement,
   dotControllerSize,
+  operateHistory,
   setActiveTarget,
   setFirstInit,
 } from '../canvas';
@@ -94,13 +95,16 @@ class DotController extends BaseBox {
       }
     });
 
-    canvasElement.addEventListener('mouseup', () => {
-      isMouseDown = false;
-      setActiveTarget(null);
-      setFirstInit(false);
-    });
-
     this.el?.addEventListener('mouseup', () => {
+      if (activeTarget !== this) return;
+      operateHistory.push(
+        this.context.getImageData(
+          this.cutoutBox.x,
+          this.cutoutBox.y,
+          this.cutoutBox.width,
+          this.cutoutBox.height,
+        ),
+      );
       isMouseDown = false;
       setActiveTarget(null);
       setFirstInit(false);
