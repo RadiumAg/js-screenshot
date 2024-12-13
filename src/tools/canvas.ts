@@ -8,8 +8,7 @@ class OperateHistory extends Array<ImageData> {
   private currentHistoryIndex = -1;
 
   push(...items: any[]) {
-    console.log('push', items);
-    this.currentHistoryIndex++;
+    this.currentHistoryIndex = this.length - 1;
     return super.push(...items);
   }
 
