@@ -4,7 +4,6 @@ import alias from '@rollup/plugin-alias';
 import image from '@rollup/plugin-image';
 import postcss from 'rollup-plugin-postcss';
 import typescript from '@rollup/plugin-typescript';
-import { svgResolverPlugin } from './svg-source-plugin';
 
 async function build() {
   watch({
@@ -40,9 +39,10 @@ async function build() {
           strict: true,
           skipLibCheck: true,
           declaration: true,
-          declarationDir: resolve(__dirname, '../dist/esm'),
           rootDir: resolve(__dirname, '../src'),
+          declarationDir: resolve(__dirname, '../dist/esm'),
         },
+        include: [resolve(__dirname, './type.d.ts')],
         exclude: ['node_modules'],
       }),
     ],
