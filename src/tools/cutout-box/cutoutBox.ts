@@ -365,12 +365,14 @@ class CutoutBox extends BaseBox {
         oldClientY = event.clientY;
         oldX = this.x;
         oldY = this.y;
+
         isMouseDown = true;
         setActiveTarget(this);
       }
     });
 
     canvasElement.addEventListener('mouseup', event => {
+      if (activeTarget !== this) return;
       if (isLock) return;
 
       isMouseDown = false;
@@ -453,11 +455,22 @@ class CutoutBox extends BaseBox {
 
     document.addEventListener('keydown', event => {
       if (event.ctrlKey && event.key === 'z') {
-        const preImageData = operateHistory.pop();
-        if (!preImageData) return;
+        const preImageData = operateHistory.prev();
 
-        this.sourceContext.putImageData(preImageData, 0, 0);
-        this.context.putImageData(preImageData, this.x, this.y);
+        if (preImageData) {
+          this.context.putImageData(preImageData, this.x, this.y);
+        } else {
+          this.context.putImageData(
+            this.sourceContext.getImageData(
+              this.x,
+              this.y,
+              this.width,
+              this.height,
+            ),
+            this.x,
+            this.y,
+          );
+        }
       }
     });
   }
@@ -519,6 +532,7 @@ class CutoutBox extends BaseBox {
   initCutoutBox() {
     this.width = canvasElement.width;
     this.height = canvasElement.height;
+
     this.toolBox = new ToolBox(this);
     this.toolBox.initToolBox();
 

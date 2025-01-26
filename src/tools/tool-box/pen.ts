@@ -1,5 +1,5 @@
 import Style from '@screenshots/theme/pen.module.scss';
-import pen from '@screenshots/assets/images/pen.svg?raw';
+import pen from '@screenshots/assets/images/pen.svg';
 import BaseBox from '../baseBox';
 import {
   activeTarget,
@@ -21,7 +21,7 @@ class Pen extends BaseBox {
   initPen() {
     this.el = document.createElement('div');
     this.el.classList.add(Style.pen);
-    this.el.innerHTML = pen;
+    this.el.append(pen);
 
     this.initEvent();
   }
@@ -96,6 +96,8 @@ class Pen extends BaseBox {
       isMouseDown = false;
     });
   }
+
+  destory(): void {}
 }
 
 export default Pen;

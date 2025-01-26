@@ -8,8 +8,6 @@ import {
 } from './tools/canvas';
 import CutoutBox from './tools/cutout-box/cutoutBox';
 
-type ScreenShotOptions = {};
-
 function createCanvas(width: number, height: number) {
   const canvas = document.createElement('canvas');
 

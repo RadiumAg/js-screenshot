@@ -32,8 +32,8 @@ class ToolBox extends BaseBox {
 
     const pen = new Pen(this.cutoutBox);
     const save = new Save(this.cutoutBox);
-    const refuse = new Refuse(this.cutoutBox);
     const textBox = new TextBox(this.cutoutBox);
+    const refuse = new Refuse(this.cutoutBox, [pen.destory]);
 
     pen.initPen();
     save.initSave();
@@ -49,6 +49,8 @@ class ToolBox extends BaseBox {
   protected initEvent() {
     /** empty **/
   }
+
+  destory(): void {}
 }
 
 export default ToolBox;
