@@ -21,7 +21,7 @@ class Pen extends BaseBox {
   initPen() {
     this.el = document.createElement('div');
     this.el.classList.add(Style.pen);
-    this.el.innerHTML = pen;
+    this.el.append(pen);
 
     this.initEvent();
   }

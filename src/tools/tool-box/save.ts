@@ -43,7 +43,7 @@ class Save extends BaseBox {
   initSave() {
     this.el = document.createElement('div');
     this.el.classList.add(Style.save);
-    this.el.innerHTML = save;
+    this.el.append(save);
 
     this.initEvent();
   }

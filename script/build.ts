@@ -1,12 +1,13 @@
 import { resolve } from 'path';
-import { rollup } from 'rollup';
+import { watch } from 'rollup';
 import alias from '@rollup/plugin-alias';
 import image from '@rollup/plugin-image';
 import postcss from 'rollup-plugin-postcss';
 import typescript from '@rollup/plugin-typescript';
+import { svgResolverPlugin } from './svg-source-plugin';
 
 async function build() {
-  const bundle = await rollup({
+  watch({
     input: resolve(__dirname, '../src/screenShot.ts'),
     plugins: [
       alias({
@@ -14,11 +15,23 @@ async function build() {
           { find: '@screenshots', replacement: resolve(__dirname, '../src') },
         ],
       }),
-      image(),
+      image({ dom: true }),
       postcss({
         modules: true,
         extract: true,
         sourceMap: false,
+        namedExports(id) {
+          const nameArray = id.split('-');
+          const name = nameArray.reduce((pre, current, index) => {
+            if (index === 0) {
+              return pre;
+            } else {
+              return pre + current[0].toUpperCase() + current.slice(1);
+            }
+          });
+
+          return name;
+        },
       }),
       typescript({
         compilerOptions: {
@@ -34,14 +47,15 @@ async function build() {
       }),
     ],
     external: ['html2canvas'],
-  });
-
-  bundle.write({
-    format: 'esm',
-    dir: resolve(__dirname, '../dist/esm'),
-    globals: { html2canvas: 'html2canvas' },
-    preserveModules: true,
-    preserveModulesRoot: 'src',
+    output: [
+      {
+        format: 'esm',
+        dir: resolve(__dirname, '../dist/esm'),
+        globals: { html2canvas: 'html2canvas' },
+        preserveModules: true,
+        preserveModulesRoot: 'src',
+      },
+    ],
   });
 }
 

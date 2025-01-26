@@ -25,7 +25,7 @@ class Refuse extends BaseBox {
   initRefuse() {
     this.el = document.createElement('div');
     this.el.classList.add(Style.refuse);
-    this.el.innerHTML = refuse;
+    this.el.append(refuse);
 
     this.initEvent();
   }

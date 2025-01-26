@@ -36,7 +36,7 @@ class TextBox extends BaseBox {
   initTextBox() {
     this.el = document.createElement('div');
     this.el.classList.add(Style['text-box']);
-    this.el.innerHTML = textBox;
+    this.el.append(textBox);
     this.initEvent();
   }
 
