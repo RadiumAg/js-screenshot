@@ -47,6 +47,8 @@ class Save extends BaseBox {
 
     this.initEvent();
   }
+
+  destory(): void {}
 }
 
 export default Save;

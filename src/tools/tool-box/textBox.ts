@@ -125,6 +125,10 @@ class TextBox extends BaseBox {
   private setPosition(textBoxTextarea: HTMLDivElement, event: MouseEvent) {
     const clientX = event.clientX;
     const clientY = event.clientY;
+    const lastXy = {
+      x: clientX,
+      y: clientY,
+    };
     const actualClientX = event.clientX - this.shifting.x;
     const actualClientY = event.clientY - this.shifting.y;
     const isInLeft = !this.isOutLeft(
@@ -149,48 +153,43 @@ class TextBox extends BaseBox {
       actualClientY + this.fontSize + this.shifting.paddingTopBottom * 2,
     );
 
-    if (
-      activeTarget !== this ||
-      !this.isCurrentArea(
-        this.cutoutBox.x,
-        this.cutoutBox.x + this.cutoutBox.width,
-        this.cutoutBox.y,
-        this.cutoutBox.y + this.cutoutBox.height,
-        clientX,
-        clientY,
-      )
-    )
-      return;
-
     // out left
     if (!isInLeft) {
       textBoxTextarea.style.left = `${this.cutoutBox.x}px`;
+      lastXy.x = this.cutoutBox.x;
     } else {
       textBoxTextarea.style.left = `${actualClientX}px`;
+      lastXy.x = actualClientX;
     }
 
     // out top
     if (!isInTop) {
       textBoxTextarea.style.top = `${this.cutoutBox.y}px`;
+      lastXy.y = this.cutoutBox.y;
     } else {
       textBoxTextarea.style.top = `${actualClientY}px`;
+      lastXy.y = actualClientY;
     }
 
     // out right
     if (!isInRight) {
-      textBoxTextarea.style.left = `${
+      const lastLeft =
         this.cutoutBox.x +
         this.cutoutBox.width -
         this.shifting.minWidth -
-        this.shifting.paddingLeftRight * 2
-      }px`;
+        this.shifting.paddingLeftRight * 2;
+      textBoxTextarea.style.left = `${lastLeft}px`;
+      lastXy.x = lastLeft;
     }
 
     if (!isInBottom) {
-      textBoxTextarea.style.top = `${
-        this.cutoutBox.y + this.cutoutBox.height - this.shifting.minWidth
-      }px`;
+      const lastY = this.cutoutBox.y + this.cutoutBox.height - 46;
+      textBoxTextarea.style.top = `${lastY}px`;
+      console.log('lastY', lastY);
+      lastXy.y = lastY;
     }
+
+    return lastXy;
   }
 
   private setStyle(textBoxTextarea: HTMLDivElement) {
@@ -214,25 +213,34 @@ class TextBox extends BaseBox {
     });
 
     canvasElement.addEventListener('mousedown', event => {
-      if (!isLock) return;
-      let maxHeight = 0;
-      let maxWidth = this.shifting.minWidth;
-      const clientX = event.clientX;
-      const clientY = event.clientY;
-
-      const textBoxTextarea = document.createElement('div');
-      this.setStyle(textBoxTextarea);
-      this.setPosition(textBoxTextarea, event);
-
       this.preTextarea?.remove();
 
+      if (!isLock) return;
+      if (activeTarget !== this) return;
+      if (
+        !this.isCurrentArea(
+          this.cutoutBox.x + dotControllerSize / 2,
+          this.cutoutBox.x + this.cutoutBox.width - dotControllerSize / 2,
+          this.cutoutBox.y + dotControllerSize / 2,
+          this.cutoutBox.y + this.cutoutBox.height - dotControllerSize / 2,
+          event.clientX,
+          event.clientY,
+        )
+      )
+        return;
+      let maxHeight = 0;
+      let maxWidth = this.shifting.minWidth;
+      const textBoxTextarea = document.createElement('div');
+      this.setStyle(textBoxTextarea);
+      this.preTextarea = textBoxTextarea;
+      const lastXy = this.setPosition(textBoxTextarea, event);
+
       textBoxTextarea.addEventListener('blur', () => {
-        textBoxTextarea.remove();
         this.renderToCanvas(
           textBoxTextarea.textContent,
           maxWidth,
-          clientX,
-          clientY,
+          lastXy.x,
+          lastXy.y,
         );
         const imageData = this.context.getImageData(
           this.cutoutBox.x,
@@ -240,6 +248,7 @@ class TextBox extends BaseBox {
           this.cutoutBox.width,
           this.cutoutBox.height,
         );
+
         operateHistory.push(imageData);
       });
 
@@ -280,9 +289,12 @@ class TextBox extends BaseBox {
               }px`;
       });
 
-      this.preTextarea = textBoxTextarea;
       document.body.append(textBoxTextarea);
     });
+  }
+
+  destory(): void {
+    this.preTextarea?.remove();
   }
 }
 

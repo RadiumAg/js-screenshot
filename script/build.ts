@@ -6,7 +6,7 @@ import postcss from 'rollup-plugin-postcss';
 import typescript from '@rollup/plugin-typescript';
 
 async function build() {
-  watch({
+  const watcher = watch({
     input: resolve(__dirname, '../src/screenShot.ts'),
     plugins: [
       alias({
@@ -42,7 +42,10 @@ async function build() {
           rootDir: resolve(__dirname, '../src'),
           declarationDir: resolve(__dirname, '../dist/esm'),
         },
-        include: [resolve(__dirname, './type.d.ts')],
+        include: [
+          resolve(__dirname, './type.d.ts'),
+          resolve(__dirname, '../src/**/*.ts'),
+        ],
         exclude: ['node_modules'],
       }),
     ],
@@ -56,6 +59,18 @@ async function build() {
         preserveModulesRoot: 'src',
       },
     ],
+  });
+
+  watcher.on('event', event => {
+    if (event.code === 'START') {
+      console.log('构建开始...');
+    } else if (event.code === 'BUNDLE_END') {
+      console.log('打包完成，文件输出到 dist 目录');
+    } else if (event.code === 'ERROR') {
+      console.error('发生错误:', event.error);
+    } else if (event.code === 'END') {
+      console.log('所有任务完成');
+    }
   });
 }
 

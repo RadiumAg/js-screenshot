@@ -1,11 +1,12 @@
 import Style from '@screenshots/theme/refuse.module.scss';
 import refuse from '@screenshots/assets/images/refuse.svg';
+import { AnyFun } from '@screenshots/utils';
 import BaseBox from '../baseBox';
 import CutoutBox from '../cutout-box/cutoutBox';
 import { operateHistory } from '../canvas';
 
 class Refuse extends BaseBox {
-  constructor(private cutoutBox: CutoutBox) {
+  constructor(private cutoutBox: CutoutBox, private destoryArray: AnyFun[]) {
     super();
   }
 
@@ -19,6 +20,9 @@ class Refuse extends BaseBox {
     this.el?.addEventListener('click', () => {
       this.cutoutBox.destroy();
       operateHistory.clear();
+      this.destoryArray.forEach(fn => {
+        fn();
+      });
     });
   }
 
@@ -29,6 +33,8 @@ class Refuse extends BaseBox {
 
     this.initEvent();
   }
+
+  destory(): void {}
 }
 
 export default Refuse;

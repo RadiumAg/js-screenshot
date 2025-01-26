@@ -96,6 +96,8 @@ class Pen extends BaseBox {
       isMouseDown = false;
     });
   }
+
+  destory(): void {}
 }
 
 export default Pen;
