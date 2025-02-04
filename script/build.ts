@@ -63,13 +63,13 @@ async function build() {
 
   watcher.on('event', event => {
     if (event.code === 'START') {
-      console.log('构建开始...');
+      console.log('📦 build start...');
     } else if (event.code === 'BUNDLE_END') {
-      console.log('打包完成，文件输出到 dist 目录');
+      console.log('📦 build end');
     } else if (event.code === 'ERROR') {
-      console.error('发生错误:', event.error);
+      console.error('📦 build error:', event.error);
     } else if (event.code === 'END') {
-      console.log('所有任务完成');
+      console.log('📦 build end');
     }
   });
 }
