@@ -1,4 +1,5 @@
 import BaseBox from '../baseBox';
+import { setActiveTarget, setIsLock } from '../canvas';
 import CutoutBox from '../cutout-box/cutoutBox';
 
 class Arrow extends BaseBox {
@@ -8,11 +9,25 @@ class Arrow extends BaseBox {
 
   el: HTMLDivElement | null = null;
 
-  updatePosition() {}
+  updatePosition() {
+    /** arrow */
+  }
 
-  protected initEvent() {}
+  protected initEvent() {
+    const isMouseDown = false;
+    this.el?.addEventListener('click', () => {
+      setIsLock(true);
+      setActiveTarget(this);
+    });
+  }
 
-  initSave() {}
+  initArrow() {
+    this.el = document.createElement('div');
+    this.el.classList.add(Style.pen);
+    this.el.append(pen);
+
+    this.initEvent();
+  }
 
   destory(): void {}
 }
