@@ -1,3 +1,4 @@
+import Style from '@screenshots/theme/pen.module.scss';
 import BaseBox from '../baseBox';
 import { setActiveTarget, setIsLock } from '../canvas';
 import CutoutBox from '../cutout-box/cutoutBox';
@@ -15,6 +16,7 @@ class Arrow extends BaseBox {
 
   protected initEvent() {
     const isMouseDown = false;
+
     this.el?.addEventListener('click', () => {
       setIsLock(true);
       setActiveTarget(this);

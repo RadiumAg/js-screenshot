@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": " esno ./script/build.ts",
-    "playground-build": "pnpm run -C playground build"
+    "playground-build": "pnpm run build & pnpm run -C playground build"
   },
   "keywords": [],
   "author": "",
