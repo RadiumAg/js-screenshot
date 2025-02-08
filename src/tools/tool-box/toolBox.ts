@@ -6,6 +6,7 @@ import Pen from './pen';
 import Save from './save';
 import TextBox from './textBox';
 import Refuse from './refuse';
+import Arrow from './arrow';
 
 class ToolBox extends BaseBox {
   constructor(private cutoutBox: CutoutBox) {
@@ -32,6 +33,7 @@ class ToolBox extends BaseBox {
 
     const pen = new Pen(this.cutoutBox);
     const save = new Save(this.cutoutBox);
+    const arrow = new Arrow(this.cutoutBox);
     const textBox = new TextBox(this.cutoutBox);
     const refuse = new Refuse(this.cutoutBox, [pen.destory]);
 
@@ -39,9 +41,10 @@ class ToolBox extends BaseBox {
     save.initSave();
     refuse.initRefuse();
     textBox.initTextBox();
+    arrow.initArrow();
 
     this.el.append(
-      ...([textBox.el, pen.el, refuse.el, save.el] as HTMLElement[]),
+      ...([textBox.el, pen.el, refuse.el, save.el, arrow.el] as HTMLElement[]),
     );
     document.body.append(this.el);
   }

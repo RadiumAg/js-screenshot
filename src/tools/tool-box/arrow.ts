@@ -1,4 +1,5 @@
-import Style from '@screenshots/theme/pen.module.scss';
+import Style from '@screenshots/theme/arrow.module.scss';
+import arrow from '@screenshots/assets/images/arrow.svg';
 import BaseBox from '../baseBox';
 import { setActiveTarget, setIsLock } from '../canvas';
 import CutoutBox from '../cutout-box/cutoutBox';
@@ -25,8 +26,8 @@ class Arrow extends BaseBox {
 
   initArrow() {
     this.el = document.createElement('div');
-    this.el.classList.add(Style.pen);
-    this.el.append(pen);
+    this.el.classList.add(Style.arrow);
+    this.el.append(arrow);
 
     this.initEvent();
   }

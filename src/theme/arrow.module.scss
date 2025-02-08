@@ -1,0 +1,10 @@
+/** @format */
+@use './common.scss' as common;
+
+.arrow {
+  @include common.common;
+}
+
+.arrow:hover {
+  @include common.hover;
+}
