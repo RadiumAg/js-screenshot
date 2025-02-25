@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "pnpm run build & pnpm run -C playground dev",
-    "build": "esno ./script/build.ts",
-    "playground-build": "pnpm run build & pnpm run -C playground build"
+    "dev": "NODE_ENV=development pnpm run build && pnpm run -C playground dev",
+    "build:dev": "NODE_ENV=development esno ./script/build.ts",
+    "playground-build": "pnpm run build && pnpm run -C playground build"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,7 @@
     "@raag/eslint-config-vue": "^1.1.4",
     "@rollup/plugin-alias": "^5.0.1",
     "@rollup/plugin-image": "^3.0.3",
+    "@rollup/plugin-replace": "^6.0.2",
     "@rollup/plugin-terser": "^0.4.3",
     "@rollup/plugin-typescript": "^11.1.2",
     "@types/node": "^20.5.0",
