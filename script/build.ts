@@ -4,7 +4,13 @@ import image from '@rollup/plugin-image';
 import postcss from 'rollup-plugin-postcss';
 import typescript from '@rollup/plugin-typescript';
 import replace from '@rollup/plugin-replace';
-import { RollupOptions, RollupWatchOptions, rollup, watch } from 'rollup';
+import {
+  OutputOptions,
+  RollupOptions,
+  RollupWatchOptions,
+  rollup,
+  watch,
+} from 'rollup';
 import { getArgs } from './util';
 
 const buildConfig = {
@@ -86,7 +92,9 @@ async function build() {
       }
     });
   } else {
-    rollup(buildConfig as RollupOptions);
+    (await rollup(buildConfig as RollupOptions)).write(
+      buildConfig.output[0] as OutputOptions,
+    );
   }
 }
 
