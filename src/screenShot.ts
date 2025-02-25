@@ -9,6 +9,7 @@ import {
 import CutoutBox from './tools/cutout-box/cutoutBox';
 
 type ScreenShotOptions = {
+  mode?: 'media';
   afterFinished?: () => void;
 };
 
