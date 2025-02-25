@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=development pnpm run build && pnpm run -C playground dev",
+    "dev": "pnpm run build:dev & pnpm run -C playground dev",
     "build:dev": "NODE_ENV=development esno ./script/build.ts",
+    "build": "esno ./script/build.ts",
     "playground-build": "pnpm run build && pnpm run -C playground build"
   },
   "keywords": [],

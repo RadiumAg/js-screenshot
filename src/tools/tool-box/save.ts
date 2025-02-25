@@ -15,6 +15,7 @@ class Save extends BaseBox {
 
   protected initEvent() {
     const download = useDownLoad();
+
     this.el?.addEventListener('click', () => {
       const screenShotData = this.context.getImageData(this.cutoutBox.x, this.cutoutBox.y, this.cutoutBox.width, this.cutoutBox.height);
 
