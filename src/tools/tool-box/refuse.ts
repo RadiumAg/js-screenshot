@@ -18,7 +18,7 @@ class Refuse extends BaseBox {
 
   protected initEvent(): void {
     this.el?.addEventListener('click', () => {
-      this.cutoutBox.destroy();
+      this.cutoutBox.destory();
       operateHistory.clear();
       this.destoryArray.forEach(fn => {
         fn();
@@ -34,7 +34,9 @@ class Refuse extends BaseBox {
     this.initEvent();
   }
 
-  destory(): void {}
+  destory(): void {
+    // empty
+  }
 }
 
 export default Refuse;

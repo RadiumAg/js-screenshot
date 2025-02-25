@@ -9,7 +9,6 @@ const getArgs = () => {
     parsedArgs[key] = value;
   }
 
-  console.log(parsedArgs);
   return parsedArgs;
 };
 

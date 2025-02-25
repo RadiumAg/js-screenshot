@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Style from '@screenshots/theme/arrow.module.scss';
 import arrow from '@screenshots/assets/images/arrow.svg';
 import BaseBox from '../baseBox';

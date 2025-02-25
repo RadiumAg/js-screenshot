@@ -1,6 +1,5 @@
 import {
   canvasElement,
-  canvasElement,
   setCanvasElement,
   setSourceCanvasElement,
   setVideoElement,
@@ -10,7 +9,7 @@ import {
 import CutoutBox from './tools/cutout-box/cutoutBox';
 
 type ScreenShotOptions = {
-  afterFinished: () => void;
+  afterFinished?: () => void;
 };
 
 /**

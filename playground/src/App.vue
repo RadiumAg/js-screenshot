@@ -2,9 +2,7 @@
 import '../../dist/esm/screenShot.css';
 import ScreenShot from '../../dist/esm/screenShot';
 
-const screenShot = new ScreenShot({
-  mode: 'displayMedia',
-});
+const screenShot = new ScreenShot({});
 
 const handleStartShot = () => {
   screenShot.shot();
