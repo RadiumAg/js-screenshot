@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "pnpm run build:dev & pnpm run -C playground dev",
-    "build:dev": "NODE_ENV=development esno ./script/build.ts",
+    "build:dev": "cross-env NODE_ENV=development esno ./script/build.ts",
     "build": "esno ./script/build.ts",
     "build:watch": "esno ./script/build.ts --watch",
     "playground-build": "pnpm run build && pnpm run -C playground build"
@@ -28,6 +28,7 @@
     "@rollup/plugin-terser": "^0.4.3",
     "@rollup/plugin-typescript": "^11.1.2",
     "@types/node": "^20.5.0",
+    "cross-env": "^7.0.3",
     "esno": "^0.17.0",
     "postcss-modules": "^6.0.0",
     "rollup": "^3.28.0",
