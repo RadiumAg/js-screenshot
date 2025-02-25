@@ -1,4 +1,12 @@
-import {canvasElement, setCanvasElement, setSourceCanvasElement, setVideoElement, sourceCanvasElement, videoElement} from './tools/canvas';
+import {
+  canvasElement,
+  canvasElement,
+  setCanvasElement,
+  setSourceCanvasElement,
+  setVideoElement,
+  sourceCanvasElement,
+  videoElement,
+} from './tools/canvas';
 import CutoutBox from './tools/cutout-box/cutoutBox';
 
 type ScreenShotOptions = {
@@ -42,7 +50,7 @@ function createVideoElement(width: number, height: number) {
 
 async function displayMediaMode() {
   let resolveFn: (value: unknown) => void;
-  const promise = new Promise((resolve) => {
+  const promise = new Promise(resolve => {
     resolveFn = resolve;
   });
   const width = window.innerWidth;

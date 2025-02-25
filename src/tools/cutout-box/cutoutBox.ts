@@ -21,11 +21,13 @@ class CutoutBox extends BaseBox {
 
   setMask() {
     if (this.context === null) return;
-
     this.context.fillStyle = 'rgba(0,0,0,0.5)';
     this.context.fillRect(0, 0, canvasElement.width, canvasElement.height);
   }
 
+  /**
+   * 初始化dot controller
+   */
   initDotControllerArray() {
     this.dotControllerArray = [
       new DotController(
@@ -318,6 +320,9 @@ class CutoutBox extends BaseBox {
     ];
   }
 
+  /**
+   * 更新dot position
+   */
   updateDotControllerArrayPosition() {
     this.dotControllerArray[0].updatePosition(this.x, this.y);
     this.dotControllerArray[1].updatePosition(this.x + this.width / 2, this.y);
@@ -485,7 +490,6 @@ class CutoutBox extends BaseBox {
       this.width || 1,
       this.height || 1,
     );
-
     this.context.putImageData(imgData, this.x, this.y);
 
     // update dotControllerArray
@@ -543,7 +547,7 @@ class CutoutBox extends BaseBox {
     canvasElement.style.cursor = 'move';
   }
 
-  destroy() {
+  destory() {
     canvasElement.remove();
     this.toolBox?.el?.remove();
     this.dotControllerArray.forEach(_ => _.el?.remove());

@@ -35,6 +35,10 @@ class Save extends BaseBox {
           this.cutoutBox.width,
           'screen height',
           this.cutoutBox.height,
+          'screen x',
+          this.cutoutBox.x,
+          'screen y',
+          this.cutoutBox.y,
         );
       }
 
