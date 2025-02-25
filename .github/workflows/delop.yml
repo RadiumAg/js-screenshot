@@ -3,6 +3,7 @@ name: Deploy
 on:
   pull_request:
     types:
+      - 'push'
       - 'opened'
       - 'reopened'
       - 'auto_merge_enabled'
