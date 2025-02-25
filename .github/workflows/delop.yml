@@ -3,9 +3,9 @@ name: Deploy
 on:
   pull_request:
     types:
-      - "opened"
-      - "reopened"
-      - "auto_merge_enabled"
+      - 'opened'
+      - 'reopened'
+      - 'auto_merge_enabled'
     branches:
       - main
 
@@ -26,12 +26,12 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-           version: 8.3.0
+          version: 8.3.0
 
       - run: pnpm i
 
       - name: Build
-        run:  pnpm run -C playground build
+        run: pnpm run -C playground build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

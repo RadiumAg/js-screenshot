@@ -7,11 +7,15 @@
     "dev": "pnpm run build:dev & pnpm run -C playground dev",
     "build:dev": "NODE_ENV=development esno ./script/build.ts",
     "build": "esno ./script/build.ts",
-    "playground-build": "pnpm run build && pnpm run -C playground build"
+    "build:watch": "esno ./script/build.ts --watch",
+    "playground-build": "pnpm run build & pnpm run -C playground build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "pnpm": ">=9"
+  },
   "dependencies": {
     "eslint": "^8.47.0",
     "html2canvas": "^1.4.1"
