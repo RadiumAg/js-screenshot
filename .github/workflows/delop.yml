@@ -1,9 +1,11 @@
 name: Deploy
 
 on:
+  push:
+    branches:
+      - 'main'
   pull_request:
     types:
-      - 'push'
       - 'opened'
       - 'reopened'
       - 'auto_merge_enabled'
