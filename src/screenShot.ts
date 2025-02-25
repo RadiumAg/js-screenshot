@@ -12,6 +12,13 @@ type ScreenShotOptions = {
   afterFinished: () => void;
 };
 
+/**
+ * 创建canvas
+ *
+ * @param width
+ * @param height
+ * @returns
+ */
 function createCanvas(width: number, height: number) {
   const canvas = document.createElement('canvas');
 
@@ -26,7 +33,20 @@ function createCanvas(width: number, height: number) {
   return canvas;
 }
 
-// 物理像素/ css = 屏幕 / window.innerHeight
+/**
+ * 创建video element
+ *
+ * @param width
+ * @param height
+ * @returns
+ */
+function createVideoElement(width: number, height: number) {
+  const videoElement = document.createElement('video');
+  videoElement.width = width;
+  videoElement.height = height;
+  return videoElement;
+}
+
 async function displayMediaMode() {
   let resolveFn: (value: unknown) => void;
   const promise = new Promise(resolve => {
@@ -40,15 +60,14 @@ async function displayMediaMode() {
       displaySurface: 'window',
     },
   });
+
+  // 设置源source
   setSourceCanvasElement(createCanvas(width, height));
+  // 设置截图source
   setCanvasElement(createCanvas(width, height));
+  setVideoElement(createVideoElement(width, height));
 
-  setVideoElement(document.createElement('video'));
-  videoElement.width = width;
-  videoElement.height = height;
-  videoElement.style.objectFit = 'cover';
   videoElement.srcObject = captureStream;
-
   videoElement.addEventListener('loadedmetadata', () => {
     videoElement.play();
     const sourceContext = sourceCanvasElement.getContext('2d');
@@ -56,7 +75,6 @@ async function displayMediaMode() {
     setTimeout(() => {
       sourceContext?.drawImage(videoElement, 0, 0, 0, 0, 0, 0, width, height);
       document.body.append(canvasElement);
-      document.body.append(videoElement);
 
       resolveFn('init');
     }, 1000);
