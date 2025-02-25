@@ -34,7 +34,8 @@
     "playground/src/**/*.tsx",
     "playground/src/**/*.vue",
 
-    "script/**/*.ts"
+    "script/**/*.ts",
+    "dist/**/*"
   ],
   "references": [{"path": "./tsconfig.node.json"}]
 }
