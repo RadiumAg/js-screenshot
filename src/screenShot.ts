@@ -7,6 +7,7 @@ import {
   videoElement,
 } from './tools/canvas';
 import CutoutBox from './tools/cutout-box/cutoutBox';
+import { __isDev__ } from './utils';
 
 type ScreenShotOptions = {
   mode?: 'media';
@@ -45,6 +46,8 @@ function createVideoElement(width: number, height: number) {
   const videoElement = document.createElement('video');
   videoElement.width = width;
   videoElement.height = height;
+  videoElement.style.objectFit = 'cover';
+
   return videoElement;
 }
 
@@ -58,6 +61,8 @@ async function displayMediaMode() {
 
   const captureStream = await navigator.mediaDevices.getDisplayMedia({
     video: {
+      width,
+      height,
       displaySurface: 'window',
     },
   });
@@ -69,12 +74,34 @@ async function displayMediaMode() {
   setVideoElement(createVideoElement(width, height));
 
   videoElement.srcObject = captureStream;
+  document.body.append(videoElement);
   videoElement.addEventListener('loadedmetadata', () => {
     videoElement.play();
     const sourceContext = sourceCanvasElement.getContext('2d');
+    if (__isDev__) {
+      const sourceConfig = captureStream.getTracks()[0].getSettings();
+      console.info('width', width, 'height', height);
+      console.info(
+        'source width',
+        sourceConfig.width,
+        'source height',
+        sourceConfig.height,
+      );
+      console.info('source height', sourceConfig.height);
+    }
 
     setTimeout(() => {
-      sourceContext?.drawImage(videoElement, 0, 0, 0, 0, 0, 0, width, height);
+      sourceContext?.drawImage(
+        videoElement,
+        0,
+        0,
+        width,
+        height,
+        0,
+        0,
+        width,
+        height,
+      );
       document.body.append(canvasElement);
 
       resolveFn('init');
