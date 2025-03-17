@@ -44,9 +44,11 @@ function createCanvas(width: number, height: number) {
  */
 function createVideoElement(width: number, height: number) {
   const videoElement = document.createElement('video');
-  videoElement.width = width;
-  videoElement.height = height;
+  videoElement.style.width = `${width}px`;
+  videoElement.style.height = `${height}px`;
   videoElement.style.objectFit = 'cover';
+  videoElement.style.visibility = 'hidden';
+  document.body.append(videoElement);
 
   return videoElement;
 }
@@ -56,13 +58,21 @@ async function displayMediaMode() {
   const promise = new Promise(resolve => {
     resolveFn = resolve;
   });
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+
+  // 获取当前视口尺寸
+  const updateDimensions = () => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    return { width, height };
+  };
+
+  const { width, height } = updateDimensions();
 
   const captureStream = await navigator.mediaDevices.getDisplayMedia({
     video: {
       width,
       height,
+      cursor: 'never',
       displaySurface: 'window',
     },
   });
@@ -74,7 +84,6 @@ async function displayMediaMode() {
   setVideoElement(createVideoElement(width, height));
 
   videoElement.srcObject = captureStream;
-  document.body.append(videoElement);
   videoElement.addEventListener('loadedmetadata', () => {
     videoElement.play();
     const sourceContext = sourceCanvasElement.getContext('2d');
@@ -106,6 +115,59 @@ async function displayMediaMode() {
 
       resolveFn('init');
     }, 1000);
+  });
+
+  // 监听窗口缩放事件
+  let resizeTimeout: NodeJS.Timeout;
+  window.addEventListener('resize', async () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(async () => {
+      const { width, height } = updateDimensions();
+
+      // 停止当前的媒体流
+      const tracks = captureStream.getTracks();
+      tracks.forEach(track => track.stop());
+
+      // 获取新的媒体流
+      const newCaptureStream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          width: { ideal: width, min: 100, max: 4096 },
+          height: { ideal: height, min: 100, max: 4096 },
+          displaySurface: 'window',
+        },
+      });
+
+      // 更新画布和视频元素
+      setSourceCanvasElement(createCanvas(width, height));
+      setCanvasElement(createCanvas(width, height));
+      setVideoElement(createVideoElement(width, height));
+
+      videoElement.srcObject = newCaptureStream;
+      videoElement.addEventListener('loadedmetadata', () => {
+        videoElement.play();
+        const sourceContext = sourceCanvasElement.getContext('2d');
+        const actualWidth = videoElement.videoWidth;
+        const actualHeight = videoElement.videoHeight;
+        if (actualWidth !== width || actualHeight !== height) {
+          console.warn(
+            'Actual video size does not match viewport size:',
+            actualWidth,
+            actualHeight,
+          );
+        }
+        sourceContext?.drawImage(
+          videoElement,
+          0,
+          0,
+          actualWidth,
+          actualHeight,
+          0,
+          0,
+          width,
+          height,
+        );
+      });
+    }, 200); // 延迟200毫秒
   });
 
   return promise;

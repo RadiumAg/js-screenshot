@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "pnpm run build:dev && pnpm run -C playground dev",
-    "build:dev": "cross-env NODE_ENV=development esno ./script/build.ts",
+    "dev": "pnpm run build:dev & pnpm run -C playground dev",
+    "build:dev": "cross-env NODE_ENV=development esno ./script/build.ts --watch",
     "build": "esno ./script/build.ts",
     "build:watch": "esno ./script/build.ts --watch",
     "playground-build": "pnpm run build && pnpm run -C playground build"
