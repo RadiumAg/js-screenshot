@@ -72,7 +72,6 @@ async function displayMediaMode() {
     video: {
       width,
       height,
-      cursor: 'never',
       displaySurface: 'window',
     },
   });
