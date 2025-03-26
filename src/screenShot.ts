@@ -70,8 +70,6 @@ async function displayMediaMode() {
   videoElement.play();
 
   videoElement.addEventListener('play', () => {
-    const sourceContext = sourceCanvasElement.getContext('2d');
-
     setTimeout(() => {
       const width = window.innerWidth;
       const height = window.innerHeight;
@@ -82,7 +80,18 @@ async function displayMediaMode() {
       canvas.height = height;
       canvas.width = width;
 
-      sourceContext?.drawImage(videoElement, 0, 0, width, height);
+      const sourceContext = sourceCanvasElement.getContext('2d');
+      sourceContext?.drawImage(
+        videoElement,
+        0,
+        0,
+        width,
+        height,
+        0,
+        0,
+        width,
+        height,
+      );
       document.body.append(canvasElement);
 
       resolveFn('init');
