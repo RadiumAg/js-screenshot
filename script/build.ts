@@ -14,7 +14,7 @@ import {
 import { getArgs } from './util';
 
 const buildConfig = {
-  input: resolve(__dirname, '../src/screenShot.ts'),
+  input: resolve(__dirname, '../src/screen-shot.ts'),
   plugins: [
     alias({
       entries: [

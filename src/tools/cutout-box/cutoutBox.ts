@@ -2,7 +2,7 @@ import { animateThrottleFn } from '@screenshots/utils';
 import BaseBox from '../baseBox';
 import {
   activeTarget,
-  canvasElement,
+  drawCanvasElement,
   dotControllerSize,
   isFirstInit,
   isLock,
@@ -22,7 +22,7 @@ class CutoutBox extends BaseBox {
   setMask() {
     if (this.context === null) return;
     this.context.fillStyle = 'rgba(0,0,0,0.5)';
-    this.context.fillRect(0, 0, canvasElement.width, canvasElement.height);
+    this.context.fillRect(0, 0, drawCanvasElement.width, drawCanvasElement.height);
   }
 
   /**
@@ -352,7 +352,7 @@ class CutoutBox extends BaseBox {
 
     const updatePosition = animateThrottleFn(this.updatePosition.bind(this));
 
-    canvasElement.addEventListener('mousedown', event => {
+    drawCanvasElement.addEventListener('mousedown', event => {
       if (isLock) return;
 
       if (
@@ -376,7 +376,7 @@ class CutoutBox extends BaseBox {
       }
     });
 
-    canvasElement.addEventListener('mouseup', event => {
+    drawCanvasElement.addEventListener('mouseup', event => {
       if (activeTarget !== this) return;
       if (isLock) return;
 
@@ -395,11 +395,11 @@ class CutoutBox extends BaseBox {
         ) &&
         !isLock
       ) {
-        canvasElement.style.cursor = 'move';
+        drawCanvasElement.style.cursor = 'move';
       }
     });
 
-    canvasElement.addEventListener('mousemove', event => {
+    drawCanvasElement.addEventListener('mousemove', event => {
       if (activeTarget !== null && activeTarget !== this) return;
       if (isLock) return;
 
@@ -431,12 +431,12 @@ class CutoutBox extends BaseBox {
         if (this.y < 0) {
           this.y = 0;
         }
-        if (this.x + this.width > canvasElement.width) {
-          this.x = canvasElement.width - this.width;
+        if (this.x + this.width > drawCanvasElement.width) {
+          this.x = drawCanvasElement.width - this.width;
         }
 
-        if (this.y + this.height > canvasElement.height) {
-          this.y = canvasElement.height - this.height;
+        if (this.y + this.height > drawCanvasElement.height) {
+          this.y = drawCanvasElement.height - this.height;
         }
 
         updatePosition();
@@ -452,9 +452,9 @@ class CutoutBox extends BaseBox {
           event.clientY,
         )
       ) {
-        canvasElement.style.cursor = 'move';
+        drawCanvasElement.style.cursor = 'move';
       } else {
-        canvasElement.style.cursor = '';
+        drawCanvasElement.style.cursor = '';
       }
     });
 
@@ -520,13 +520,13 @@ class CutoutBox extends BaseBox {
     const startY = window.outerHeight - window.innerHeight;
 
     // clear all
-    this.context.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    this.context.clearRect(0, 0, drawCanvasElement.width, drawCanvasElement.height);
 
     const documentArea = this.sourceContext.getImageData(
       0,
       startY,
-      canvasElement.width,
-      canvasElement.height,
+      drawCanvasElement.width,
+      drawCanvasElement.height,
     );
 
     this.context.putImageData(documentArea, 0, 0);
@@ -534,8 +534,8 @@ class CutoutBox extends BaseBox {
   }
 
   initCutoutBox() {
-    this.width = canvasElement.width;
-    this.height = canvasElement.height;
+    this.width = drawCanvasElement.width;
+    this.height = drawCanvasElement.height;
 
     this.toolBox = new ToolBox(this);
     this.toolBox.initToolBox();
@@ -544,11 +544,11 @@ class CutoutBox extends BaseBox {
     this.initDotControllerArray();
     this.updatePosition();
 
-    canvasElement.style.cursor = 'move';
+    drawCanvasElement.style.cursor = 'move';
   }
 
   destory() {
-    canvasElement.remove();
+    drawCanvasElement.remove();
     this.toolBox?.el?.remove();
     this.dotControllerArray.forEach(_ => _.el?.remove());
 

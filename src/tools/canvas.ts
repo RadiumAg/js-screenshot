@@ -56,7 +56,7 @@ window.operateHistory = operateHistory;
 let isLock = false;
 let isFirstInit = true;
 let videoElement: HTMLVideoElement;
-let canvasElement: HTMLCanvasElement;
+let drawCanvasElement: HTMLCanvasElement;
 let sourceCanvasElement: HTMLCanvasElement;
 let activeTarget: CutoutBox | DotController | Pen | TextBox | Arrow | null;
 
@@ -66,8 +66,8 @@ function setVideoElement(videoElementObject: HTMLVideoElement) {
   videoElement = videoElementObject;
 }
 
-function setCanvasElement(canvasElementObject: HTMLCanvasElement) {
-  canvasElement = canvasElementObject;
+function setDrawCanvasElement(canvasElementObject: HTMLCanvasElement) {
+  drawCanvasElement = canvasElementObject;
 }
 
 function setSourceCanvasElement(sourceCanvasElementObject: HTMLCanvasElement) {
@@ -91,14 +91,14 @@ export {
   activeTarget,
   isFirstInit,
   videoElement,
-  canvasElement,
+  drawCanvasElement,
   dotControllerSize,
   operateHistory,
   sourceCanvasElement,
   setIsLock,
   setFirstInit,
   setVideoElement,
-  setCanvasElement,
+  setDrawCanvasElement,
   setActiveTarget,
   setSourceCanvasElement,
 };

@@ -1,10 +1,9 @@
 import {
-  canvasElement,
-  setCanvasElement,
+  drawCanvasElement,
+  setDrawCanvasElement,
   setSourceCanvasElement,
   setVideoElement,
 } from './tools/canvas';
-
 import CutoutBox from './tools/cutout-box/cutoutBox';
 import { __isDev__ } from './utils';
 
@@ -16,8 +15,6 @@ type ScreenShotOptions = {
 /**
  * 创建canvas
  *
- * @param width
- * @param height
  * @returns
  */
 function createCanvas() {
@@ -39,7 +36,6 @@ function createCanvas() {
  */
 function createVideoElement() {
   const videoElement = document.createElement('video');
-
   return videoElement;
 }
 
@@ -56,14 +52,12 @@ async function displayMediaMode() {
     cursor: false,
   });
 
-  // 设置源source
   const sourceCanvasElement = createCanvas();
-  setSourceCanvasElement(sourceCanvasElement);
+  const drawCanvaElement = createCanvas();
   const videoElement = createVideoElement();
-  // 设置截图source
 
-  const canvas = createCanvas();
-  setCanvasElement(canvas);
+  setSourceCanvasElement(sourceCanvasElement);
+  setDrawCanvasElement(drawCanvaElement);
   setVideoElement(videoElement);
 
   videoElement.srcObject = captureStream;
@@ -77,25 +71,19 @@ async function displayMediaMode() {
       sourceCanvasElement.width = width;
       sourceCanvasElement.height = height;
 
-      canvas.height = height;
-      canvas.width = width;
+      drawCanvaElement.height = height;
+      drawCanvaElement.width = width;
 
       const sourceContext = sourceCanvasElement.getContext('2d');
       sourceContext?.drawImage(
         videoElement,
         0,
         0,
-        width,
-        height,
-        0,
-        0,
-        width,
-        height,
       );
-      document.body.append(canvasElement);
 
+      document.body.append(drawCanvasElement);
       resolveFn('init');
-    }, 2000);
+    });
   });
 
   return promise;

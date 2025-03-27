@@ -3,7 +3,7 @@ import pen from '@screenshots/assets/images/pen.svg';
 import BaseBox from '../baseBox';
 import {
   activeTarget,
-  canvasElement,
+  drawCanvasElement,
   dotControllerSize,
   operateHistory,
   setActiveTarget,
@@ -38,7 +38,7 @@ class Pen extends BaseBox {
       setActiveTarget(this);
     });
 
-    canvasElement.addEventListener('mousemove', event => {
+    drawCanvasElement.addEventListener('mousemove', event => {
       if (activeTarget !== this) return;
 
       if (
@@ -59,7 +59,7 @@ class Pen extends BaseBox {
       }
     });
 
-    canvasElement.addEventListener('mousedown', event => {
+    drawCanvasElement.addEventListener('mousedown', event => {
       if (activeTarget !== this) return;
 
       if (
@@ -79,11 +79,11 @@ class Pen extends BaseBox {
         this.context.beginPath();
         this.context.moveTo(event.clientX, event.clientY);
       } else {
-        canvasElement.style.cursor = '';
+        drawCanvasElement.style.cursor = '';
       }
     });
 
-    canvasElement.addEventListener('mouseup', () => {
+    drawCanvasElement.addEventListener('mouseup', () => {
       if (isMouseDown) {
         const imageData = this.context.getImageData(
           this.cutoutBox.x,

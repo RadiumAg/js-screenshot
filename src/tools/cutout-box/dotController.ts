@@ -1,7 +1,7 @@
 import {animateThrottleFn} from '@screenshots/utils';
 import Style from '@screenshots/theme/dot.controller.module.scss';
 import BaseBox from '../baseBox';
-import {activeTarget, canvasElement, dotControllerSize, operateHistory, setActiveTarget, setFirstInit} from '../canvas';
+import {activeTarget, drawCanvasElement, dotControllerSize, operateHistory, setActiveTarget, setFirstInit} from '../canvas';
 import CutoutBox from './cutoutBox';
 
 type UpdateAxisCallback = (x: number, y: number, oldX: number, oldY: number, oldCutoutBox: CutoutBox) => void;
@@ -34,7 +34,7 @@ class DotController extends BaseBox {
     let isMouseDown = false;
     const updateAxis = animateThrottleFn(this.updateAxis.bind(this));
 
-    canvasElement.addEventListener('mousemove', (event) => {
+    drawCanvasElement.addEventListener('mousemove', (event) => {
       if (activeTarget !== null && activeTarget !== this) return;
 
       if (isMouseDown) {

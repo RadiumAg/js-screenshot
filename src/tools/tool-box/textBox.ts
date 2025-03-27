@@ -4,7 +4,7 @@ import BaseBox from '../baseBox';
 import CutoutBox from '../cutout-box/cutoutBox';
 import {
   activeTarget,
-  canvasElement,
+  drawCanvasElement,
   dotControllerSize,
   isLock,
   operateHistory,
@@ -212,7 +212,7 @@ class TextBox extends BaseBox {
       setActiveTarget(this);
     });
 
-    canvasElement.addEventListener('mousedown', event => {
+    drawCanvasElement.addEventListener('mousedown', event => {
       this.preTextarea?.remove();
 
       if (!isLock) return;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import '../../dist/esm/screenShot.css';
-import ScreenShot from '../../dist/esm/screenShot';
+import '../../dist/esm/screen-shot.css';
+import ScreenShot from '../../dist/esm/screen-shot';
 
 const screenShot = new ScreenShot({});
 

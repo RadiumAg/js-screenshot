@@ -1,4 +1,4 @@
-import { canvasElement, sourceCanvasElement } from './canvas';
+import { drawCanvasElement, sourceCanvasElement } from './canvas';
 
 abstract class BaseBox {
   x = 0;
@@ -8,7 +8,7 @@ abstract class BaseBox {
 
   // 当前操作的上下文
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  protected context = canvasElement.getContext('2d', {
+  protected context = drawCanvasElement.getContext('2d', {
     willReadFrequently: true,
   })!;
 
