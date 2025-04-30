@@ -16,7 +16,7 @@ class Arrow extends BaseBox {
   }
 
   el: HTMLDivElement | null = null;
-  privatefirstScreenShotImageData: ImageData | null = null;
+  private firstScreenShotImageData: ImageData | null = null;
   private isDrawing = false;
   private startX = 0;
   private startY = 0;

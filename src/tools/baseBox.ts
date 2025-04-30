@@ -6,14 +6,15 @@ abstract class BaseBox {
   width = 0;
   height = 0;
 
-  // Current operating context
-  protected context: CanvasRenderingContext2D;
-  constructor() {
-    this.context = drawCanvasElement.getContext('2d') as CanvasRenderingContext2D;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  protected context = drawCanvasElement.getContext('2d', {
+    willReadFrequently: true,
+  })!;
 
-  // Source context
-  protected sourceContext: CanvasRenderingContext2D;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  protected sourceContext = sourceCanvasElement.getContext('2d', {
+    willReadFrequently: true,
+  })!;
 
   isOutLeft(minX: number, x: number) {
     return x < minX;
