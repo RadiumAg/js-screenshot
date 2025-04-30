@@ -1,7 +1,13 @@
 import Style from '@screenshots/theme/arrow.module.scss';
 import arrow from '@screenshots/assets/images/arrow.svg';
 import BaseBox from '../baseBox';
-import { setActiveTarget, setIsLock } from '../canvas';
+import {
+  activeTarget,
+  drawCanvasElement,
+  operateHistory,
+  setActiveTarget,
+  setIsLock,
+} from '../canvas';
 import CutoutBox from '../cutout-box/cutoutBox';
 
 class Arrow extends BaseBox {
@@ -10,96 +16,119 @@ class Arrow extends BaseBox {
   }
 
   el: HTMLDivElement | null = null;
+  privatefirstScreenShotImageData: ImageData | null = null;
   private isDrawing = false;
   private startX = 0;
   private startY = 0;
+  private arrowColor = 'red';
+  private arrowWidth = 2;
+  private arrowHeadLength = 10;
 
   updatePosition() {
     /** arrow */
   }
 
   protected initEvent() {
-    const isMouseDown = false;
-
     this.el?.addEventListener('click', () => {
       setIsLock(true);
       setActiveTarget(this);
     });
+    drawCanvasElement.addEventListener('mousedown', event => {
+      /**
+       * 获取原始截图的imageData
+       */
+      this.firstScreenShotImageData = this.context.getImageData(
+        this.cutoutBox.x,
+        this.cutoutBox.y,
+        this.cutoutBox.width,
+        this.cutoutBox.height,
+      );
 
-    const canvasElement = document.createElement('canvas') as HTMLCanvasElement;
-    const context = canvasElement.getContext('2d');
+      if (activeTarget !== this) return;
 
-    canvasElement.addEventListener('mousedown', event => {
-      setActiveTarget(this);
-      this.isDrawing = true;
-      this.startX = event.clientX;
-      this.startY = event.clientY;
-    });
+      this.isCurrentArea(
+        this.cutoutBox.x,
+        this.cutoutBox.x + this.cutoutBox.width,
+        this.cutoutBox.y,
+        this.cutoutBox.y + this.cutoutBox.height,
+        event.clientX,
+        event.clientY,
+      );
+      {
+        this.isDrawing = true;
+        this.startX = event.clientX;
+        this.startY = event.clientY;
 
-    canvasElement.addEventListener('mousemove', event => {
-      if (this.isDrawing) {
-        context?.clearRect(0, 0, canvasElement.width, canvasElement.height);
-        this.drawArrow(
-          context,
-          this.startX,
-          this.startY,
-          event.clientX,
-          event.clientY,
-        );
+        this.context.beginPath();
+        this.context.strokeStyle = this.arrowColor;
+        this.context.lineWidth = this.arrowWidth;
       }
     });
 
-    canvasElement.addEventListener('mouseup', event => {
-      if (this.isDrawing) {
-        this.isDrawing = false;
-        this.drawArrow(
-          context,
-          this.startX,
-          this.startY,
-          event.clientX,
-          event.clientY,
-        );
-      }
+    drawCanvasElement.addEventListener('mousemove', event => {
+      if (this.firstScreenShotImageData === null) return;
+      if (!this.isDrawing) return;
+      if (activeTarget !== this) return;
+
+      this.context.putImageData(
+        this.firstScreenShotImageData,
+        this.cutoutBox.x,
+        this.cutoutBox.y,
+      );
+
+      this.drawArrow(this.startX, this.startY, event.clientX, event.clientY);
+    });
+
+    drawCanvasElement.addEventListener('mouseup', () => {
+      if (!this.isDrawing || activeTarget !== this) return;
+
+      this.isDrawing = false;
+
+      const imageData = this.context.getImageData(
+        this.cutoutBox.x,
+        this.cutoutBox.y,
+        this.cutoutBox.width,
+        this.cutoutBox.height,
+      );
+      operateHistory.push(imageData);
     });
   }
 
-  private drawArrow(
-    context: CanvasRenderingContext2D | null,
-    fromX: number,
-    fromY: number,
-    toX: number,
-    toY: number,
-  ) {
-    if (!context) return;
-    const headlen = 10; // 箭头头部长度
-    const dx = toX - fromX;
-    const dy = toY - fromY;
-    const angle = Math.atan2(dy, dx);
+  private drawArrow(fromX: number, fromY: number, toX: number, toY: number) {
+    const angle = Math.atan2(toY - fromY, toX - fromX);
 
-    context.beginPath();
-    context.moveTo(fromX, fromY);
-    context.lineTo(toX, toY);
-    context.lineTo(
-      toX - headlen * Math.cos(angle - Math.PI / 6),
-      toY - headlen * Math.sin(angle - Math.PI / 6),
+    this.context.beginPath();
+    this.context.moveTo(fromX, fromY);
+    this.context.lineTo(toX, toY);
+    this.context.stroke();
+
+    this.context.beginPath();
+    this.context.moveTo(toX, toY);
+    this.context.lineTo(
+      toX - this.arrowHeadLength * Math.cos(angle - Math.PI / 6),
+      toY - this.arrowHeadLength * Math.sin(angle - Math.PI / 6),
     );
-    context.moveTo(toX, toY);
-    context.lineTo(
-      toX - headlen * Math.cos(angle + Math.PI / 6),
-      toY - headlen * Math.sin(angle + Math.PI / 6),
+    this.context.moveTo(toX, toY);
+    this.context.lineTo(
+      toX - this.arrowHeadLength * Math.cos(angle + Math.PI / 6),
+      toY - this.arrowHeadLength * Math.sin(angle + Math.PI / 6),
     );
-    context.stroke();
+    this.context.stroke();
   }
 
   initArrow() {
     this.el = document.createElement('div');
     this.el.classList.add(Style.arrow);
     this.el.append(arrow);
+    this.el.tabIndex = 0;
 
     this.initEvent();
   }
 
-  destory(): void {}
+  destroy(): void {
+    this.isDrawing = false;
+    this.el?.remove();
+  }
 }
 
 export default Arrow;

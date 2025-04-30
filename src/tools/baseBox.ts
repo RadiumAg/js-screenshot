@@ -52,7 +52,7 @@ abstract class BaseBox {
 
   abstract updatePosition(...args: any[]): void;
   protected abstract initEvent(): void;
-  abstract destory(): void;
+  abstract destroy(): void;
 }
 
 export default BaseBox;

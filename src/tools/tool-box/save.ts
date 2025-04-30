@@ -62,7 +62,7 @@ class Save extends BaseBox {
     this.initEvent();
   }
 
-  destory(): void {
+  destroy() {
     /**
      * empty
      */

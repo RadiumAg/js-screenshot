@@ -1,13 +1,30 @@
-import {animateThrottleFn} from '@screenshots/utils';
+import { animateThrottleFn } from '@screenshots/utils';
 import Style from '@screenshots/theme/dot.controller.module.scss';
 import BaseBox from '../baseBox';
-import {activeTarget, drawCanvasElement, dotControllerSize, operateHistory, setActiveTarget, setFirstInit} from '../canvas';
+import {
+  activeTarget,
+  dotControllerSize,
+  drawCanvasElement,
+  operateHistory,
+  setActiveTarget,
+  setFirstInit,
+} from '../canvas';
 import CutoutBox from './cutoutBox';
 
-type UpdateAxisCallback = (x: number, y: number, oldX: number, oldY: number, oldCutoutBox: CutoutBox) => void;
+type UpdateAxisCallback = (
+  x: number,
+  y: number,
+  oldX: number,
+  oldY: number,
+  oldCutoutBox: CutoutBox,
+) => void;
 
 class DotController extends BaseBox {
-  constructor(cursor: string, cutoutBox: CutoutBox, updateAxiscallback: UpdateAxisCallback) {
+  constructor(
+    cursor: string,
+    cutoutBox: CutoutBox,
+    updateAxiscallback: UpdateAxisCallback,
+  ) {
     super();
 
     this.cursor = cursor;
@@ -34,7 +51,7 @@ class DotController extends BaseBox {
     let isMouseDown = false;
     const updateAxis = animateThrottleFn(this.updateAxis.bind(this));
 
-    drawCanvasElement.addEventListener('mousemove', (event) => {
+    drawCanvasElement.addEventListener('mousemove', event => {
       if (activeTarget !== null && activeTarget !== this) return;
 
       if (isMouseDown) {
@@ -45,12 +62,22 @@ class DotController extends BaseBox {
       }
     });
 
-    this.el?.addEventListener('mousedown', (event) => {
+    this.el?.addEventListener('mousedown', event => {
       event.stopPropagation();
 
       const isFirstMoveDown = Reflect.get(event.target || {}, 'isFirstInit');
 
-      if (this.isCurrentArea(this.x, this.x + this.width, this.y, this.y + this.height, event.clientX, event.clientY) || isFirstMoveDown) {
+      if (
+        this.isCurrentArea(
+          this.x,
+          this.x + this.width,
+          this.y,
+          this.y + this.height,
+          event.clientX,
+          event.clientY,
+        ) ||
+        isFirstMoveDown
+      ) {
         this.oldX = this.x;
         this.oldY = this.y;
 
@@ -70,7 +97,14 @@ class DotController extends BaseBox {
 
     this.el?.addEventListener('mouseup', () => {
       if (activeTarget !== this) return;
-      operateHistory.push(this.context.getImageData(this.cutoutBox.x, this.cutoutBox.y, this.cutoutBox.width, this.cutoutBox.height));
+      operateHistory.push(
+        this.context.getImageData(
+          this.cutoutBox.x,
+          this.cutoutBox.y,
+          this.cutoutBox.width,
+          this.cutoutBox.height,
+        ),
+      );
       isMouseDown = false;
       setActiveTarget(null);
       setFirstInit(false);
@@ -88,7 +122,13 @@ class DotController extends BaseBox {
   }
 
   updateAxis() {
-    this.updateAxiscallback(this.x, this.y, this.oldX, this.oldY, this.oldCutoutBox as CutoutBox);
+    this.updateAxiscallback(
+      this.x,
+      this.y,
+      this.oldX,
+      this.oldY,
+      this.oldCutoutBox as CutoutBox,
+    );
   }
 
   initDotController() {
@@ -102,8 +142,10 @@ class DotController extends BaseBox {
     document.body.append(this.el);
   }
 
-  destory(): void {}
+  destroy(): void {
+    this.el?.remove();
+  }
 }
 
 export default DotController;
-export type {UpdateAxisCallback};
+export type { UpdateAxisCallback };

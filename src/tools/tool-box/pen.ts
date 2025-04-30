@@ -3,8 +3,8 @@ import pen from '@screenshots/assets/images/pen.svg';
 import BaseBox from '../baseBox';
 import {
   activeTarget,
-  drawCanvasElement,
   dotControllerSize,
+  drawCanvasElement,
   operateHistory,
   setActiveTarget,
   setIsLock,
@@ -97,7 +97,7 @@ class Pen extends BaseBox {
     });
   }
 
-  destory(): void {}
+  destroy(): void {}
 }
 
 export default Pen;

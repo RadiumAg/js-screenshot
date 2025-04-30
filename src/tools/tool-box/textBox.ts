@@ -4,8 +4,8 @@ import BaseBox from '../baseBox';
 import CutoutBox from '../cutout-box/cutoutBox';
 import {
   activeTarget,
-  drawCanvasElement,
   dotControllerSize,
+  drawCanvasElement,
   isLock,
   operateHistory,
   setActiveTarget,
@@ -293,7 +293,7 @@ class TextBox extends BaseBox {
     });
   }
 
-  destory(): void {
+  destroy() {
     this.preTextarea?.remove();
   }
 }

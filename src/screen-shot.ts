@@ -75,11 +75,7 @@ async function displayMediaMode() {
       drawCanvaElement.width = width;
 
       const sourceContext = sourceCanvasElement.getContext('2d');
-      sourceContext?.drawImage(
-        videoElement,
-        0,
-        0,
-      );
+      sourceContext?.drawImage(videoElement, 0, 0);
 
       document.body.append(drawCanvasElement);
       resolveFn('init');
@@ -91,7 +87,9 @@ async function displayMediaMode() {
 
 class ScreenShot {
   constructor(private screenShotOptions: ScreenShotOptions) {
-    console.log('options', this.screenShotOptions);
+    if (__isDev__) {
+      console.log('[DEGUT] options', this.screenShotOptions);
+    }
   }
 
   async shot() {

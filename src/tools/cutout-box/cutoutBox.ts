@@ -2,8 +2,8 @@ import { animateThrottleFn } from '@screenshots/utils';
 import BaseBox from '../baseBox';
 import {
   activeTarget,
-  drawCanvasElement,
   dotControllerSize,
+  drawCanvasElement,
   isFirstInit,
   isLock,
   operateHistory,
@@ -22,7 +22,12 @@ class CutoutBox extends BaseBox {
   setMask() {
     if (this.context === null) return;
     this.context.fillStyle = 'rgba(0,0,0,0.5)';
-    this.context.fillRect(0, 0, drawCanvasElement.width, drawCanvasElement.height);
+    this.context.fillRect(
+      0,
+      0,
+      drawCanvasElement.width,
+      drawCanvasElement.height,
+    );
   }
 
   /**
@@ -520,7 +525,12 @@ class CutoutBox extends BaseBox {
     const startY = window.outerHeight - window.innerHeight;
 
     // clear all
-    this.context.clearRect(0, 0, drawCanvasElement.width, drawCanvasElement.height);
+    this.context.clearRect(
+      0,
+      0,
+      drawCanvasElement.width,
+      drawCanvasElement.height,
+    );
 
     const documentArea = this.sourceContext.getImageData(
       0,
@@ -547,7 +557,7 @@ class CutoutBox extends BaseBox {
     drawCanvasElement.style.cursor = 'move';
   }
 
-  destory() {
+  destroy() {
     drawCanvasElement.remove();
     this.toolBox?.el?.remove();
     this.dotControllerArray.forEach(_ => _.el?.remove());

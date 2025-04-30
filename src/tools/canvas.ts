@@ -4,6 +4,7 @@ import CutoutBox from './cutout-box/cutoutBox';
 import DotController from './cutout-box/dotController';
 import TextBox from './tool-box/textBox';
 import Arrow from './tool-box/arrow';
+import Mosaic from './tool-box/mosaic';
 
 class OperateHistory extends Array<ImageData> {
   private currentHistoryIndex = -1;
@@ -56,9 +57,18 @@ window.operateHistory = operateHistory;
 let isLock = false;
 let isFirstInit = true;
 let videoElement: HTMLVideoElement;
+// 画布的canvas
 let drawCanvasElement: HTMLCanvasElement;
+// 原始截图的canvas
 let sourceCanvasElement: HTMLCanvasElement;
-let activeTarget: CutoutBox | DotController | Pen | TextBox | Arrow | null;
+let activeTarget:
+  | CutoutBox
+  | DotController
+  | Pen
+  | TextBox
+  | Arrow
+  | Mosaic
+  | null;
 
 const dotControllerSize = 10;
 

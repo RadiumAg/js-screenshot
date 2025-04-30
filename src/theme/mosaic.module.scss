@@ -1,0 +1,10 @@
+/** @format */
+@use './common.scss' as common;
+
+.mosaic {
+  @include common.common;
+}
+
+.mosaic:hover {
+  @include common.hover;
+}

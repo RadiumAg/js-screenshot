@@ -7,6 +7,7 @@ import Save from './save';
 import TextBox from './textBox';
 import Refuse from './refuse';
 import Arrow from './arrow';
+import Mosaic from './mosaic';
 
 class ToolBox extends BaseBox {
   constructor(private cutoutBox: CutoutBox) {
@@ -35,17 +36,34 @@ class ToolBox extends BaseBox {
     const save = new Save(this.cutoutBox);
     const arrow = new Arrow(this.cutoutBox);
     const textBox = new TextBox(this.cutoutBox);
-    const refuse = new Refuse(this.cutoutBox, [pen.destory]);
+    const mosaic = new Mosaic(this.cutoutBox);
+
+    const refuse = new Refuse(this.cutoutBox, [
+      pen.destroy,
+      save.destroy,
+      arrow.destroy,
+      mosaic.destroy,
+      textBox.destroy,
+    ]);
 
     pen.initPen();
     save.initSave();
     refuse.initRefuse();
     textBox.initTextBox();
     arrow.initArrow();
+    mosaic.initMosaic();
 
     this.el.append(
-      ...([textBox.el, pen.el, refuse.el, save.el, arrow.el] as HTMLElement[]),
+      ...([
+        textBox.el,
+        pen.el,
+        refuse.el,
+        save.el,
+        arrow.el,
+        mosaic.el,
+      ] as HTMLElement[]),
     );
+
     document.body.append(this.el);
   }
 
@@ -53,7 +71,9 @@ class ToolBox extends BaseBox {
     /** empty **/
   }
 
-  destory(): void {}
+  destroy(): void {
+    this.el?.remove();
+  }
 }
 
 export default ToolBox;
