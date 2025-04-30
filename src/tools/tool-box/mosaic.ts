@@ -17,7 +17,7 @@ class Mosaic extends BaseBox {
 
   el: HTMLDivElement | null = null;
   private isDrawing = false;
-  private mosaicSize = 10;
+  private mosaicSize = 10; // Mosaic block size
 
   updatePosition() {
     /** mosaic */
@@ -43,7 +43,7 @@ class Mosaic extends BaseBox {
         )
       ) {
         this.isDrawing = true;
-        // 立即在点击位置应用马赛克
+        // Apply mosaic at click position immediately
         this.applyMosaic(event.clientX, event.clientY);
       }
     });
@@ -51,7 +51,7 @@ class Mosaic extends BaseBox {
     drawCanvasElement.addEventListener('mousemove', event => {
       if (!this.isDrawing || activeTarget !== this) return;
 
-      // 在鼠标移动位置应用马赛克
+      // Apply mosaic at mouse position
       this.applyMosaic(event.clientX, event.clientY);
     });
 
@@ -59,7 +59,7 @@ class Mosaic extends BaseBox {
       if (!this.isDrawing || activeTarget !== this) return;
 
       this.isDrawing = false;
-      // 保存到历史记录
+      // Save to history
       const imageData = this.context.getImageData(
         this.cutoutBox.x,
         this.cutoutBox.y,
@@ -71,35 +71,35 @@ class Mosaic extends BaseBox {
   }
 
   private applyMosaic(x: number, y: number) {
-    // 设置马赛克笔刷大小
+    // Set mosaic brush size
     const brushSize = 20;
 
-    // 确保坐标在画布范围内
+    // Ensure coordinates are within canvas bounds
     x = Math.max(x, this.cutoutBox.x);
     y = Math.max(y, this.cutoutBox.y);
     x = Math.min(x, this.cutoutBox.x + this.cutoutBox.width - brushSize);
     y = Math.min(y, this.cutoutBox.y + this.cutoutBox.height - brushSize);
 
-    // 获取马赛克区域的图像数据
+    // Get image data for mosaic area
     const imageData = this.context.getImageData(x, y, brushSize, brushSize);
     const pixels = imageData.data;
 
-    // 计算马赛克块的数量
+    // Calculate number of mosaic blocks
     const blocksX = Math.ceil(brushSize / this.mosaicSize);
     const blocksY = Math.ceil(brushSize / this.mosaicSize);
 
-    // 对每个马赛克块进行处理
+    // Process each mosaic block
     for (let blockY = 0; blockY < blocksY; blockY++) {
       for (let blockX = 0; blockX < blocksX; blockX++) {
-        // 计算当前块的起始位置
+        // Calculate current block start position
         const startX = blockX * this.mosaicSize;
         const startY = blockY * this.mosaicSize;
 
-        // 计算当前块的实际大小
+        // Calculate current block actual size
         const blockWidth = Math.min(this.mosaicSize, brushSize - startX);
         const blockHeight = Math.min(this.mosaicSize, brushSize - startY);
 
-        // 计算当前块的平均颜色
+        // Calculate average color for current block
         const avgColor = this.calculateAverageColor(
           pixels,
           startX,
@@ -109,7 +109,7 @@ class Mosaic extends BaseBox {
           brushSize,
         );
 
-        // 用平均颜色填充当前块
+        // Fill current block with average color
         this.fillBlock(
           x + startX,
           y + startY,

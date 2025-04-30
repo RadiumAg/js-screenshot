@@ -57,9 +57,9 @@ window.operateHistory = operateHistory;
 let isLock = false;
 let isFirstInit = true;
 let videoElement: HTMLVideoElement;
-// 画布的canvas
+// Canvas for drawing
 let drawCanvasElement: HTMLCanvasElement;
-// 原始截图的canvas
+// Canvas for original screenshot
 let sourceCanvasElement: HTMLCanvasElement;
 let activeTarget:
   | CutoutBox

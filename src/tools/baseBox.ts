@@ -6,17 +6,14 @@ abstract class BaseBox {
   width = 0;
   height = 0;
 
-  // 当前操作的上下文
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  protected context = drawCanvasElement.getContext('2d', {
-    willReadFrequently: true,
-  })!;
+  // Current operating context
+  protected context: CanvasRenderingContext2D;
+  constructor() {
+    this.context = drawCanvasElement.getContext('2d') as CanvasRenderingContext2D;
+  }
 
-  // 源上下文
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  protected sourceContext = sourceCanvasElement.getContext('2d', {
-    willReadFrequently: true,
-  })!;
+  // Source context
+  protected sourceContext: CanvasRenderingContext2D;
 
   isOutLeft(minX: number, x: number) {
     return x < minX;
