@@ -45,7 +45,7 @@ async function displayMediaMode() {
   });
 
   const captureStream = await navigator.mediaDevices.getDisplayMedia({
-    preferCurrentTab: 1,
+    preferCurrentTab: true,
   });
 
   const sourceCanvasElement = createCanvas();
