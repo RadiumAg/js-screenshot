@@ -1,5 +1,4 @@
 import {
-  drawCanvasElement,
   setDrawCanvasElement,
   setSourceCanvasElement,
   setVideoElement,
@@ -46,40 +45,47 @@ async function displayMediaMode() {
   });
 
   const captureStream = await navigator.mediaDevices.getDisplayMedia({
-    video: {},
     preferCurrentTab: 1,
-    audio: false,
-    cursor: false,
   });
 
   const sourceCanvasElement = createCanvas();
-  const drawCanvaElement = createCanvas();
+  const drawCanvasElement = createCanvas();
   const videoElement = createVideoElement();
+  const sourceContext = sourceCanvasElement.getContext('2d');
 
   setSourceCanvasElement(sourceCanvasElement);
-  setDrawCanvasElement(drawCanvaElement);
+  setDrawCanvasElement(drawCanvasElement);
   setVideoElement(videoElement);
 
   videoElement.srcObject = captureStream;
   videoElement.play();
 
+  function updateCanvas() {
+    if (
+      sourceContext &&
+      videoElement.readyState === videoElement.HAVE_ENOUGH_DATA
+    ) {
+      sourceContext.drawImage(videoElement, 0, 0);
+      return;
+    }
+
+    requestAnimationFrame(updateCanvas);
+  }
+
   videoElement.addEventListener('play', () => {
-    setTimeout(() => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
-      sourceCanvasElement.width = width;
-      sourceCanvasElement.height = height;
+    sourceCanvasElement.width = width;
+    sourceCanvasElement.height = height;
 
-      drawCanvaElement.height = height;
-      drawCanvaElement.width = width;
+    drawCanvasElement.height = height;
+    drawCanvasElement.width = width;
 
-      const sourceContext = sourceCanvasElement.getContext('2d');
-      sourceContext?.drawImage(videoElement, 0, 0);
+    document.body.append(drawCanvasElement);
 
-      document.body.append(drawCanvasElement);
-      resolveFn('init');
-    });
+    updateCanvas();
+    resolveFn('init');
   });
 
   return promise;
@@ -88,7 +94,7 @@ async function displayMediaMode() {
 class ScreenShot {
   constructor(private screenShotOptions: ScreenShotOptions) {
     if (__isDev__) {
-      console.log('[DEGUT] options', this.screenShotOptions);
+      console.log('[DEBUG] options', this.screenShotOptions);
     }
   }
 

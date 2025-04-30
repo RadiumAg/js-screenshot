@@ -17,10 +17,7 @@ class Mosaic extends BaseBox {
 
   el: HTMLDivElement | null = null;
   private isDrawing = false;
-  private startX = 0;
-  private startY = 0;
-  private mosaicSize = 10; // 马赛克块的大小
-  private firstScreenShotImageData: ImageData | null = null;
+  private mosaicSize = 10;
 
   updatePosition() {
     /** mosaic */
@@ -46,54 +43,22 @@ class Mosaic extends BaseBox {
         )
       ) {
         this.isDrawing = true;
-        this.startX = event.clientX;
-        this.startY = event.clientY;
-
-        // 保存原始截图数据
-        this.firstScreenShotImageData = this.context.getImageData(
-          this.cutoutBox.x,
-          this.cutoutBox.y,
-          this.cutoutBox.width,
-          this.cutoutBox.height,
-        );
+        // 立即在点击位置应用马赛克
+        this.applyMosaic(event.clientX, event.clientY);
       }
     });
 
     drawCanvasElement.addEventListener('mousemove', event => {
-      if (
-        !this.isDrawing ||
-        !this.firstScreenShotImageData ||
-        activeTarget !== this
-      )
-        return;
+      if (!this.isDrawing || activeTarget !== this) return;
 
-      // 恢复原始截图
-      this.context.putImageData(
-        this.firstScreenShotImageData,
-        this.cutoutBox.x,
-        this.cutoutBox.y,
-      );
-
-      // 计算马赛克区域
-      const x = this.startX;
-      const y = this.startY;
-      const width = Math.abs(event.clientX - this.startX);
-      const height = Math.abs(event.clientY - this.startY);
-
-      // 应用马赛克效果
-      this.applyMosaic(x, y, width, height);
+      // 在鼠标移动位置应用马赛克
+      this.applyMosaic(event.clientX, event.clientY);
     });
 
     drawCanvasElement.addEventListener('mouseup', () => {
-      if (
-        !this.isDrawing ||
-        !this.firstScreenShotImageData ||
-        activeTarget !== this
-      )
-        return;
+      if (!this.isDrawing || activeTarget !== this) return;
 
       this.isDrawing = false;
-
       // 保存到历史记录
       const imageData = this.context.getImageData(
         this.cutoutBox.x,
@@ -101,27 +66,27 @@ class Mosaic extends BaseBox {
         this.cutoutBox.width,
         this.cutoutBox.height,
       );
-
       operateHistory.push(imageData);
     });
   }
 
-  private applyMosaic(x: number, y: number, width: number, height: number) {
-    if (width === 0 || height === 0) return;
+  private applyMosaic(x: number, y: number) {
+    // 设置马赛克笔刷大小
+    const brushSize = 20;
 
     // 确保坐标在画布范围内
     x = Math.max(x, this.cutoutBox.x);
     y = Math.max(y, this.cutoutBox.y);
-    width = Math.min(width, this.cutoutBox.width - (x - this.cutoutBox.x));
-    height = Math.min(height, this.cutoutBox.height - (y - this.cutoutBox.y));
+    x = Math.min(x, this.cutoutBox.x + this.cutoutBox.width - brushSize);
+    y = Math.min(y, this.cutoutBox.y + this.cutoutBox.height - brushSize);
 
     // 获取马赛克区域的图像数据
-    const imageData = this.context.getImageData(x, y, width, height);
+    const imageData = this.context.getImageData(x, y, brushSize, brushSize);
     const pixels = imageData.data;
 
     // 计算马赛克块的数量
-    const blocksX = Math.ceil(width / this.mosaicSize);
-    const blocksY = Math.ceil(height / this.mosaicSize);
+    const blocksX = Math.ceil(brushSize / this.mosaicSize);
+    const blocksY = Math.ceil(brushSize / this.mosaicSize);
 
     // 对每个马赛克块进行处理
     for (let blockY = 0; blockY < blocksY; blockY++) {
@@ -131,8 +96,8 @@ class Mosaic extends BaseBox {
         const startY = blockY * this.mosaicSize;
 
         // 计算当前块的实际大小
-        const blockWidth = Math.min(this.mosaicSize, width - startX);
-        const blockHeight = Math.min(this.mosaicSize, height - startY);
+        const blockWidth = Math.min(this.mosaicSize, brushSize - startX);
+        const blockHeight = Math.min(this.mosaicSize, brushSize - startY);
 
         // 计算当前块的平均颜色
         const avgColor = this.calculateAverageColor(
@@ -141,7 +106,7 @@ class Mosaic extends BaseBox {
           startY,
           blockWidth,
           blockHeight,
-          width,
+          brushSize,
         );
 
         // 用平均颜色填充当前块

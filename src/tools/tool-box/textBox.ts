@@ -185,7 +185,7 @@ class TextBox extends BaseBox {
     if (!isInBottom) {
       const lastY = this.cutoutBox.y + this.cutoutBox.height - 46;
       textBoxTextarea.style.top = `${lastY}px`;
-      console.log('lastY', lastY);
+      console.log('[DEBUG] lastY', lastY);
       lastXy.y = lastY;
     }
 

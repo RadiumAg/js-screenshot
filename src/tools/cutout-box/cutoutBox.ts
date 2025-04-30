@@ -15,7 +15,7 @@ import ToolBox from '../tool-box/toolBox';
 import DotController from './dotController';
 
 class CutoutBox extends BaseBox {
-  startY = window.outerHeight - window.innerHeight;
+  private startY = 0;
   dotControllerArray: DotController[] = [];
   toolBox: ToolBox | null = null;
 
@@ -522,7 +522,6 @@ class CutoutBox extends BaseBox {
 
   updateBackGround() {
     if (this.sourceContext === null || this.context === null) return;
-    const startY = window.outerHeight - window.innerHeight;
 
     // clear all
     this.context.clearRect(
@@ -534,7 +533,7 @@ class CutoutBox extends BaseBox {
 
     const documentArea = this.sourceContext.getImageData(
       0,
-      startY,
+      0,
       drawCanvasElement.width,
       drawCanvasElement.height,
     );

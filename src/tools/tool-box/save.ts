@@ -31,6 +31,7 @@ class Save extends BaseBox {
 
       if (__isDev__) {
         console.info(
+          '[DEBUG]',
           'screen width',
           this.cutoutBox.width,
           'screen height',
