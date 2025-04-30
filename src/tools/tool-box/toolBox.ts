@@ -57,10 +57,10 @@ class ToolBox extends BaseBox {
       ...([
         textBox.el,
         pen.el,
-        refuse.el,
-        save.el,
         arrow.el,
         mosaic.el,
+        refuse.el,
+        save.el,
       ] as HTMLElement[]),
     );
 
