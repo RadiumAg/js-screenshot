@@ -1,6 +1,6 @@
 import Style from '@screenshots/theme/arrow.module.scss';
 import arrow from '@screenshots/assets/images/arrow.svg';
-import BaseBox from '../baseBox';
+import BaseBox from '../base-box';
 import {
   activeTarget,
   drawCanvasElement,
@@ -8,8 +8,14 @@ import {
   setActiveTarget,
   setIsLock,
 } from '../canvas';
-import CutoutBox from '../cutout-box/cutoutBox';
+import CutoutBox from '../cutout-box';
 
+/**
+ * 箭头
+ *
+ * @class Arrow
+ * @extends {BaseBox}
+ */
 class Arrow extends BaseBox {
   constructor(private cutoutBox: CutoutBox) {
     super();

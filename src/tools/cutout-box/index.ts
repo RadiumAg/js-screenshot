@@ -1,5 +1,5 @@
 import { animateThrottleFn } from '@screenshots/utils';
-import BaseBox from '../baseBox';
+import BaseBox from '../base-box';
 import {
   activeTarget,
   dotControllerSize,
@@ -11,8 +11,8 @@ import {
   setFirstInit,
   setIsLock,
 } from '../canvas';
-import ToolBox from '../tool-box/toolBox';
-import DotController from './dotController';
+import ToolBox from '../tool-box/tool-box';
+import DotController from './dot-controller';
 
 class CutoutBox extends BaseBox {
   private startY = 0;

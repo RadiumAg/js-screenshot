@@ -32,6 +32,18 @@ abstract class BaseBox {
     return y > maxY;
   }
 
+  /**
+   * 是否在当前区域
+   *
+   * @param {number} minX
+   * @param {number} maxX
+   * @param {number} minY
+   * @param {number} maxY
+   * @param {number} x
+   * @param {number} y
+   * @return {*} 
+   * @memberof BaseBox
+   */
   isCurrentArea(
     minX: number,
     maxX: number,

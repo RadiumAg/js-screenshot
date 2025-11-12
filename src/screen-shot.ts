@@ -3,7 +3,7 @@ import {
   setSourceCanvasElement,
   setVideoElement,
 } from './tools/canvas';
-import CutoutBox from './tools/cutout-box/cutoutBox';
+import CutoutBox from './tools/cutout-box';
 import { __isDev__ } from './utils';
 
 type ScreenShotOptions = {

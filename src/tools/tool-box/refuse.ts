@@ -1,8 +1,8 @@
 import Style from '@screenshots/theme/refuse.module.scss';
 import refuse from '@screenshots/assets/images/refuse.svg';
 import { AnyFun } from '@screenshots/utils';
-import BaseBox from '../baseBox';
-import CutoutBox from '../cutout-box/cutoutBox';
+import BaseBox from '../base-box';
+import CutoutBox from '../cutout-box';
 import { operateHistory } from '../canvas';
 
 class Refuse extends BaseBox {

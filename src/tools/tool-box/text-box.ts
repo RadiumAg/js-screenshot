@@ -1,7 +1,7 @@
 import Style from '@screenshots/theme/text-box.module.scss';
 import textBox from '@screenshots/assets/images/text-box.svg';
-import BaseBox from '../baseBox';
-import CutoutBox from '../cutout-box/cutoutBox';
+import BaseBox from '../base-box';
+import CutoutBox from '../cutout-box';
 import {
   activeTarget,
   dotControllerSize,
@@ -12,6 +12,12 @@ import {
   setIsLock,
 } from '../canvas';
 
+/**
+ * 文字
+ *
+ * @class TextBox
+ * @extends {BaseBox}
+ */
 class TextBox extends BaseBox {
   constructor(private cutoutBox: CutoutBox) {
     super();

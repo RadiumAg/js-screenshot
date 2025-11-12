@@ -1,9 +1,15 @@
 import Style from '@screenshots/theme/save.module.scss';
 import save from '@screenshots/assets/images/save.svg';
 import { __isDev__, useDownLoad } from '@screenshots/utils';
-import BaseBox from '../baseBox';
-import CutoutBox from '../cutout-box/cutoutBox';
+import BaseBox from '../base-box';
+import CutoutBox from '../cutout-box';
 
+/**
+ * 保存
+ *
+ * @class Save
+ * @extends {BaseBox}
+ */
 class Save extends BaseBox {
   constructor(private cutoutBox: CutoutBox) {
     super();

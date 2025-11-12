@@ -1,6 +1,6 @@
 import Style from '@screenshots/theme/pen.module.scss';
 import pen from '@screenshots/assets/images/pen.svg';
-import BaseBox from '../baseBox';
+import BaseBox from '../base-box';
 import {
   activeTarget,
   dotControllerSize,
@@ -9,8 +9,14 @@ import {
   setActiveTarget,
   setIsLock,
 } from '../canvas';
-import CutoutBox from '../cutout-box/cutoutBox';
+import CutoutBox from '../cutout-box';
 
+/**
+ * 画笔
+ *
+ * @class Pen
+ * @extends {BaseBox}
+ */
 class Pen extends BaseBox {
   constructor(private cutoutBox: CutoutBox) {
     super();

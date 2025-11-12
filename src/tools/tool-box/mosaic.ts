@@ -1,6 +1,6 @@
 import Style from '@screenshots/theme/mosaic.module.scss';
 import mosaic from '@screenshots/assets/images/mosaic.svg';
-import BaseBox from '../baseBox';
+import BaseBox from '../base-box';
 import {
   activeTarget,
   drawCanvasElement,
@@ -8,8 +8,14 @@ import {
   setActiveTarget,
   setIsLock,
 } from '../canvas';
-import CutoutBox from '../cutout-box/cutoutBox';
+import CutoutBox from '../cutout-box';
 
+/**
+ * 马赛克
+ *
+ * @class Mosaic
+ * @extends {BaseBox}
+ */
 class Mosaic extends BaseBox {
   constructor(private cutoutBox: CutoutBox) {
     super();

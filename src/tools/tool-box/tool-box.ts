@@ -1,14 +1,21 @@
 import { animateThrottleFn } from '@screenshots/utils';
 import Style from '@screenshots/theme/tool-box.module.scss';
-import BaseBox from '../baseBox';
-import CutoutBox from '../cutout-box/cutoutBox';
+import BaseBox from '../base-box';
+import CutoutBox from '../cutout-box';
 import Pen from './pen';
 import Save from './save';
-import TextBox from './textBox';
+import TextBox from './text-box';
 import Refuse from './refuse';
 import Arrow from './arrow';
 import Mosaic from './mosaic';
 
+/**
+ *
+ * 外框
+ *
+ * @class ToolBox
+ * @extends {BaseBox}
+ */
 class ToolBox extends BaseBox {
   constructor(private cutoutBox: CutoutBox) {
     super();

@@ -1,6 +1,6 @@
 import { animateThrottleFn } from '@screenshots/utils';
 import Style from '@screenshots/theme/dot.controller.module.scss';
-import BaseBox from '../baseBox';
+import BaseBox from '../base-box';
 import {
   activeTarget,
   dotControllerSize,
@@ -9,7 +9,7 @@ import {
   setActiveTarget,
   setFirstInit,
 } from '../canvas';
-import CutoutBox from './cutoutBox';
+import CutoutBox from '.';
 
 type UpdateAxisCallback = (
   x: number,
