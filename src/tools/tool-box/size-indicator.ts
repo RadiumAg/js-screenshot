@@ -47,6 +47,11 @@ class SizeIndicator extends BaseBox {
       this.observerArray.push(observer);
     };
 
+    /**
+     *
+     * 监听cutoutBox尺寸变化
+     *
+     */
     const sizeObserver = () => {
       this.cutoutBox.sizeObserverArray.push((width, height) => {
         if (this.el == null)

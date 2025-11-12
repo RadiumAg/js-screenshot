@@ -1,6 +1,10 @@
 @use './common.scss' as common;
 
 .size-indicator {
-    color: #fff;
+    color: #000;
     position: fixed;
+    padding: 0 8px;
+    border-radius: 4px;
+    background-color: #fff;
+    transform: translateY(calc(-100% - 10px));
 }
