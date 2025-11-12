@@ -134,13 +134,18 @@ function getBuildConfig(format: ModuleFormat) {
   return buildConfig;
 }
 
+/**
+ *
+ * 清理dist
+ *
+ */
 async function cleanDist() {
   const distPath = outputDist;
   try {
     await fs.rm(distPath, { recursive: true, force: true });
     console.log('🗑️  Cleaned dist directory');
   }
-  catch (error) {
+  catch {
     // ignore error
   }
 }
