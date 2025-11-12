@@ -1,6 +1,6 @@
 import type CutoutBox from '.';
 import Style from '@screenshots/theme/dot-controller.module.scss';
-import { animateThrottleFn } from '@screenshots/utils';
+import { animateThrottleFn, copyWithGettersAndSetters } from '@screenshots/utils';
 import BaseBox from '../base-box';
 import {
   activeTarget,
@@ -29,15 +29,14 @@ class DotController extends BaseBox {
 
     this.cursor = cursor;
     this.cutoutBox = cutoutBox;
+    this.width = dotControllerSize;
+    this.height = dotControllerSize;
     this.initDotController();
-
     this.initEvent();
     this.updateAxiscallback = updateAxiscallback;
   }
 
   el: HTMLDivElement | null = null;
-  width = dotControllerSize;
-  height = dotControllerSize;
 
   private oldX = 0;
   private oldY = 0;
@@ -86,10 +85,7 @@ class DotController extends BaseBox {
         oldClientX = event.clientX;
         oldClientY = event.clientY;
 
-        this.oldCutoutBox = {
-          ...this.cutoutBox,
-          ...Object.getPrototypeOf(this.cutoutBox),
-        };
+        this.oldCutoutBox = copyWithGettersAndSetters(this.cutoutBox);
 
         isMouseDown = true;
         setActiveTarget(this);

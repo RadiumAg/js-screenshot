@@ -13,8 +13,12 @@ abstract class BaseBox {
   }
 
   set width(value: number) {
+    const oldWidth = this.__width;
     this.__width = value;
-    this.sizeObserverCallback();
+
+    if (value !== oldWidth) {
+      this.sizeObserverCallback();
+    }
   }
 
   get height() {
@@ -22,8 +26,14 @@ abstract class BaseBox {
   }
 
   set height(value: number) {
+    const oldHeight = this.__height;
     this.__height = value;
-    this.sizeObserverCallback();
+
+    console.log('[DEBUG] height', value);
+
+    if (value !== oldHeight) {
+      this.sizeObserverCallback();
+    }
   }
 
   protected context = drawCanvasElement.getContext('2d', {
