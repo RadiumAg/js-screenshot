@@ -7,6 +7,7 @@ import Mosaic from './mosaic';
 import Pen from './pen';
 import Refuse from './refuse';
 import Save from './save';
+import SizeIndicator from './size-indicator';
 import TextBox from './text-box';
 
 /**
@@ -45,6 +46,7 @@ class ToolBox extends BaseBox {
     const arrow = new Arrow(this.cutoutBox);
     const textBox = new TextBox(this.cutoutBox);
     const mosaic = new Mosaic(this.cutoutBox);
+    const sizeIndicator = new SizeIndicator(this.cutoutBox);
 
     const refuse = new Refuse(this.cutoutBox, [
       pen.destroy,
@@ -52,6 +54,7 @@ class ToolBox extends BaseBox {
       arrow.destroy,
       mosaic.destroy,
       textBox.destroy,
+      sizeIndicator.destroy,
     ]);
 
     pen.initPen();
@@ -60,6 +63,7 @@ class ToolBox extends BaseBox {
     textBox.initTextBox();
     arrow.initArrow();
     mosaic.initMosaic();
+    sizeIndicator.initSizeIndicator();
 
     this.el.append(
       ...([

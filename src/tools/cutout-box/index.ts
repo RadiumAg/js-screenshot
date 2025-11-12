@@ -577,12 +577,12 @@ class CutoutBox extends BaseBox {
     this.width = drawCanvasElement.width;
     this.height = drawCanvasElement.height;
 
-    this.toolBox = new ToolBox(this);
-    this.toolBox.initToolBox();
-
     this.initEvent();
     this.initDotControllerArray();
     this.updatePosition();
+
+    this.toolBox = new ToolBox(this);
+    this.toolBox.initToolBox();
 
     drawCanvasElement.style.cursor = 'move';
   }

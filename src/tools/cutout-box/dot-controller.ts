@@ -1,5 +1,5 @@
 import type CutoutBox from '.';
-import Style from '@screenshots/theme/dot.controller.module.scss';
+import Style from '@screenshots/theme/dot-controller.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
 import BaseBox from '../base-box';
 import {
