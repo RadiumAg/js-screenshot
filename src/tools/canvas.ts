@@ -16,20 +16,20 @@ class OperateHistory extends Array<ImageData> {
 
   prev() {
     if (this.currentHistoryIndex === 0) {
-      return operateHistory[this.currentHistoryIndex];
+      return this[this.currentHistoryIndex];
     }
 
     this.currentHistoryIndex--;
-    return operateHistory[this.currentHistoryIndex];
+    return this[this.currentHistoryIndex];
   }
 
   next() {
     if (this.currentHistoryIndex === this.length) {
-      return operateHistory[this.currentHistoryIndex];
+      return this[this.currentHistoryIndex];
     }
 
     this.currentHistoryIndex++;
-    return operateHistory[this.currentHistoryIndex];
+    return this[this.currentHistoryIndex];
   }
 
   clear() {

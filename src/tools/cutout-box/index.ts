@@ -19,6 +19,12 @@ class CutoutBox extends BaseBox {
   dotControllerArray: DotController[] = [];
   toolBox: ToolBox | null = null;
 
+  /**
+   * 设置背景为灰色
+   *
+   * @return {*}
+   * @memberof CutoutBox
+   */
   setMask() {
     if (this.context === null)
       return;

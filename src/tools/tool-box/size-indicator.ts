@@ -14,32 +14,49 @@ class SizeIndicator extends BaseBox {
   }
 
   el: HTMLDivElement | null = null;
-  observer: MutationObserver | null = null;
+  observerArray: MutationObserver[] = [];
 
   updatePosition() {}
 
   protected initEvent() {
-    const targetNode = this.cutoutBox.dotControllerArray[0].el;
-    const config = { attributes: true };
+    /**
+     *
+     * 更新位置
+     *
+     * @return {*}
+     */
+    const positionObserver = () => {
+      const targetNode = this.cutoutBox.dotControllerArray[0].el;
+      const config = { attributes: true };
 
-    if (targetNode == null)
-      return;
-
-    // 创建一个观察器实例并传入回调函数
-    const observer = new MutationObserver(() => {
-      if (this.el == null)
+      if (targetNode == null)
         return;
 
-      const { top, left } = (targetNode as HTMLDivElement).getBoundingClientRect();
-      Object.assign(this.el?.style, {
-        top: `${top}px`,
-        left: `${left}px`,
-      });
-    });
+      const observer = new MutationObserver(() => {
+        if (this.el == null)
+          return;
 
-    // 以上述配置开始观察目标节点
-    observer.observe(targetNode, config);
-    this.observer = observer;
+        const { top, left } = (targetNode as HTMLDivElement).getBoundingClientRect();
+        Object.assign(this.el?.style, {
+          top: `${top}px`,
+          left: `${left}px`,
+        });
+      });
+
+      observer.observe(targetNode, config);
+      this.observerArray.push(observer);
+    };
+
+    const sizeObserver = () => {
+      this.cutoutBox.sizeObserverArray.push((width, height) => {
+        if (this.el == null)
+          return;
+        this.el.textContent = `${width} * ${height}`;
+      });
+    };
+
+    positionObserver();
+    sizeObserver();
   }
 
   initSizeIndicator() {
@@ -51,7 +68,9 @@ class SizeIndicator extends BaseBox {
 
   destroy() {
     this.el?.remove();
-    this.observer?.disconnect();
+    this.observerArray.forEach((ob) => {
+      ob.disconnect();
+    });
   }
 }
 

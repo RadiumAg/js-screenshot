@@ -1,10 +1,30 @@
+import type { AnyFun } from '@screenshots/utils';
 import { drawCanvasElement, sourceCanvasElement } from './canvas';
 
 abstract class BaseBox {
   x = 0;
   y = 0;
-  width = 0;
-  height = 0;
+  sizeObserverArray: AnyFun[] = [];
+  private __width = 0;
+  private __height = 0;
+
+  get width() {
+    return this.__width;
+  }
+
+  set width(value: number) {
+    this.__width = value;
+    this.sizeObserverCallback();
+  }
+
+  get height() {
+    return this.__height;
+  }
+
+  set height(value: number) {
+    this.__height = value;
+    this.sizeObserverCallback();
+  }
 
   protected context = drawCanvasElement.getContext('2d', {
     willReadFrequently: true,
@@ -56,6 +76,10 @@ abstract class BaseBox {
       && !this.isOutTop(minY, y)
       && !this.isOutBottom(maxY, y)
     );
+  }
+
+  sizeObserverCallback() {
+    this.sizeObserverArray.forEach(ob => ob?.(this.width, this.height));
   }
 
   abstract updatePosition(...args: any[]): void;
