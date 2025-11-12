@@ -4,6 +4,7 @@ import type {
   RollupOptions,
   RollupWatchOptions,
 } from 'rollup';
+import fs from 'node:fs/promises';
 import { resolve } from 'node:path';
 import process from 'node:process';
 import alias from '@rollup/plugin-alias';
@@ -16,6 +17,8 @@ import {
 } from 'rollup';
 import postcss from 'rollup-plugin-postcss';
 import { getArgs } from './util';
+
+const outputDist = resolve(__dirname, '../dist');
 
 /**
  * build 入口函数
@@ -57,21 +60,21 @@ function getBuildConfig(format: ModuleFormat) {
   const output = {
     esm: {
       format: 'esm',
-      dir: resolve(__dirname, '../dist/esm'),
+      dir: resolve(outputDist, './esm'),
       globals: { html2canvas: 'html2canvas' },
       preserveModules: true,
       preserveModulesRoot: 'src',
     },
     cjs: {
       format: 'cjs',
-      dir: resolve(__dirname, '../dist/cjs'),
+      dir: resolve(outputDist, './cjs'),
       globals: { html2canvas: 'html2canvas' },
       preserveModules: true,
       preserveModulesRoot: 'src',
     },
     iife: {
       format: 'iife',
-      file: resolve(__dirname, '../dist/iife/index.js'),
+      file: resolve(outputDist, './iife/index.js'),
       globals: { html2canvas: 'html2canvas' },
     },
   } as Record<string, OutputOptions>;
@@ -117,7 +120,7 @@ function getBuildConfig(format: ModuleFormat) {
           resolve(__dirname, './type.d.ts'),
           resolve(__dirname, '../src/**/*.ts'),
         ],
-        exclude: ['node_modules'],
+        exclude: ['node_modules', '../script', '../playground'],
       }),
       replace({
         'preventAssignment': true,
@@ -131,6 +134,19 @@ function getBuildConfig(format: ModuleFormat) {
   return buildConfig;
 }
 
-build('esm');
-build('iife');
-build('cjs');
+async function cleanDist() {
+  const distPath = outputDist;
+  try {
+    await fs.rm(distPath, { recursive: true, force: true });
+    console.log('🗑️  Cleaned dist directory');
+  }
+  catch (error) {
+    // ignore error
+  }
+}
+
+cleanDist().then(() => {
+  build('esm');
+  build('iife');
+  build('cjs');
+});
