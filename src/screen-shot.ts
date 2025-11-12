@@ -1,15 +1,6 @@
-import {
-  setDrawCanvasElement,
-  setSourceCanvasElement,
-  setVideoElement,
-} from './tools/canvas';
 import CutoutBox from './tools/cutout-box';
-import { __isDev__ } from './utils';
-
-type ScreenShotOptions = {
-  mode?: 'media';
-  afterFinished?: () => void;
-};
+import { __isDev__, ScreenShotOptions } from './utils';
+import { setDrawCanvasElement, setSourceCanvasElement, setVideoElement } from './tools/canvas';
 
 /**
  * 创建canvas
@@ -40,7 +31,7 @@ function createVideoElement() {
 
 async function displayMediaMode() {
   let resolveFn: (value: unknown) => void;
-  const promise = new Promise(resolve => {
+  const promise = new Promise((resolve) => {
     resolveFn = resolve;
   });
 
@@ -61,10 +52,7 @@ async function displayMediaMode() {
   videoElement.play();
 
   function updateCanvas() {
-    if (
-      sourceContext &&
-      videoElement.readyState === videoElement.HAVE_ENOUGH_DATA
-    ) {
+    if (sourceContext && videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
       sourceContext.drawImage(videoElement, 0, 0);
       return;
     }

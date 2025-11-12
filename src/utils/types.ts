@@ -1,3 +1,8 @@
 type AnyFun = (...args: any[]) => any;
 
-export type { AnyFun };
+type ScreenShotOptions = {
+  mode?: 'media';
+  afterFinished?: () => void;
+};
+
+export type { AnyFun, ScreenShotOptions };

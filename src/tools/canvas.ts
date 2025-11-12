@@ -41,8 +41,8 @@ class OperateHistory extends Array<ImageData> {
     const canvasElement = document.createElement('canvas') as HTMLCanvasElement;
     const context = canvasElement.getContext('2d');
     context?.putImageData(this[index], 0, 0);
-    const blob = await new Promise<Blob>(resolve => {
-      canvasElement.toBlob(data => {
+    const blob = await new Promise<Blob>((resolve) => {
+      canvasElement.toBlob((data) => {
         if (data) resolve(data);
       });
     });
@@ -61,14 +61,7 @@ let videoElement: HTMLVideoElement;
 let drawCanvasElement: HTMLCanvasElement;
 // Canvas for original screenshot
 let sourceCanvasElement: HTMLCanvasElement;
-let activeTarget:
-  | CutoutBox
-  | DotController
-  | Pen
-  | TextBox
-  | Arrow
-  | Mosaic
-  | null;
+let activeTarget: CutoutBox | DotController | Pen | TextBox | Arrow | Mosaic | null;
 
 const dotControllerSize = 10;
 
