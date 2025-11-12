@@ -1,11 +1,12 @@
-import CutoutBox from './tools/cutout-box';
-import { __isDev__, ScreenShotOptions } from './utils';
+import type { ScreenShotOptions } from './utils';
 import { setDrawCanvasElement, setSourceCanvasElement, setVideoElement } from './tools/canvas';
+import CutoutBox from './tools/cutout-box';
+import { __isDev__ } from './utils';
 
 /**
  * 创建canvas
  *
- * @returns
+ * @returns createCanvas
  */
 function createCanvas() {
   const canvas = document.createElement('canvas');

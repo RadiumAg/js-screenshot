@@ -1,7 +1,8 @@
-import { defineConfig } from 'eslint/config';
+// eslint.config.mjs
+import antfu from '@antfu/eslint-config'
 
-export default defineConfig([
-  {
-    extends: ['@raag/eslint-config-vue'],
+export default antfu({
+  rules: {
+    'style/semi': 'off',
   },
-]);
+})
