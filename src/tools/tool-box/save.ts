@@ -1,8 +1,8 @@
-import Style from '@screenshots/theme/save.module.scss';
+import type CutoutBox from '../cutout-box';
 import save from '@screenshots/assets/images/save.svg';
+import Style from '@screenshots/theme/save.module.scss';
 import { __isDev__, useDownLoad } from '@screenshots/utils';
 import BaseBox from '../base-box';
-import CutoutBox from '../cutout-box';
 
 /**
  * 保存
@@ -50,8 +50,9 @@ class Save extends BaseBox {
       }
 
       screenCanvas.toBlob(
-        blob => {
-          if (!blob) return;
+        (blob) => {
+          if (!blob)
+            return;
           const url = URL.createObjectURL(blob);
           download('截图', url);
         },

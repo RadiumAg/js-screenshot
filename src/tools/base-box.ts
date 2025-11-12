@@ -41,7 +41,7 @@ abstract class BaseBox {
    * @param {number} maxY
    * @param {number} x
    * @param {number} y
-   * @return {*} 
+   * @return {*}
    * @memberof BaseBox
    */
   isCurrentArea(
@@ -53,10 +53,10 @@ abstract class BaseBox {
     y: number,
   ) {
     return (
-      !this.isOutLeft(minX, x) &&
-      !this.isOutRight(maxX, x) &&
-      !this.isOutTop(minY, y) &&
-      !this.isOutBottom(maxY, y)
+      !this.isOutLeft(minX, x)
+      && !this.isOutRight(maxX, x)
+      && !this.isOutTop(minY, y)
+      && !this.isOutBottom(maxY, y)
     );
   }
 

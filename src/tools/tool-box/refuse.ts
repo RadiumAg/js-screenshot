@@ -1,8 +1,8 @@
-import Style from '@screenshots/theme/refuse.module.scss';
+import type { AnyFun } from '@screenshots/utils';
+import type CutoutBox from '../cutout-box';
 import refuse from '@screenshots/assets/images/refuse.svg';
-import { AnyFun } from '@screenshots/utils';
+import Style from '@screenshots/theme/refuse.module.scss';
 import BaseBox from '../base-box';
-import CutoutBox from '../cutout-box';
 import { operateHistory } from '../canvas';
 
 class Refuse extends BaseBox {
@@ -13,14 +13,14 @@ class Refuse extends BaseBox {
   el: HTMLDivElement | null = null;
 
   updatePosition(): void {
-    /** empty **/
+    /** empty */
   }
 
   protected initEvent(): void {
     this.el?.addEventListener('click', () => {
       this.cutoutBox.destroy();
       operateHistory.clear();
-      this.destoryArray.forEach(fn => {
+      this.destoryArray.forEach((fn) => {
         fn();
       });
     });

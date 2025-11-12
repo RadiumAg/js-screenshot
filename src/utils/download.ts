@@ -1,4 +1,4 @@
-const useDownLoad = () => {
+function useDownLoad() {
   return (name: string, url: string) => {
     const aElement = document.createElement('a');
     aElement.href = url;
@@ -6,6 +6,6 @@ const useDownLoad = () => {
 
     aElement.click();
   };
-};
+}
 
 export { useDownLoad };

@@ -1,6 +1,6 @@
-import { readFileSync } from 'fs';
-import path from 'path';
-import { Plugin } from 'rollup';
+import type { Plugin } from 'rollup';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 
 function svgResolverPlugin(): Plugin {
   return {

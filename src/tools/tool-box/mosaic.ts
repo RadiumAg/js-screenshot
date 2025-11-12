@@ -1,5 +1,6 @@
-import Style from '@screenshots/theme/mosaic.module.scss';
+import type CutoutBox from '../cutout-box';
 import mosaic from '@screenshots/assets/images/mosaic.svg';
+import Style from '@screenshots/theme/mosaic.module.scss';
 import BaseBox from '../base-box';
 import {
   activeTarget,
@@ -8,7 +9,6 @@ import {
   setActiveTarget,
   setIsLock,
 } from '../canvas';
-import CutoutBox from '../cutout-box';
 
 /**
  * 马赛克
@@ -35,8 +35,9 @@ class Mosaic extends BaseBox {
       setActiveTarget(this);
     });
 
-    drawCanvasElement.addEventListener('mousedown', event => {
-      if (activeTarget !== this) return;
+    drawCanvasElement.addEventListener('mousedown', (event) => {
+      if (activeTarget !== this)
+        return;
 
       if (
         this.isCurrentArea(
@@ -54,15 +55,17 @@ class Mosaic extends BaseBox {
       }
     });
 
-    drawCanvasElement.addEventListener('mousemove', event => {
-      if (!this.isDrawing || activeTarget !== this) return;
+    drawCanvasElement.addEventListener('mousemove', (event) => {
+      if (!this.isDrawing || activeTarget !== this)
+        return;
 
       // Apply mosaic at mouse position
       this.applyMosaic(event.clientX, event.clientY);
     });
 
     drawCanvasElement.addEventListener('mouseup', () => {
-      if (!this.isDrawing || activeTarget !== this) return;
+      if (!this.isDrawing || activeTarget !== this)
+        return;
 
       this.isDrawing = false;
       // Save to history
@@ -134,11 +137,11 @@ class Mosaic extends BaseBox {
     width: number,
     height: number,
     totalWidth: number,
-  ): { r: number; g: number; b: number; a: number } {
-    let r = 0,
-      g = 0,
-      b = 0,
-      a = 0;
+  ): { r: number, g: number, b: number, a: number } {
+    let r = 0;
+    let g = 0;
+    let b = 0;
+    let a = 0;
     let count = 0;
 
     for (let y = 0; y < height; y++) {
@@ -165,7 +168,7 @@ class Mosaic extends BaseBox {
     y: number,
     width: number,
     height: number,
-    color: { r: number; g: number; b: number; a: number },
+    color: { r: number, g: number, b: number, a: number },
   ) {
     this.context.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${
       color.a / 255

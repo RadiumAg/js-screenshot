@@ -1,4 +1,4 @@
-const getArgs = () => {
+function getArgs() {
   const args = process.argv.slice(2);
   const parsedArgs: Record<string, any> = {};
 
@@ -10,6 +10,6 @@ const getArgs = () => {
   }
 
   return parsedArgs;
-};
+}
 
 export { getArgs };

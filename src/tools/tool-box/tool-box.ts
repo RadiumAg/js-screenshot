@@ -1,13 +1,13 @@
-import { animateThrottleFn } from '@screenshots/utils';
+import type CutoutBox from '../cutout-box';
 import Style from '@screenshots/theme/tool-box.module.scss';
+import { animateThrottleFn } from '@screenshots/utils';
 import BaseBox from '../base-box';
-import CutoutBox from '../cutout-box';
-import Pen from './pen';
-import Save from './save';
-import TextBox from './text-box';
-import Refuse from './refuse';
 import Arrow from './arrow';
 import Mosaic from './mosaic';
+import Pen from './pen';
+import Refuse from './refuse';
+import Save from './save';
+import TextBox from './text-box';
 
 /**
  *
@@ -25,7 +25,8 @@ class ToolBox extends BaseBox {
   el: HTMLDivElement | null = null;
 
   updatePosition(x: number, y: number) {
-    if (!this.el) return;
+    if (!this.el)
+      return;
     this.x = x;
     this.y = y;
 
@@ -75,7 +76,7 @@ class ToolBox extends BaseBox {
   }
 
   protected initEvent() {
-    /** empty **/
+    /** empty */
   }
 
   destroy(): void {

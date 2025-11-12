@@ -1,34 +1,35 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "useDefineForClassFields": true,
-    "module": "ESNext",
+    "jsx": "preserve",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "skipLibCheck": true,
+    "useDefineForClassFields": true,
+    "rootDir": ".",
+    "module": "ESNext",
 
     /* Bundler mode */
     "moduleResolution": "bundler",
+    "paths": {
+      "@screenshots/*": ["./src/*"]
+    },
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "preserve",
 
     /* Linting */
     "strict": true,
+    "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "rootDir": ".",
-    "paths": {
-      "@screenshots/*": ["./src/*"]
-    }
+    "noEmit": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
   },
+  "references": [{ "path": "./tsconfig.node.json" }],
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    
+
     "playground/src/**/*.ts",
     "playground/src/**/*.d.ts",
     "playground/src/**/*.tsx",
@@ -36,6 +37,5 @@
 
     "script/**/*.ts",
     "dist/**/*"
-  ],
-  "references": [{"path": "./tsconfig.node.json"}]
+  ]
 }

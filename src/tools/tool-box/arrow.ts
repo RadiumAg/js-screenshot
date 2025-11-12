@@ -1,5 +1,6 @@
-import Style from '@screenshots/theme/arrow.module.scss';
+import type CutoutBox from '../cutout-box';
 import arrow from '@screenshots/assets/images/arrow.svg';
+import Style from '@screenshots/theme/arrow.module.scss';
 import BaseBox from '../base-box';
 import {
   activeTarget,
@@ -8,7 +9,6 @@ import {
   setActiveTarget,
   setIsLock,
 } from '../canvas';
-import CutoutBox from '../cutout-box';
 
 /**
  * 箭头
@@ -39,7 +39,7 @@ class Arrow extends BaseBox {
       setIsLock(true);
       setActiveTarget(this);
     });
-    drawCanvasElement.addEventListener('mousedown', event => {
+    drawCanvasElement.addEventListener('mousedown', (event) => {
       /**
        * 获取原始截图的imageData
        */
@@ -50,7 +50,8 @@ class Arrow extends BaseBox {
         this.cutoutBox.height,
       );
 
-      if (activeTarget !== this) return;
+      if (activeTarget !== this)
+        return;
 
       this.isCurrentArea(
         this.cutoutBox.x,
@@ -60,21 +61,22 @@ class Arrow extends BaseBox {
         event.clientX,
         event.clientY,
       );
-      {
-        this.isDrawing = true;
-        this.startX = event.clientX;
-        this.startY = event.clientY;
+      this.isDrawing = true;
+      this.startX = event.clientX;
+      this.startY = event.clientY;
 
-        this.context.beginPath();
-        this.context.strokeStyle = this.arrowColor;
-        this.context.lineWidth = this.arrowWidth;
-      }
+      this.context.beginPath();
+      this.context.strokeStyle = this.arrowColor;
+      this.context.lineWidth = this.arrowWidth;
     });
 
-    drawCanvasElement.addEventListener('mousemove', event => {
-      if (this.firstScreenShotImageData === null) return;
-      if (!this.isDrawing) return;
-      if (activeTarget !== this) return;
+    drawCanvasElement.addEventListener('mousemove', (event) => {
+      if (this.firstScreenShotImageData === null)
+        return;
+      if (!this.isDrawing)
+        return;
+      if (activeTarget !== this)
+        return;
 
       this.context.putImageData(
         this.firstScreenShotImageData,
@@ -86,7 +88,8 @@ class Arrow extends BaseBox {
     });
 
     drawCanvasElement.addEventListener('mouseup', () => {
-      if (!this.isDrawing || activeTarget !== this) return;
+      if (!this.isDrawing || activeTarget !== this)
+        return;
 
       this.isDrawing = false;
 

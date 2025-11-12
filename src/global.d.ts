@@ -1,7 +1,7 @@
 interface Window {
-  operateHistory: ImageData[];
+  operateHistory: ImageData[]
 }
 
 interface DisplayMediaStreamOptions {
-  preferCurrentTab?: boolean;
+  preferCurrentTab?: boolean
 }

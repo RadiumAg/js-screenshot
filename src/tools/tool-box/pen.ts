@@ -1,5 +1,6 @@
-import Style from '@screenshots/theme/pen.module.scss';
+import type CutoutBox from '../cutout-box';
 import pen from '@screenshots/assets/images/pen.svg';
+import Style from '@screenshots/theme/pen.module.scss';
 import BaseBox from '../base-box';
 import {
   activeTarget,
@@ -9,7 +10,6 @@ import {
   setActiveTarget,
   setIsLock,
 } from '../canvas';
-import CutoutBox from '../cutout-box';
 
 /**
  * 画笔
@@ -44,8 +44,9 @@ class Pen extends BaseBox {
       setActiveTarget(this);
     });
 
-    drawCanvasElement.addEventListener('mousemove', event => {
-      if (activeTarget !== this) return;
+    drawCanvasElement.addEventListener('mousemove', (event) => {
+      if (activeTarget !== this)
+        return;
 
       if (
         this.isCurrentArea(
@@ -55,8 +56,8 @@ class Pen extends BaseBox {
           this.cutoutBox.y + this.cutoutBox.height - dotControllerSize / 2,
           event.clientX,
           event.clientY,
-        ) &&
-        isMouseDown
+        )
+        && isMouseDown
       ) {
         this.context.lineWidth = 15;
         this.context.lineCap = 'round';
@@ -65,8 +66,9 @@ class Pen extends BaseBox {
       }
     });
 
-    drawCanvasElement.addEventListener('mousedown', event => {
-      if (activeTarget !== this) return;
+    drawCanvasElement.addEventListener('mousedown', (event) => {
+      if (activeTarget !== this)
+        return;
 
       if (
         this.isCurrentArea(
@@ -84,7 +86,8 @@ class Pen extends BaseBox {
         this.context.strokeStyle = 'blue';
         this.context.beginPath();
         this.context.moveTo(event.clientX, event.clientY);
-      } else {
+      }
+      else {
         drawCanvasElement.style.cursor = '';
       }
     });

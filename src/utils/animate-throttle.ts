@@ -1,14 +1,15 @@
-import { AnyFun } from './types';
+import type { AnyFun } from './types';
 
-const animateThrottleFn = (fn: AnyFun) => {
+function animateThrottleFn(fn: AnyFun) {
   let isFinished = false;
 
   return (...args: any[]) => {
     let resolveFn: (value: unknown) => void;
-    const promise = new Promise(resolve => {
+    const promise = new Promise((resolve) => {
       resolveFn = resolve;
     });
-    if (isFinished) return;
+    if (isFinished)
+      return;
     isFinished = true;
 
     requestAnimationFrame(async () => {
@@ -19,6 +20,6 @@ const animateThrottleFn = (fn: AnyFun) => {
 
     return promise;
   };
-};
+}
 
 export { animateThrottleFn };

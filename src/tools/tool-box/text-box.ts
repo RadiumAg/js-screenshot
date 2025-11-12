@@ -1,7 +1,7 @@
-import Style from '@screenshots/theme/text-box.module.scss';
+import type CutoutBox from '../cutout-box';
 import textBox from '@screenshots/assets/images/text-box.svg';
+import Style from '@screenshots/theme/text-box.module.scss';
 import BaseBox from '../base-box';
-import CutoutBox from '../cutout-box';
 import {
   activeTarget,
   dotControllerSize,
@@ -30,6 +30,7 @@ class TextBox extends BaseBox {
     paddingTopBottom: 6,
     paddingLeftRight: 10,
   };
+
   el: HTMLDivElement | null = null;
   preTextarea: HTMLDivElement | null = null;
   fontSize = 20;
@@ -61,11 +62,11 @@ class TextBox extends BaseBox {
       this.context.fillText(
         stringValue,
         clientX - this.shifting.x + this.shifting.paddingLeftRight * 2,
-        clientY -
-          this.shifting.y +
-          this.renderIndex * 20 +
-          this.shifting.paddingTopBottom +
-          this.fontSize,
+        clientY
+        - this.shifting.y
+        + this.renderIndex * 20
+        + this.shifting.paddingTopBottom
+        + this.fontSize,
       );
     const stringValue = textBoxValue.slice(startIndex, endIndex);
 
@@ -86,7 +87,8 @@ class TextBox extends BaseBox {
         startIndex,
         endIndex,
       );
-    } else {
+    }
+    else {
       endIndex++;
       this.mersureLineToCanvas(
         textBoxValue,
@@ -144,9 +146,9 @@ class TextBox extends BaseBox {
 
     const isInRight = !this.isOutRight(
       this.cutoutBox.x + this.cutoutBox.width - dotControllerSize / 2,
-      actualClientX +
-        this.shifting.minWidth +
-        this.shifting.paddingTopBottom * 2,
+      actualClientX
+      + this.shifting.minWidth
+      + this.shifting.paddingTopBottom * 2,
     );
 
     const isInTop = !this.isOutTop(
@@ -163,7 +165,8 @@ class TextBox extends BaseBox {
     if (!isInLeft) {
       textBoxTextarea.style.left = `${this.cutoutBox.x}px`;
       lastXy.x = this.cutoutBox.x;
-    } else {
+    }
+    else {
       textBoxTextarea.style.left = `${actualClientX}px`;
       lastXy.x = actualClientX;
     }
@@ -172,18 +175,19 @@ class TextBox extends BaseBox {
     if (!isInTop) {
       textBoxTextarea.style.top = `${this.cutoutBox.y}px`;
       lastXy.y = this.cutoutBox.y;
-    } else {
+    }
+    else {
       textBoxTextarea.style.top = `${actualClientY}px`;
       lastXy.y = actualClientY;
     }
 
     // out right
     if (!isInRight) {
-      const lastLeft =
-        this.cutoutBox.x +
-        this.cutoutBox.width -
-        this.shifting.minWidth -
-        this.shifting.paddingLeftRight * 2;
+      const lastLeft
+        = this.cutoutBox.x
+          + this.cutoutBox.width
+          - this.shifting.minWidth
+          - this.shifting.paddingLeftRight * 2;
       textBoxTextarea.style.left = `${lastLeft}px`;
       lastXy.x = lastLeft;
     }
@@ -218,11 +222,13 @@ class TextBox extends BaseBox {
       setActiveTarget(this);
     });
 
-    drawCanvasElement.addEventListener('mousedown', event => {
+    drawCanvasElement.addEventListener('mousedown', (event) => {
       this.preTextarea?.remove();
 
-      if (!isLock) return;
-      if (activeTarget !== this) return;
+      if (!isLock)
+        return;
+      if (activeTarget !== this)
+        return;
       if (
         !this.isCurrentArea(
           this.cutoutBox.x + dotControllerSize / 2,
@@ -232,8 +238,9 @@ class TextBox extends BaseBox {
           event.clientX,
           event.clientY,
         )
-      )
+      ) {
         return;
+      }
       let maxHeight = 0;
       let maxWidth = this.shifting.minWidth;
       const textBoxTextarea = document.createElement('div');
@@ -258,41 +265,41 @@ class TextBox extends BaseBox {
         operateHistory.push(imageData);
       });
 
-      textBoxTextarea.addEventListener('input', event => {
+      textBoxTextarea.addEventListener('input', (event) => {
         const currentTarget = event.currentTarget as HTMLDivElement;
         const textboxTextReact = currentTarget.getBoundingClientRect();
         if (
-          maxWidth === this.shifting.minWidth &&
-          textboxTextReact.right >= this.cutoutBox.x + this.cutoutBox.width
+          maxWidth === this.shifting.minWidth
+          && textboxTextReact.right >= this.cutoutBox.x + this.cutoutBox.width
         ) {
-          maxWidth =
-            currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2 - 20;
+          maxWidth
+            = currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2 - 20;
           currentTarget.style.whiteSpace = 'unset';
         }
 
         if (
-          !maxHeight &&
-          this.shifting.minWidth &&
-          textboxTextReact.bottom >= this.cutoutBox.y + this.cutoutBox.height
+          !maxHeight
+          && this.shifting.minWidth
+          && textboxTextReact.bottom >= this.cutoutBox.y + this.cutoutBox.height
         ) {
-          maxHeight =
-            currentTarget.scrollHeight -
-            this.shifting.paddingTopBottom * 2 -
-            60;
+          maxHeight
+            = currentTarget.scrollHeight
+              - this.shifting.paddingTopBottom * 2
+              - 60;
         }
 
         currentTarget.style.height = maxHeight
           ? `${maxHeight}`
           : `${
-              currentTarget.scrollHeight - this.shifting.paddingTopBottom * 2
-            }px`;
+            currentTarget.scrollHeight - this.shifting.paddingTopBottom * 2
+          }px`;
 
-        currentTarget.style.width =
-          maxWidth !== this.shifting.minWidth
+        currentTarget.style.width
+          = maxWidth !== this.shifting.minWidth
             ? `${maxWidth}px`
             : `${
-                currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2
-              }px`;
+              currentTarget.scrollWidth - this.shifting.paddingLeftRight * 2
+            }px`;
       });
 
       document.body.append(textBoxTextarea);

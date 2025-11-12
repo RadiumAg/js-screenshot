@@ -3,12 +3,12 @@ name: Deploy
 on:
   push:
     branches:
-      - 'main'
+      - main
   pull_request:
     types:
-      - 'opened'
-      - 'reopened'
-      - 'auto_merge_enabled'
+      - opened
+      - reopened
+      - auto_merge_enabled
     branches:
       - main
 

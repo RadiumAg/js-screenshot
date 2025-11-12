@@ -10,10 +10,11 @@ function parseArgs() {
       if (value && !value.startsWith('--')) {
         result[key] = value;
         i++;
-      } else {
+      }
+      else {
         result[key] = '';
       }
     }
   }
   return result;
-} 
+}

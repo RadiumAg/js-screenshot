@@ -1,10 +1,10 @@
 /* eslint-disable import/no-mutable-exports */
-import Pen from './tool-box/pen';
-import CutoutBox from './cutout-box';
-import DotController from './cutout-box/dot-controller';
-import TextBox from './tool-box/text-box';
-import Arrow from './tool-box/arrow';
-import Mosaic from './tool-box/mosaic';
+import type CutoutBox from './cutout-box';
+import type DotController from './cutout-box/dot-controller';
+import type Arrow from './tool-box/arrow';
+import type Mosaic from './tool-box/mosaic';
+import type Pen from './tool-box/pen';
+import type TextBox from './tool-box/text-box';
 
 class OperateHistory extends Array<ImageData> {
   private currentHistoryIndex = -1;
@@ -43,7 +43,8 @@ class OperateHistory extends Array<ImageData> {
     context?.putImageData(this[index], 0, 0);
     const blob = await new Promise<Blob>((resolve) => {
       canvasElement.toBlob((data) => {
-        if (data) resolve(data);
+        if (data)
+          resolve(data);
       });
     });
 
@@ -90,18 +91,18 @@ function setIsLock(isLockValue: boolean) {
 }
 
 export {
-  isLock,
   activeTarget,
-  isFirstInit,
-  videoElement,
-  drawCanvasElement,
   dotControllerSize,
+  drawCanvasElement,
+  isFirstInit,
+  isLock,
   operateHistory,
-  sourceCanvasElement,
-  setIsLock,
-  setFirstInit,
-  setVideoElement,
-  setDrawCanvasElement,
   setActiveTarget,
+  setDrawCanvasElement,
+  setFirstInit,
+  setIsLock,
   setSourceCanvasElement,
+  setVideoElement,
+  sourceCanvasElement,
+  videoElement,
 };

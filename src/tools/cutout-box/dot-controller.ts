@@ -1,5 +1,6 @@
-import { animateThrottleFn } from '@screenshots/utils';
+import type CutoutBox from '.';
 import Style from '@screenshots/theme/dot.controller.module.scss';
+import { animateThrottleFn } from '@screenshots/utils';
 import BaseBox from '../base-box';
 import {
   activeTarget,
@@ -9,7 +10,6 @@ import {
   setActiveTarget,
   setFirstInit,
 } from '../canvas';
-import CutoutBox from '.';
 
 type UpdateAxisCallback = (
   x: number,
@@ -34,6 +34,7 @@ class DotController extends BaseBox {
     this.initEvent();
     this.updateAxiscallback = updateAxiscallback;
   }
+
   el: HTMLDivElement | null = null;
   width = dotControllerSize;
   height = dotControllerSize;
@@ -51,8 +52,9 @@ class DotController extends BaseBox {
     let isMouseDown = false;
     const updateAxis = animateThrottleFn(this.updateAxis.bind(this));
 
-    drawCanvasElement.addEventListener('mousemove', event => {
-      if (activeTarget !== null && activeTarget !== this) return;
+    drawCanvasElement.addEventListener('mousemove', (event) => {
+      if (activeTarget !== null && activeTarget !== this)
+        return;
 
       if (isMouseDown) {
         this.x = this.oldX + event.clientX - oldClientX;
@@ -62,7 +64,7 @@ class DotController extends BaseBox {
       }
     });
 
-    this.el?.addEventListener('mousedown', event => {
+    this.el?.addEventListener('mousedown', (event) => {
       event.stopPropagation();
 
       const isFirstMoveDown = Reflect.get(event.target || {}, 'isFirstInit');
@@ -75,8 +77,8 @@ class DotController extends BaseBox {
           this.y + this.height,
           event.clientX,
           event.clientY,
-        ) ||
-        isFirstMoveDown
+        )
+        || isFirstMoveDown
       ) {
         this.oldX = this.x;
         this.oldY = this.y;
@@ -96,7 +98,8 @@ class DotController extends BaseBox {
     });
 
     this.el?.addEventListener('mouseup', () => {
-      if (activeTarget !== this) return;
+      if (activeTarget !== this)
+        return;
       operateHistory.push(
         this.context.getImageData(
           this.cutoutBox.x,
@@ -112,7 +115,8 @@ class DotController extends BaseBox {
   }
 
   updatePosition(x: number, y: number) {
-    if (this.context === null || this.el === null) return;
+    if (this.context === null || this.el === null)
+      return;
 
     this.x = x - this.width / 2;
     this.y = y - this.height / 2;
