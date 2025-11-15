@@ -69,7 +69,7 @@ class DotController extends BaseBox {
       }
     });
 
-    drawCanvasElement.addEventListener('mousemove', (event) => {
+    document.body.addEventListener('mousemove', (event) => {
       if (activeTarget !== null && activeTarget === this) {
         if (isMouseDown) {
           this.x = this.oldX + event.clientX - oldClientX;
