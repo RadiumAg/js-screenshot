@@ -57,15 +57,26 @@ class DotController extends BaseBox {
       setFirstInit(false);
     };
 
+    this.el?.addEventListener('mousemove', () => {
+      if (activeTarget == null) {
+        document.body.style.cursor = this.cursor;
+      }
+    });
+
+    this.el?.addEventListener('mouseleave', () => {
+      if (activeTarget == null) {
+        document.body.style.cursor = '';
+      }
+    });
+
     drawCanvasElement.addEventListener('mousemove', (event) => {
-      if (activeTarget !== null && activeTarget !== this)
-        return;
+      if (activeTarget !== null && activeTarget === this) {
+        if (isMouseDown) {
+          this.x = this.oldX + event.clientX - oldClientX;
+          this.y = this.oldY + event.clientY - oldClientY;
 
-      if (isMouseDown) {
-        this.x = this.oldX + event.clientX - oldClientX;
-        this.y = this.oldY + event.clientY - oldClientY;
-
-        updateAxis();
+          updateAxis();
+        }
       }
     });
 
@@ -145,7 +156,6 @@ class DotController extends BaseBox {
 
     this.el.style.width = `${this.width}px`;
     this.el.style.height = `${this.height}px`;
-    this.el.style.cursor = this.cursor;
     this.el.classList.add(Style['dot-controller']);
 
     document.body.append(this.el);

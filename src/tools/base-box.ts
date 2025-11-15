@@ -29,8 +29,6 @@ abstract class BaseBox {
     const oldHeight = this.__height;
     this.__height = value;
 
-    console.log('[DEBUG] height', value);
-
     if (value !== oldHeight) {
       this.sizeObserverCallback();
     }

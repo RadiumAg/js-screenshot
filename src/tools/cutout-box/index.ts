@@ -384,7 +384,7 @@ class CutoutBox extends BaseBox {
 
     const updatePosition = animateThrottleFn(this.updatePosition.bind(this));
 
-    drawCanvasElement.addEventListener('mousedown', (event) => {
+    document.body.addEventListener('mousedown', (event) => {
       if (isLock)
         return;
 
@@ -409,35 +409,22 @@ class CutoutBox extends BaseBox {
       }
     });
 
-    drawCanvasElement.addEventListener('mouseup', (event) => {
+    document.body.addEventListener('mouseup', () => {
       if (activeTarget !== this)
         return;
-      
+
       if (isLock)
         return;
 
       isMouseDown = false;
       setActiveTarget(null);
       setFirstInit(false);
-
-      if (
-        this.isCurrentArea(
-          this.x,
-          this.x + this.width,
-          this.y,
-          this.y + this.height,
-          event.clientX,
-          event.clientY,
-        )
-        && !isLock
-      ) {
-        drawCanvasElement.style.cursor = 'move';
-      }
     });
 
-    drawCanvasElement.addEventListener('mousemove', (event) => {
+    document.body.addEventListener('mousemove', (event) => {
       if (activeTarget !== null && activeTarget !== this)
         return;
+
       if (isLock)
         return;
 
@@ -459,7 +446,7 @@ class CutoutBox extends BaseBox {
         });
       }
 
-      if (!isFirstInit && isMouseDown) {
+      else if (isMouseDown) {
         this.x = oldX + event.clientX - oldClientX;
         this.y = oldY + event.clientY - oldClientY;
 
@@ -480,6 +467,11 @@ class CutoutBox extends BaseBox {
 
         updatePosition();
       }
+    });
+
+    drawCanvasElement.addEventListener('mousemove', (event) => {
+      if (activeTarget != null)
+        return;
 
       if (
         this.isCurrentArea(
@@ -491,14 +483,14 @@ class CutoutBox extends BaseBox {
           event.clientY,
         )
       ) {
-        drawCanvasElement.style.cursor = 'move';
+        document.body.style.cursor = 'move';
       }
       else {
-        drawCanvasElement.style.cursor = '';
+        document.body.style.cursor = '';
       }
     });
 
-    document.addEventListener('keydown', (event) => {
+    document.body.addEventListener('keydown', (event) => {
       if (event.ctrlKey && event.key === 'z') {
         const preImageData = operateHistory.prev();
 
@@ -590,8 +582,6 @@ class CutoutBox extends BaseBox {
 
     this.toolBox = new ToolBox(this);
     this.toolBox.initToolBox();
-
-    drawCanvasElement.style.cursor = 'move';
   }
 
   destroy() {
