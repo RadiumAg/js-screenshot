@@ -483,7 +483,12 @@ class CutoutBox extends BaseBox {
           event.clientY,
         )
       ) {
-        document.body.style.cursor = 'move';
+        if (isLock) {
+          document.body.style.cursor = '';
+        }
+        else {
+          document.body.style.cursor = 'move';
+        }
       }
       else {
         document.body.style.cursor = '';

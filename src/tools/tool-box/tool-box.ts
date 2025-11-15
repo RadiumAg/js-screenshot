@@ -49,12 +49,12 @@ class ToolBox extends BaseBox {
     const sizeIndicator = new SizeIndicator(this.cutoutBox);
 
     const refuse = new Refuse(this.cutoutBox, [
-      pen.destroy,
-      save.destroy,
-      arrow.destroy,
-      mosaic.destroy,
-      textBox.destroy,
-      sizeIndicator.destroy,
+      pen.destroy.bind(pen),
+      save.destroy.bind(save),
+      arrow.destroy.bind(arrow),
+      mosaic.destroy.bind(mosaic),
+      textBox.destroy.bind(textBox),
+      sizeIndicator.destroy.bind(sizeIndicator),
     ]);
 
     pen.initPen();
