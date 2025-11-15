@@ -9,8 +9,9 @@
   "engines": {
     "pnpm": ">=9"
   },
+  "type": "module",
   "scripts": {
-    "dev": "pnpm run build:dev & pnpm run -C playground dev",
+    "dev": "concurrently \"pnpm run build:dev\" \"pnpm run -C playground dev\"",
     "build:dev": "cross-env NODE_ENV=development esno ./script/build.ts --watch",
     "build": "esno ./script/build.ts",
     "build:watch": "esno ./script/build.ts --watch",
@@ -29,6 +30,7 @@
     "@rollup/plugin-terser": "^0.4.3",
     "@rollup/plugin-typescript": "^11.1.2",
     "@types/node": "^20.5.0",
+    "concurrently": "^9.2.1",
     "cross-env": "^7.0.3",
     "eslint": "^9.39.1",
     "esno": "^0.17.0",
@@ -37,6 +39,7 @@
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-scss": "^4.0.0",
     "sass": "^1.70.0",
-    "tslib": "^2.6.1"
+    "tslib": "^2.6.1",
+    "typescript": "^5.3.3"
   }
 }

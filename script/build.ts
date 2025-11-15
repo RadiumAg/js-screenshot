@@ -5,8 +5,9 @@ import type {
   RollupWatchOptions,
 } from 'rollup';
 import fs from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import alias from '@rollup/plugin-alias';
 import image from '@rollup/plugin-image';
 import replace from '@rollup/plugin-replace';
@@ -18,6 +19,8 @@ import {
 import postcss from 'rollup-plugin-postcss';
 import { getArgs } from './util';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const outputDist = resolve(__dirname, '../dist');
 
 /**

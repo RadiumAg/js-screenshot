@@ -51,6 +51,12 @@ class DotController extends BaseBox {
     let isMouseDown = false;
     const updateAxis = animateThrottleFn(this.updateAxis.bind(this));
 
+    const stopMove = () => {
+      isMouseDown = false;
+      setActiveTarget(null);
+      setFirstInit(false);
+    };
+
     drawCanvasElement.addEventListener('mousemove', (event) => {
       if (activeTarget !== null && activeTarget !== this)
         return;
@@ -96,6 +102,7 @@ class DotController extends BaseBox {
     this.el?.addEventListener('mouseup', () => {
       if (activeTarget !== this)
         return;
+
       operateHistory.push(
         this.context.getImageData(
           this.cutoutBox.x,
@@ -104,9 +111,11 @@ class DotController extends BaseBox {
           this.cutoutBox.height,
         ),
       );
-      isMouseDown = false;
-      setActiveTarget(null);
-      setFirstInit(false);
+      stopMove();
+    });
+
+    document.addEventListener('mouseup', () => {
+      stopMove();
     });
   }
 

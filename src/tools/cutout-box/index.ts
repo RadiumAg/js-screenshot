@@ -412,6 +412,7 @@ class CutoutBox extends BaseBox {
     drawCanvasElement.addEventListener('mouseup', (event) => {
       if (activeTarget !== this)
         return;
+      
       if (isLock)
         return;
 
