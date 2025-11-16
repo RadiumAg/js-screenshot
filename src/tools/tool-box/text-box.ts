@@ -58,7 +58,11 @@ class TextBox extends BaseBox {
     if (!textBoxValue) {
       return;
     }
-    const render = () =>
+    const stringValue = textBoxValue.slice(startIndex, endIndex);
+    const render = () => {
+      if (stringValue == null)
+        return;
+
       this.context.fillText(
         stringValue,
         clientX - this.shifting.x + this.shifting.paddingLeftRight * 2,
@@ -68,7 +72,7 @@ class TextBox extends BaseBox {
         + this.shifting.paddingTopBottom
         + this.fontSize,
       );
-    const stringValue = textBoxValue.slice(startIndex, endIndex);
+    };
 
     if (endIndex === textBoxValue.length) {
       render();
