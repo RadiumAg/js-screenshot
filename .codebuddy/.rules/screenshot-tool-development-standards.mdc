@@ -1,0 +1,234 @@
+---
+description: 
+alwaysApply: true
+enabled: true
+updatedAt: 2025-11-20T15:59:45.211Z
+provider: 
+---
+
+# 截图工具项目开发规范
+
+## 内存管理规范
+
+### 资源清理
+- **必须**在 `destroy()` 方法中清理所有事件监听器
+- **必须**在 `destroy()` 方法中移除所有 DOM 元素引用
+- **必须**在 `destroy()` 方法中清空对象引用，设置为 `null`
+- **禁止**在组件销毁后保留任何事件监听器
+
+### 事件监听器管理
+```typescript
+// ✅ 正确做法
+private eventListeners: Map<EventTarget, Map<string, EventListener>> = new Map();
+
+destroy() {
+  // 清理事件监听器
+  this.eventListeners.forEach((listeners, target) => {
+    listeners.forEach((listener, type) => {
+      target.removeEventListener(type, listener);
+    });
+  });
+  this.eventListeners.clear();
+  
+  // 清理 DOM 元素
+  this.el?.remove();
+  this.el = null;
+}
+
+// ❌ 错误做法
+destroy() {
+  this.el?.remove(); // 未清理事件监听器
+}
+```
+
+## 性能优化规范
+
+### 递归调用限制
+- **禁止**使用递归处理大量数据或长文本
+- **必须**使用迭代算法替代递归调用
+- **必须**对可能栈溢出的算法进行优化
+
+### 文本处理优化
+```typescript
+// ✅ 正确做法 - 使用迭代
+private measureTextToCanvas(textBoxValue: string | null, maxWidth: number) {
+  if (!textBoxValue) return;
+  
+  let currentIndex = 0;
+  const textLength = textBoxValue.length;
+  
+  while (currentIndex < textLength) {
+    // 迭代处理文本
+    // ...
+  }
+}
+
+// ❌ 错误做法 - 递归调用
+mersureLineToCanvas(textBoxValue: string | null, maxWidth: number) {
+  // 递归调用可能导致栈溢出
+  this.mersureLineToCanvas(textBoxValue, maxWidth, ...);
+}
+```
+
+## 命名规范
+
+### 方法命名
+- **必须**使用正确的英文拼写
+- **必须**使用驼峰命名法
+- **必须**使用有意义的方法名
+
+### 常量命名
+- **必须**使用大写字母和下划线命名常量
+- **禁止**在代码中使用硬编码数值
+- **必须**为魔法数字提供语义化常量
+
+```typescript
+// ✅ 正确做法
+const TEXT_BOX_BOTTOM_MARGIN = 46;
+const lastY = this.cutoutBox.y + this.cutoutBox.height - TEXT_BOX_BOTTOM_MARGIN;
+
+// ❌ 错误做法
+const lastY = this.cutoutBox.y + this.cutoutBox.height - 46; // 魔法数字
+```
+
+## 类型安全规范
+
+### 类型检查
+- **必须**使用 TypeScript 类型守卫
+- **禁止**使用强制类型转换 `as` 除非必要
+- **必须**对所有可能的 `null` 和 `undefined` 进行检查
+
+```typescript
+// ✅ 正确做法
+textBoxTextarea.addEventListener('input', (event) => {
+  const currentTarget = event.currentTarget;
+  if (!(currentTarget instanceof HTMLDivElement)) return;
+  // 安全使用 currentTarget
+});
+
+// ❌ 错误做法
+textBoxTextarea.addEventListener('input', (event) => {
+  const currentTarget = event.currentTarget as HTMLDivElement; // 强制转换
+});
+```
+
+## 调试代码规范
+
+### 调试输出
+- **禁止**在生产环境中保留 `console.log` 语句
+- **必须**使用环境变量控制调试输出
+- **建议**使用统一的日志工具
+
+```typescript
+// ✅ 正确做法
+if (process.env.NODE_ENV === 'development') {
+  console.log('[DEBUG] lastY', lastY);
+}
+
+// ❌ 错误做法
+console.log('[DEBUG] lastY', lastY); // 生产环境中的调试代码
+```
+
+## 组件生命周期规范
+
+### 组件初始化
+- **必须**在构造函数中调用 `super()`
+- **必须**在初始化方法中设置事件监听器
+- **必须**实现完整的生命周期方法
+
+### 组件销毁
+- **必须**实现 `destroy()` 方法
+- **必须**清理所有创建的资源
+- **必须**移除所有事件监听器
+
+## Canvas 操作规范
+
+### 绘图上下文
+- **必须**在绘图前检查 `context` 是否为 `null`
+- **必须**设置正确的绘图样式
+- **必须**在绘图完成后保存操作历史
+
+```typescript
+// ✅ 正确做法
+if (this.context === null) return;
+this.context.strokeStyle = 'blue';
+this.context.beginPath();
+this.context.moveTo(event.clientX, event.clientY);
+
+// 保存操作历史
+const imageData = this.context.getImageData(
+  this.cutoutBox.x,
+  this.cutoutBox.y,
+  this.cutoutBox.width,
+  this.cutoutBox.height,
+);
+operateHistory.push(imageData);
+```
+
+## 事件处理规范
+
+### 事件监听器
+- **必须**在组件销毁时移除事件监听器
+- **必须**使用 `event.stopPropagation()` 防止事件冒泡
+- **必须**检查事件目标的有效性
+
+### 鼠标事件
+- **必须**检查鼠标位置是否在有效区域内
+- **必须**处理鼠标状态（按下、移动、松开）
+- **必须**设置正确的光标样式
+
+## 代码组织规范
+
+### 导入顺序
+1. 类型导入
+2. 资源导入（图片、样式）
+3. 基类导入
+4. 工具函数导入
+
+### 类结构
+```typescript
+class ClassName extends BaseClass {
+  // 1. 构造函数
+  constructor() {}
+  
+  // 2. 公共属性
+  publicProperty: Type;
+  
+  // 3. 私有属性
+  privateProperty: Type;
+  
+  // 4. 公共方法
+  publicMethod() {}
+  
+  // 5. 私有方法
+  privateMethod() {}
+  
+  // 6. 生命周期方法
+  init() {}
+  destroy() {}
+}
+```
+
+## 错误处理规范
+
+### 异常处理
+- **必须**使用 try-catch 包装可能出错的操作
+- **必须**提供有意义的错误信息
+- **必须**在错误发生时进行适当的清理
+
+### 边界检查
+- **必须**检查数组索引的有效性
+- **必须**检查对象属性的存在性
+- **必须**检查数值的有效范围
+
+## 性能监控规范
+
+### 防抖和节流
+- **必须**对频繁触发的事件使用防抖或节流
+- **必须**对 Canvas 操作进行性能优化
+- **必须**避免不必要的重绘
+
+### 内存监控
+- **必须**定期检查内存使用情况
+- **必须**及时清理不再使用的对象
+- **必须**避免内存泄漏

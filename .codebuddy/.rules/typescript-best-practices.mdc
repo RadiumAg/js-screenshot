@@ -1,0 +1,379 @@
+---
+description: 
+alwaysApply: true
+enabled: true
+updatedAt: 2025-11-20T16:00:19.491Z
+provider: 
+---
+
+# TypeScript 最佳实践
+
+## 类型定义规范
+
+### 接口和类型
+- **必须**使用 `interface` 定义对象类型
+- **必须**使用 `type` 定义联合类型、交叉类型和复杂类型
+- **必须**为所有公共 API 提供类型定义
+
+```typescript
+// ✅ 正确做法
+interface TextBoxConfig {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+type ToolType = 'pen' | 'text' | 'arrow' | 'mosaic';
+
+// ❌ 错误做法
+// 缺少类型定义
+function createTextBox(x, y, width, height) {
+  // ...
+}
+```
+
+### 泛型使用
+- **必须**使用泛型提高代码复用性
+- **必须**为泛型参数提供约束
+- **必须**使用有意义的泛型参数名
+
+```typescript
+// ✅ 正确做法
+interface Repository<T extends { id: string }> {
+  findById(id: string): Promise<T | null>;
+  save(entity: T): Promise<T>;
+}
+
+// ❌ 错误做法
+interface Repository {
+  findById(id: string): Promise<any>; // 使用 any
+  save(entity: any): Promise<any>;
+}
+```
+
+## 空值处理规范
+
+### 可选链和空值合并
+- **必须**使用可选链操作符 `?.` 访问可能为空的属性
+- **必须**使用空值合并操作符 `??` 提供默认值
+- **必须**使用明确的类型检查
+
+```typescript
+// ✅ 正确做法
+const element = document.querySelector('.selector');
+const text = element?.textContent ?? 'default text';
+
+// ❌ 错误做法
+const element = document.querySelector('.selector');
+const text = element.textContent; // 可能为 null
+```
+
+### 类型守卫
+- **必须**使用类型守卫函数进行运行时类型检查
+- **必须**使用 `in` 操作符检查属性存在性
+- **必须**使用 `instanceof` 检查对象类型
+
+```typescript
+// ✅ 正确做法
+function isHTMLElement(element: unknown): element is HTMLElement {
+  return element instanceof HTMLElement;
+}
+
+if (isHTMLElement(element)) {
+  // 安全使用 element
+}
+
+// ❌ 错误做法
+const htmlElement = element as HTMLElement; // 强制转换不安全
+```
+
+## 函数定义规范
+
+### 参数类型
+- **必须**为所有函数参数提供类型
+- **必须**为函数返回值提供类型
+- **必须**使用明确的参数类型
+
+```typescript
+// ✅ 正确做法
+function calculateArea(width: number, height: number): number {
+  return width * height;
+}
+
+// ❌ 错误做法
+function calculateArea(width, height) {
+  return width * height;
+}
+```
+
+### 可选参数
+- **必须**使用 `?` 标记可选参数
+- **必须**为可选参数提供默认值
+- **必须**将可选参数放在参数列表末尾
+
+```typescript
+// ✅ 正确做法
+function createTextBox(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  text?: string
+): TextBox {
+  return new TextBox(x, y, width, height, text ?? '');
+}
+
+// ❌ 错误做法
+function createTextBox(x, y, width, height, text = '') {
+  // 缺少类型定义
+}
+```
+
+## 类定义规范
+
+### 访问修饰符
+- **必须**使用明确的访问修饰符
+- **必须**将公共接口设为 `public`
+- **必须**将内部实现设为 `private` 或 `protected`
+
+```typescript
+// ✅ 正确做法
+class TextBox {
+  public x: number;
+  private context: CanvasRenderingContext2D | null;
+  protected elements: HTMLElement[] = [];
+  
+  constructor(x: number) {
+    this.x = x;
+  }
+}
+
+// ❌ 错误做法
+class TextBox {
+  x: number; // 缺少访问修饰符
+  context; // 缺少类型和修饰符
+}
+```
+
+### 属性初始化
+- **必须**在构造函数中初始化所有属性
+- **必须**使用参数属性简化构造函数
+- **必须**为属性提供初始值
+
+```typescript
+// ✅ 正确做法
+class TextBox {
+  private elements: HTMLElement[] = [];
+  
+  constructor(
+    private x: number,
+    private y: number,
+    private width: number,
+    private height: number
+  ) {}
+}
+
+// ❌ 错误做法
+class TextBox {
+  private x: number;
+  private y: number;
+  
+  constructor() {
+    // 属性未初始化
+  }
+}
+```
+
+## 异步操作规范
+
+### Promise 使用
+- **必须**使用 `async/await` 替代 `.then()` 链
+- **必须**使用 `try/catch` 处理异步错误
+- **必须**为异步函数提供返回类型
+
+```typescript
+// ✅ 正确做法
+async function loadImage(src: string): Promise<HTMLImageElement> {
+  try {
+    const img = new Image();
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = src;
+    });
+    return img;
+  } catch (error) {
+    throw new Error(`Failed to load image: ${src}`);
+  }
+}
+
+// ❌ 错误做法
+function loadImage(src: string) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.src = src;
+  });
+}
+```
+
+## 模块化规范
+
+### 导入导出
+- **必须**使用具名导入导出
+- **必须**避免使用 `export default`
+- **必须**按功能模块组织导入
+
+```typescript
+// ✅ 正确做法
+import { TextBox, Pen, Arrow } from './tools';
+import { CanvasManager } from './canvas';
+import type { ToolConfig } from './types';
+
+export { TextBox, Pen, Arrow };
+
+// ❌ 错误做法
+import TextBox from './tools';
+import CanvasManager from './canvas';
+import * as Types from './types';
+```
+
+### 类型导入
+- **必须**使用 `import type` 导入仅用于类型的导入
+- **必须**将类型导入和值导入分开
+- **必须**避免在运行时使用类型导入
+
+```typescript
+// ✅ 正确做法
+import type { CutoutBox } from './cutout-box';
+import { CutoutBox as CutoutBoxClass } from './cutout-box';
+
+// ❌ 错误做法
+import { CutoutBox } from './cutout-box'; // 如果只用于类型
+```
+
+## 枚举和常量规范
+
+### 枚举使用
+- **必须**使用枚举定义固定值集合
+- **必须**为枚举提供字符串值
+- **必须**使用命名空间组织枚举
+
+```typescript
+// ✅ 正确做法
+enum ToolType {
+  PEN = 'pen',
+  TEXT = 'text',
+  ARROW = 'arrow',
+  MOSAIC = 'mosaic'
+}
+
+// ❌ 错误做法
+const TOOL_TYPES = {
+  PEN: 'pen',
+  TEXT: 'text',
+  ARROW: 'arrow',
+  MOSAIC: 'mosaic'
+};
+```
+
+### 常量定义
+- **必须**使用 `const` 定义常量
+- **必须**使用 `readonly` 修饰符保护对象常量
+- **必须**使用大写字母和下划线命名常量
+
+```typescript
+// ✅ 正确做法
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 600;
+
+const DEFAULT_CONFIG = {
+  fontSize: 16,
+  color: '#000000',
+  lineWidth: 2
+} as const;
+
+// ❌ 错误做法
+let canvasWidth = 800;
+const defaultConfig = {
+  fontSize: 16,
+  color: '#000000',
+  lineWidth: 2
+}; // 对象属性可变
+```
+
+## 错误处理规范
+
+### 自定义错误类
+- **必须**创建自定义错误类
+- **必须**继承自 `Error` 类
+- **必须**提供有意义的错误信息
+
+```typescript
+// ✅ 正确做法
+class CanvasError extends Error {
+  constructor(message: string, public readonly code: string) {
+    super(message);
+    this.name = 'CanvasError';
+  }
+}
+
+// ❌ 错误做法
+throw new Error('Something went wrong'); // 缺少具体信息
+```
+
+### 错误处理模式
+- **必须**使用 Result 模式处理可恢复错误
+- **必须**使用 Either 模式处理二值结果
+- **必须**避免使用异常处理控制流程
+
+```typescript
+// ✅ 正确做法
+type Result<T, E = Error> = {
+  success: true;
+  data: T;
+} | {
+  success: false;
+  error: E;
+};
+
+function safeOperation(): Result<string> {
+  try {
+    return { success: true, data: 'result' };
+  } catch (error) {
+    return { success: false, error: error as Error };
+  }
+}
+
+// ❌ 错误做法
+function operation() {
+  if (Math.random() > 0.5) {
+    throw new Error('Random error'); // 使用异常控制流程
+  }
+  return 'result';
+}
+```
+
+## 性能优化规范
+
+### 类型推断优化
+- **必须**让 TypeScript 推断简单类型
+- **必须**显式声明复杂类型
+- **必须**避免不必要的类型断言
+
+```typescript
+// ✅ 正确做法
+const message = 'Hello'; // 推断为 string
+const numbers = [1, 2, 3]; // 推断为 number[]
+
+interface ComplexData {
+  id: string;
+  items: Array<{ name: string; value: number }>;
+}
+const data: ComplexData = { /* ... */ };
+
+// ❌ 错误做法
+const message: string = 'Hello'; // 不必要的类型注解
+const data = {} as ComplexData; // 类型断言不安全
+```
