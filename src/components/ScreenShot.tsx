@@ -1,4 +1,5 @@
 import type { ScreenShotOptions } from '@screenshots/utils';
+import { useMount } from '@screenshots/hooks/useMount';
 import { __isDev__ } from '@screenshots/utils';
 import { useEffect, useState } from 'preact/hooks';
 import { ScreenshotProvider, useScreenshotContext } from './context/ScreenshotContext';
@@ -93,9 +94,9 @@ function ScreenShotInner({ options, onComplete }: ScreenShotProps) {
   };
 
   // 组件挂载时自动开始截图流程
-  useEffect(() => {
+  useMount(() => {
     startShot();
-  }, []);
+  });
 
   if (!isInitialized) {
     return null;

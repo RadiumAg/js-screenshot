@@ -6,6 +6,7 @@ import { useScreenshotContext } from './context/ScreenshotContext';
 import { DotController } from './DotController';
 import { ToolBox } from './ToolBox';
 import { SizeIndicator } from './tools/SizeIndicator';
+import { ACTIVE_TYPE } from './utils/share';
 
 export interface CutoutBoxProps {
   onComplete?: (result: any) => void
@@ -195,7 +196,7 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         oldClientRef.current = { x: event.clientX, y: event.clientY };
         oldPositionRef.current = { x: position.x, y: position.y };
         setIsMouseDown(true);
-        setActiveTarget('cutoutBox');
+        setActiveTarget(ACTIVE_TYPE.cutoutBox);
       }
     },
   );
@@ -204,7 +205,7 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
    * 处理鼠标松开事件
    */
   const handleMouseUp = useMemoizedFn(() => {
-    if (activeTarget !== 'cutoutBox')
+    if (activeTarget !== ACTIVE_TYPE.cutoutBox)
       return;
     if (isLock)
       return;
@@ -360,14 +361,7 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
       // 清理
       document.body.style.cursor = '';
     };
-  }, [
-    handleMouseDown,
-    handleMouseUp,
-    handleMouseMove,
-    handleKeyDown,
-    handleCanvasMouseMove,
-    drawCanvasElement,
-  ]);
+  }, []);
 
   // 清理函数
   useEffect(() => {

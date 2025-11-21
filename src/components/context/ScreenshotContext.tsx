@@ -1,4 +1,5 @@
 import type { ComponentChildren } from 'preact';
+import type { ACTIVE_TYPE } from '../utils/share';
 import { createContext } from 'preact';
 import { useContext, useMemo, useRef, useState } from 'preact/hooks';
 
@@ -51,7 +52,7 @@ class OperateHistory extends Array<ImageData> {
 /**
  * 激活目标类型
  */
-export type ActiveTarget = any | null;
+export type ActiveTarget = ACTIVE_TYPE;
 
 /**
  * Screenshot Context 接口

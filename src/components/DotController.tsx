@@ -117,30 +117,18 @@ export function DotController({
     (event: MouseEvent) => {
       event.stopPropagation();
 
-      if (
-        isCurrentArea(
-          positionRef.current.x,
-          positionRef.current.x + dotControllerSize,
-          positionRef.current.y,
-          positionRef.current.y + dotControllerSize,
-          event.clientX,
-          event.clientY,
-        )
-      ) {
-        oldPositionRef.current = { ...positionRef.current };
-        oldClientRef.current = { x: event.clientX, y: event.clientY };
+      oldPositionRef.current = { ...positionRef.current };
+      oldClientRef.current = { x: event.clientX, y: event.clientY };
 
-        oldCutoutBoxRef.current = {
-          x: cutoutBoxX,
-          y: cutoutBoxY,
-          width: cutoutBoxWidth,
-          height: cutoutBoxHeight,
-        };
+      oldCutoutBoxRef.current = {
+        x: cutoutBoxX,
+        y: cutoutBoxY,
+        width: cutoutBoxWidth,
+        height: cutoutBoxHeight,
+      };
 
-        isMouseDownRef.current = true;
-        setActiveTarget('dotController');
-        Reflect.deleteProperty(event.target || {}, 'isFirstInit');
-      }
+      isMouseDownRef.current = true;
+      setActiveTarget('dotController');
     },
   );
 

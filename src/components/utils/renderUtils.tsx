@@ -17,7 +17,7 @@ export function createAndRenderComponent(component: ComponentChildren): HTMLElem
   container.style.position = 'fixed';
   container.style.top = '0';
   container.style.left = '0';
-  container.style.pointerEvents = 'none';
+  // container.style.pointerEvents = 'none';
   container.style.zIndex = '9999';
 
   document.body.appendChild(container);
