@@ -1,3 +1,4 @@
+import { useMount } from '@screenshots/hooks/useMount';
 import { animateThrottleFn } from '@screenshots/utils';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { useScreenshotContext } from './context/ScreenshotContext';
@@ -337,7 +338,7 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
   }, [onComplete]);
 
   // 初始化裁剪框
-  useEffect(() => {
+  useMount(() => {
     if (!drawCanvasElement)
       return;
     const cutoutBoxWidth = drawCanvasElement.width / 2;
@@ -354,7 +355,7 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
     });
 
     updatePosition();
-  }, [drawCanvasElement, updatePosition]);
+  });
 
   // 监听位置变化，更新渲染
   useEffect(() => {
