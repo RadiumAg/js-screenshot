@@ -1,6 +1,8 @@
 import arrow from '@screenshots/assets/images/arrow.svg';
+import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
+import { useMount } from '@screenshots/hooks/useMount';
 import Style from '@screenshots/theme/arrow.module.scss';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { useScreenshotContext } from '../context/ScreenshotContext';
 
 export interface ArrowToolProps {
@@ -44,14 +46,13 @@ export function ArrowTool({
     }
   }, [drawCanvasElement]);
 
-  const isCurrentArea = useCallback(
+  const isCurrentArea = useMemoizedFn(
     (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
       return x >= minX && x <= maxX && y >= minY && y <= maxY;
     },
-    [],
   );
 
-  const drawArrow = useCallback(
+  const drawArrow = useMemoizedFn(
     (fromX: number, fromY: number, toX: number, toY: number) => {
       if (!contextRef.current)
         return;
@@ -76,15 +77,14 @@ export function ArrowTool({
       );
       contextRef.current.stroke();
     },
-    [],
   );
 
-  const handleClick = useCallback(() => {
+  const handleClick = useMemoizedFn(() => {
     setIsLock(true);
     setActiveTarget('arrow');
-  }, [setIsLock, setActiveTarget]);
+  });
 
-  const handleMouseDown = useCallback(
+  const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
       if (!contextRef.current)
         return;
@@ -114,10 +114,9 @@ export function ArrowTool({
       contextRef.current.strokeStyle = arrowColor;
       contextRef.current.lineWidth = arrowWidth;
     },
-    [activeTarget, cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, isCurrentArea],
   );
 
-  const handleMouseMove = useCallback(
+  const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
       if (!firstScreenShotImageDataRef.current || !contextRef.current)
         return;
@@ -132,10 +131,9 @@ export function ArrowTool({
 
       drawArrow(startPoint.x, startPoint.y, event.clientX, event.clientY);
     },
-    [isDrawing, activeTarget, cutoutBoxX, cutoutBoxY, startPoint, drawArrow],
   );
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useMemoizedFn(() => {
     if (!isDrawing || activeTarget !== 'arrow' || !contextRef.current)
       return;
 
@@ -148,9 +146,9 @@ export function ArrowTool({
       cutoutBoxHeight,
     );
     operateHistory.push(imageData);
-  }, [isDrawing, activeTarget, cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, operateHistory]);
+  });
 
-  useEffect(() => {
+  useMount(() => {
     if (!drawCanvasElement)
       return;
 
@@ -163,7 +161,7 @@ export function ArrowTool({
       drawCanvasElement.removeEventListener('mousemove', handleMouseMove as any);
       drawCanvasElement.removeEventListener('mouseup', handleMouseUp as any);
     };
-  }, [drawCanvasElement, handleMouseDown, handleMouseMove, handleMouseUp]);
+  });
 
   return (
     <div class={Style.arrow} onClick={handleClick} tabIndex={0}>

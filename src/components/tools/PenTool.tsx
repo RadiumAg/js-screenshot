@@ -1,6 +1,7 @@
 import pen from '@screenshots/assets/images/pen.svg';
+import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
 import Style from '@screenshots/theme/pen.module.scss';
-import { useCallback, useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef } from 'preact/hooks';
 import { useScreenshotContext } from '../context/ScreenshotContext';
 
 export interface PenToolProps {
@@ -39,20 +40,19 @@ export function PenTool({
     }
   }, [drawCanvasElement]);
 
-  const isCurrentArea = useCallback(
+  const isCurrentArea = useMemoizedFn(
     (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
       return x >= minX && x <= maxX && y >= minY && y <= maxY;
     },
-    [],
   );
 
-  const handleClick = useCallback(() => {
+  const handleClick = useMemoizedFn(() => {
     setIsLock(true);
     setActiveTarget('pen');
     // Tool is now active
-  }, [setIsLock, setActiveTarget]);
+  });
 
-  const handleMouseMove = useCallback(
+  const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
       if (activeTarget !== 'pen' || !contextRef.current)
         return;
@@ -74,18 +74,9 @@ export function PenTool({
         contextRef.current.stroke();
       }
     },
-    [
-      activeTarget,
-      cutoutBoxX,
-      cutoutBoxY,
-      cutoutBoxWidth,
-      cutoutBoxHeight,
-      dotControllerSize,
-      isCurrentArea,
-    ],
   );
 
-  const handleMouseDown = useCallback(
+  const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
       if (activeTarget !== 'pen' || !contextRef.current)
         return;
@@ -113,20 +104,9 @@ export function PenTool({
         }
       }
     },
-    [
-      activeTarget,
-      cutoutBoxX,
-      cutoutBoxY,
-      cutoutBoxWidth,
-      cutoutBoxHeight,
-      dotControllerSize,
-      isCurrentArea,
-      setActiveTarget,
-      drawCanvasElement,
-    ],
   );
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useMemoizedFn(() => {
     if (isMouseDownRef.current && contextRef.current) {
       const imageData = contextRef.current.getImageData(
         cutoutBoxX,
@@ -137,9 +117,9 @@ export function PenTool({
       operateHistory.push(imageData);
     }
     isMouseDownRef.current = false;
-  }, [cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, operateHistory]);
+  });
 
-  useEffect(() => {
+  useMO(() => {
     if (!drawCanvasElement)
       return;
 

@@ -1,6 +1,7 @@
 import textBox from '@screenshots/assets/images/text-box.svg';
+import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
 import Style from '@screenshots/theme/text-box.module.scss';
-import { useCallback, useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef } from 'preact/hooks';
 import { useScreenshotContext } from '../context/ScreenshotContext';
 
 export interface TextBoxToolProps {
@@ -49,19 +50,18 @@ export function TextBoxTool({
     }
   }, [drawCanvasElement]);
 
-  const isCurrentArea = useCallback(
+  const isCurrentArea = useMemoizedFn(
     (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
       return x >= minX && x <= maxX && y >= minY && y <= maxY;
     },
-    [],
   );
 
-  const isOutLeft = useCallback((minX: number, x: number) => x < minX, []);
-  const isOutRight = useCallback((maxX: number, x: number) => x > maxX, []);
-  const isOutTop = useCallback((minY: number, y: number) => y < minY, []);
-  const isOutBottom = useCallback((maxY: number, y: number) => y > maxY, []);
+  const isOutLeft = useMemoizedFn((minX: number, x: number) => x < minX);
+  const isOutRight = useMemoizedFn((maxX: number, x: number) => x > maxX);
+  const isOutTop = useMemoizedFn((minY: number, y: number) => y < minY);
+  const isOutBottom = useMemoizedFn((maxY: number, y: number) => y > maxY);
 
-  const measureLineToCanvas = useCallback(
+  const measureLineToCanvas = useMemoizedFn(
     (
       textBoxValue: string | null,
       maxWidth: number,
@@ -122,10 +122,9 @@ export function TextBoxTool({
         );
       }
     },
-    [],
   );
 
-  const renderToCanvas = useCallback(
+  const renderToCanvas = useMemoizedFn(
     (
       textBoxValue: string | null,
       maxWidth: number,
@@ -139,10 +138,9 @@ export function TextBoxTool({
       contextRef.current.font = `${fontSize}px system-ui`;
       measureLineToCanvas(textBoxValue, maxWidth, clientX, clientY, 0);
     },
-    [measureLineToCanvas],
   );
 
-  const setPosition = useCallback(
+  const setPosition = useMemoizedFn(
     (textBoxTextarea: HTMLDivElement, event: MouseEvent) => {
       const clientX = event.clientX;
       const clientY = event.clientY;
@@ -210,10 +208,9 @@ export function TextBoxTool({
 
       return lastXy;
     },
-    [cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, dotControllerSize, isOutLeft, isOutRight, isOutTop, isOutBottom],
   );
 
-  const setStyle = useCallback((textBoxTextarea: HTMLDivElement) => {
+  const setStyle = useMemoizedFn((textBoxTextarea: HTMLDivElement) => {
     textBoxTextarea.setAttribute('wrap', 'hard');
     textBoxTextarea.style.whiteSpace = 'nowrap';
     textBoxTextarea.setAttribute('autofocus', '');
@@ -223,14 +220,14 @@ export function TextBoxTool({
     textBoxTextarea.style.width = `${shifting.minWidth}px`;
     textBoxTextarea.style.minWidth = `${shifting.minWidth}px`;
     textBoxTextarea.style.padding = `${shifting.paddingTopBottom}px ${shifting.paddingLeftRight}px`;
-  }, []);
+  });
 
-  const handleClick = useCallback(() => {
+  const handleClick = useMemoizedFn(() => {
     setIsLock(true);
     setActiveTarget('textBox');
-  }, [setIsLock, setActiveTarget]);
+  });
 
-  const handleMouseDown = useCallback(
+  const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
       preTextareaRef.current?.remove();
 
@@ -316,7 +313,6 @@ export function TextBoxTool({
       document.body.append(textBoxTextarea);
       textBoxTextarea.focus();
     },
-    [isLock, activeTarget, isCurrentArea, cutoutBoxX, dotControllerSize, cutoutBoxWidth, cutoutBoxY, cutoutBoxHeight, shifting.minWidth, shifting.paddingTopBottom, shifting.paddingLeftRight, setStyle, setPosition, renderToCanvas, operateHistory],
   );
 
   useEffect(() => {

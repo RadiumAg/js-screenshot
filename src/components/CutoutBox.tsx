@@ -1,7 +1,7 @@
 import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
 import { useMount } from '@screenshots/hooks/useMount';
 import { animateThrottleFn } from '@screenshots/utils';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { useScreenshotContext } from './context/ScreenshotContext';
 import { DotController } from './DotController';
 import { ToolBox } from './ToolBox';
@@ -55,7 +55,7 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
   /**
    * 设置半透明遮罩
    */
-  const setMask = useCallback(() => {
+  const setMask = useMemoizedFn(() => {
     if (!contextRef.current || !drawCanvasElement)
       return;
 
@@ -66,12 +66,12 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
       drawCanvasElement.width,
       drawCanvasElement.height,
     );
-  }, [drawCanvasElement]);
+  });
 
   /**
    * 更新背景
    */
-  const updateBackground = useCallback(() => {
+  const updateBackground = useMemoizedFn(() => {
     if (!sourceContextRef.current || !contextRef.current || !drawCanvasElement)
       return;
 
@@ -93,12 +93,12 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
 
     contextRef.current.putImageData(documentArea, 0, 0);
     setMask();
-  }, [drawCanvasElement, setMask]);
+  });
 
   /**
    * 更新裁剪框位置和渲染
    */
-  const updatePosition = useCallback(() => {
+  const updatePosition = useMemoizedFn(() => {
     if (!sourceContextRef.current || !contextRef.current)
       return;
 
@@ -111,7 +111,7 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
       size.height || 1,
     );
     contextRef.current.putImageData(imgData, position.x, position.y);
-  }, [position.x, position.y, size.width, size.height, updateBackground]);
+  });
 
   // 使用节流的更新函数
   const throttledUpdatePosition = useRef(
@@ -123,17 +123,16 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
   /**
    * 检查是否在当前区域内
    */
-  const isCurrentArea = useCallback(
+  const isCurrentArea = useMemoizedFn(
     (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
       return x >= minX && x <= maxX && y >= minY && y <= maxY;
     },
-    [],
   );
 
   /**
    * 处理控制点更新轴坐标
    */
-  const handleDotControllerUpdateAxis = useCallback(
+  const handleDotControllerUpdateAxis = useMemoizedFn(
     (x: number, y: number, oldX: number, oldY: number, oldCutoutBox: any) => {
       if (!sourceContextRef.current || !contextRef.current)
         return;
@@ -172,7 +171,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
 
       contextRef.current.putImageData(imgData, position.x, position.y);
     },
-    [updateBackground, dotControllerSize, position.x, position.y, size.width, size.height],
   );
 
   /**
@@ -205,7 +203,7 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
   /**
    * 处理鼠标松开事件
    */
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useMemoizedFn(() => {
     if (activeTarget !== 'cutoutBox')
       return;
     if (isLock)
@@ -214,12 +212,12 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
     setIsMouseDown(false);
     setActiveTarget(null);
     setIsFirstInit(false);
-  }, [activeTarget, isLock, setActiveTarget, setIsFirstInit]);
+  });
 
   /**
    * 处理鼠标移动事件
    */
-  const handleMouseMove = useCallback(
+  const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
       if (activeTarget !== null && activeTarget !== 'cutoutBox')
         return;
@@ -254,7 +252,7 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
   /**
    * 处理 Canvas 鼠标移动（用于光标样式）
    */
-  const handleCanvasMouseMove = useCallback(
+  const handleCanvasMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
       if (activeTarget != null)
         return;
@@ -275,13 +273,12 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         document.body.style.cursor = '';
       }
     },
-    [activeTarget, position, size, isLock, isCurrentArea],
   );
 
   /**
    * 处理键盘事件（Ctrl+Z 撤销）
    */
-  const handleKeyDown = useCallback(
+  const handleKeyDown = useMemoizedFn(
     (event: KeyboardEvent) => {
       if (event.ctrlKey && event.key === 'z') {
         const preImageData = operateHistory.prev();
@@ -303,17 +300,16 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         }
       }
     },
-    [operateHistory, position, size],
   );
 
   /**
    * 处理取消操作
    */
-  const handleCancel = useCallback(() => {
+  const handleCancel = useMemoizedFn(() => {
     if (onComplete) {
       onComplete(null);
     }
-  }, [onComplete]);
+  });
 
   // 初始化裁剪框
   useMount(() => {

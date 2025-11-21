@@ -1,13 +1,14 @@
-import { useState, useCallback } from 'preact/hooks';
+import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
+import { useState } from 'preact/hooks';
 
 export interface Position {
-  x: number;
-  y: number;
+  x: number
+  y: number
 }
 
 export interface Size {
-  width: number;
-  height: number;
+  width: number
+  height: number
 }
 
 export interface PositionState extends Position, Size {}
@@ -23,27 +24,27 @@ export function usePosition(initialState: Partial<PositionState> = {}) {
     height: initialState.height || 0,
   });
 
-  const updatePosition = useCallback((newPosition: Partial<PositionState>) => {
+  const updatePosition = useMemoizedFn((newPosition: Partial<PositionState>) => {
     setPosition(prev => ({ ...prev, ...newPosition }));
-  }, []);
+  });
 
-  const setX = useCallback((x: number) => {
+  const setX = useMemoizedFn((x: number) => {
     setPosition(prev => ({ ...prev, x }));
-  }, []);
+  });
 
-  const setY = useCallback((y: number) => {
+  const setY = useMemoizedFn((y: number) => {
     setPosition(prev => ({ ...prev, y }));
-  }, []);
+  });
 
-  const setWidth = useCallback((width: number) => {
+  const setWidth = useMemoizedFn((width: number) => {
     setPosition(prev => ({ ...prev, width }));
-  }, []);
+  });
 
-  const setHeight = useCallback((height: number) => {
+  const setHeight = useMemoizedFn((height: number) => {
     setPosition(prev => ({ ...prev, height }));
-  }, []);
+  });
 
-  const isCurrentArea = useCallback((
+  const isCurrentArea = useMemoizedFn((
     minX: number,
     maxX: number,
     minY: number,
@@ -52,7 +53,7 @@ export function usePosition(initialState: Partial<PositionState> = {}) {
     y: number,
   ) => {
     return x >= minX && x <= maxX && y >= minY && y <= maxY;
-  }, []);
+  });
 
   return {
     position,

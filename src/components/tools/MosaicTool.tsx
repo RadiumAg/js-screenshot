@@ -1,13 +1,15 @@
-import { useEffect, useState, useRef, useCallback } from 'preact/hooks';
 import mosaic from '@screenshots/assets/images/mosaic.svg';
+import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
+import { useMount } from '@screenshots/hooks/useMount';
 import Style from '@screenshots/theme/mosaic.module.scss';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { useScreenshotContext } from '../context/ScreenshotContext';
 
 export interface MosaicToolProps {
-  cutoutBoxX: number;
-  cutoutBoxY: number;
-  cutoutBoxWidth: number;
-  cutoutBoxHeight: number;
+  cutoutBoxX: number
+  cutoutBoxY: number
+  cutoutBoxWidth: number
+  cutoutBoxHeight: number
 }
 
 /**
@@ -39,14 +41,13 @@ export function MosaicTool({
     }
   }, [drawCanvasElement]);
 
-  const isCurrentArea = useCallback(
+  const isCurrentArea = useMemoizedFn(
     (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
       return x >= minX && x <= maxX && y >= minY && y <= maxY;
     },
-    []
   );
 
-  const calculateAverageColor = useCallback(
+  const calculateAverageColor = useMemoizedFn(
     (
       pixels: Uint8ClampedArray,
       startX: number,
@@ -54,7 +55,7 @@ export function MosaicTool({
       width: number,
       height: number,
       totalWidth: number,
-    ): { r: number; g: number; b: number; a: number } => {
+    ): { r: number, g: number, b: number, a: number } => {
       let r = 0;
       let g = 0;
       let b = 0;
@@ -79,30 +80,30 @@ export function MosaicTool({
         a: Math.round(a / count),
       };
     },
-    []
   );
 
-  const fillBlock = useCallback(
+  const fillBlock = useMemoizedFn(
     (
       x: number,
       y: number,
       width: number,
       height: number,
-      color: { r: number; g: number; b: number; a: number },
+      color: { r: number, g: number, b: number, a: number },
     ) => {
-      if (!contextRef.current) return;
+      if (!contextRef.current)
+        return;
 
       contextRef.current.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${
         color.a / 255
       })`;
       contextRef.current.fillRect(x, y, width, height);
     },
-    []
   );
 
-  const applyMosaic = useCallback(
+  const applyMosaic = useMemoizedFn(
     (x: number, y: number) => {
-      if (!contextRef.current) return;
+      if (!contextRef.current)
+        return;
 
       const brushSize = 20;
 
@@ -138,17 +139,17 @@ export function MosaicTool({
         }
       }
     },
-    [cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, calculateAverageColor, fillBlock]
   );
 
-  const handleClick = useCallback(() => {
+  const handleClick = useMemoizedFn(() => {
     setIsLock(true);
     setActiveTarget('mosaic');
-  }, [setIsLock, setActiveTarget]);
+  });
 
-  const handleMouseDown = useCallback(
+  const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
-      if (activeTarget !== 'mosaic') return;
+      if (activeTarget !== 'mosaic')
+        return;
 
       if (
         isCurrentArea(
@@ -164,20 +165,20 @@ export function MosaicTool({
         applyMosaic(event.clientX, event.clientY);
       }
     },
-    [activeTarget, cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, isCurrentArea, applyMosaic]
   );
 
-  const handleMouseMove = useCallback(
+  const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
-      if (!isDrawing || activeTarget !== 'mosaic') return;
+      if (!isDrawing || activeTarget !== 'mosaic')
+        return;
 
       applyMosaic(event.clientX, event.clientY);
     },
-    [isDrawing, activeTarget, applyMosaic]
   );
 
-  const handleMouseUp = useCallback(() => {
-    if (!isDrawing || activeTarget !== 'mosaic' || !contextRef.current) return;
+  const handleMouseUp = useMemoizedFn(() => {
+    if (!isDrawing || activeTarget !== 'mosaic' || !contextRef.current)
+      return;
 
     setIsDrawing(false);
 
@@ -188,10 +189,11 @@ export function MosaicTool({
       cutoutBoxHeight,
     );
     operateHistory.push(imageData);
-  }, [isDrawing, activeTarget, cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, operateHistory]);
+  });
 
-  useEffect(() => {
-    if (!drawCanvasElement) return;
+  useMount(() => {
+    if (!drawCanvasElement)
+      return;
 
     drawCanvasElement.addEventListener('mousedown', handleMouseDown as any);
     drawCanvasElement.addEventListener('mousemove', handleMouseMove as any);
@@ -202,7 +204,7 @@ export function MosaicTool({
       drawCanvasElement.removeEventListener('mousemove', handleMouseMove as any);
       drawCanvasElement.removeEventListener('mouseup', handleMouseUp as any);
     };
-  }, [drawCanvasElement, handleMouseDown, handleMouseMove, handleMouseUp]);
+  });
 
   return (
     <div class={Style.mosaic} onClick={handleClick} tabIndex={0}>
