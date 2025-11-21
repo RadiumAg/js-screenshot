@@ -1,3 +1,4 @@
+import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
 import { useMount } from '@screenshots/hooks/useMount';
 import { animateThrottleFn } from '@screenshots/utils';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
@@ -177,7 +178,7 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
   /**
    * 处理鼠标按下事件
    */
-  const handleMouseDown = useCallback(
+  const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
       if (isLock)
         return;
@@ -199,7 +200,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         setActiveTarget('cutoutBox');
       }
     },
-    [isLock, position, size, isCurrentArea, setActiveTarget],
   );
 
   /**
@@ -223,23 +223,11 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
     (event: MouseEvent) => {
       if (activeTarget !== null && activeTarget !== 'cutoutBox')
         return;
-      if (isLock || !drawCanvasElement)
+
+      if (isLock || !drawCanvasElement) {
         return;
-
-      // 首次初始化的特殊处理
-      if (isFirstInit && isMouseDown) {
-        setIsMouseDown(false);
-        const width = dotControllerSize * 2;
-        const height = dotControllerSize * 2;
-
-        setSize({ width, height });
-        setPosition({
-          x: event.clientX - width,
-          y: event.clientY - height,
-        });
-
-        throttledUpdatePosition();
       }
+
       // 正常拖拽
       else if (isMouseDown) {
         let newX = oldPositionRef.current.x + event.clientX - oldClientRef.current.x;
@@ -261,16 +249,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         throttledUpdatePosition();
       }
     },
-    [
-      activeTarget,
-      isLock,
-      drawCanvasElement,
-      isFirstInit,
-      isMouseDown,
-      dotControllerSize,
-      size,
-      throttledUpdatePosition,
-    ],
   );
 
   /**

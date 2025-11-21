@@ -5,6 +5,7 @@ export default antfu({
   react: true,
   rules: {
     'style/semi': ['error', 'always'],
+    'no-useless-return': 'off',
   },
   ignores: ['node_modules', 'package.json', 'babel.config.js', 'lib', 'es', 'dist'],
 });
