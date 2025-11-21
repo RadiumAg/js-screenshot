@@ -228,7 +228,6 @@ export function DotController({
         height: `${dotControllerSize}px`,
         position: 'fixed',
       }}
-
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseDown={handleMouseDown}
