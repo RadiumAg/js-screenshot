@@ -1,6 +1,8 @@
+import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
+import { useMount } from '@screenshots/hooks/useMount';
 import Style from '@screenshots/theme/dot-controller.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
-import { useCallback, useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef } from 'preact/hooks';
 import { useScreenshotContext } from './context/ScreenshotContext';
 
 export interface DotControllerProps {
@@ -41,19 +43,10 @@ export function DotController({
 
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  // 初始化 context
-  useEffect(() => {
-    if (drawCanvasElement) {
-      contextRef.current = drawCanvasElement.getContext('2d', {
-        willReadFrequently: true,
-      });
-    }
-  }, [drawCanvasElement]);
-
   /**
    * 更新控制点位置
    */
-  const updatePosition = useCallback((x: number, y: number) => {
+  const updatePosition = useMemoizedFn((x: number, y: number) => {
     if (!elRef.current)
       return;
 
@@ -64,12 +57,12 @@ export function DotController({
 
     elRef.current.style.left = `${positionRef.current.x}px`;
     elRef.current.style.top = `${positionRef.current.y}px`;
-  }, [dotControllerSize]);
+  });
 
   /**
    * 更新轴坐标
    */
-  const updateAxis = useCallback(() => {
+  const updateAxis = useMemoizedFn(() => {
     onUpdateAxis(
       positionRef.current.x,
       positionRef.current.y,
@@ -77,51 +70,50 @@ export function DotController({
       oldPositionRef.current.y,
       oldCutoutBoxRef.current,
     );
-  }, [onUpdateAxis]);
+  });
 
   const throttledUpdateAxis = useRef(animateThrottleFn(updateAxis)).current;
 
   /**
    * 检查是否在当前区域
    */
-  const isCurrentArea = useCallback(
+  const isCurrentArea = useMemoizedFn(
     (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
       return x >= minX && x <= maxX && y >= minY && y <= maxY;
     },
-    [],
   );
 
   /**
    * 停止移动
    */
-  const stopMove = useCallback(() => {
+  const stopMove = useMemoizedFn(() => {
     isMouseDownRef.current = false;
     setActiveTarget(null);
     setIsFirstInit(false);
-  }, [setActiveTarget, setIsFirstInit]);
+  });
 
   /**
    * 处理鼠标进入
    */
-  const handleMouseEnter = useCallback(() => {
+  const handleMouseEnter = useMemoizedFn(() => {
     if (activeTarget == null) {
       document.body.style.cursor = cursor;
     }
-  }, [activeTarget, cursor]);
+  });
 
   /**
    * 处理鼠标离开
    */
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = useMemoizedFn(() => {
     if (activeTarget == null) {
       document.body.style.cursor = '';
     }
-  }, [activeTarget]);
+  });
 
   /**
    * 处理鼠标按下
    */
-  const handleMouseDown = useCallback(
+  const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
       event.stopPropagation();
 
@@ -153,21 +145,12 @@ export function DotController({
         Reflect.deleteProperty(event.target || {}, 'isFirstInit');
       }
     },
-    [
-      isCurrentArea,
-      dotControllerSize,
-      cutoutBoxX,
-      cutoutBoxY,
-      cutoutBoxWidth,
-      cutoutBoxHeight,
-      setActiveTarget,
-    ],
   );
 
   /**
    * 处理鼠标松开
    */
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useMemoizedFn(() => {
     if (activeTarget !== 'dotController')
       return;
     if (!contextRef.current)
@@ -182,12 +165,12 @@ export function DotController({
       ),
     );
     stopMove();
-  }, [activeTarget, operateHistory, cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, stopMove]);
+  });
 
   /**
    * 处理全局鼠标移动
    */
-  const handleGlobalMouseMove = useCallback(
+  const handleGlobalMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
       if (activeTarget !== null && activeTarget === 'dotController') {
         if (isMouseDownRef.current) {
@@ -200,24 +183,32 @@ export function DotController({
         }
       }
     },
-    [activeTarget, throttledUpdateAxis],
   );
 
   // 设置全局事件监听
-  useEffect(() => {
-    document.body.addEventListener('mousemove', handleGlobalMouseMove as any);
-    document.addEventListener('mouseup', stopMove as any);
+  useMount(() => {
+    document.body.addEventListener('mousemove', handleGlobalMouseMove);
+    document.body.addEventListener('mouseup', stopMove);
 
     return () => {
       document.body.removeEventListener('mousemove', handleGlobalMouseMove as any);
-      document.removeEventListener('mouseup', stopMove as any);
+      document.body.removeEventListener('mouseup', stopMove as any);
     };
-  }, [handleGlobalMouseMove, stopMove]);
+  });
 
   // 初始化位置
   useEffect(() => {
     updatePosition(cutoutBoxX, cutoutBoxY);
-  }, [cutoutBoxX, cutoutBoxY, updatePosition]);
+  });
+
+  // 初始化 context
+  useEffect(() => {
+    if (drawCanvasElement) {
+      contextRef.current = drawCanvasElement.getContext('2d', {
+        willReadFrequently: true,
+      });
+    }
+  }, [drawCanvasElement]);
 
   return (
     <div
