@@ -4,6 +4,7 @@ import { useMount } from '@screenshots/hooks/useMount';
 import Style from '@screenshots/theme/mosaic.module.scss';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useScreenshotContext } from '../context/ScreenshotContext';
+import { ACTIVE_TYPE } from '../utils/share';
 
 export interface MosaicToolProps {
   cutoutBoxX: number
@@ -23,10 +24,10 @@ export function MosaicTool({
 }: MosaicToolProps) {
   const {
     activeTarget,
-    setActiveTarget,
-    setIsLock,
     operateHistory,
     drawCanvasElement,
+    setActiveTarget,
+    setIsLock,
   } = useScreenshotContext();
 
   const [isDrawing, setIsDrawing] = useState(false);
@@ -143,12 +144,12 @@ export function MosaicTool({
 
   const handleClick = useMemoizedFn(() => {
     setIsLock(true);
-    setActiveTarget('mosaic');
+    setActiveTarget(ACTIVE_TYPE.mosaic);
   });
 
   const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
-      if (activeTarget !== 'mosaic')
+      if (activeTarget !== ACTIVE_TYPE.mosaic)
         return;
 
       if (
@@ -169,7 +170,7 @@ export function MosaicTool({
 
   const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
-      if (!isDrawing || activeTarget !== 'mosaic')
+      if (!isDrawing || activeTarget !== ACTIVE_TYPE.mosaic)
         return;
 
       applyMosaic(event.clientX, event.clientY);
@@ -177,7 +178,7 @@ export function MosaicTool({
   );
 
   const handleMouseUp = useMemoizedFn(() => {
-    if (!isDrawing || activeTarget !== 'mosaic' || !contextRef.current)
+    if (!isDrawing || activeTarget !== ACTIVE_TYPE.mosaic || !contextRef.current)
       return;
 
     setIsDrawing(false);

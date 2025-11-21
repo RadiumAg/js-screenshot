@@ -52,7 +52,7 @@ class OperateHistory extends Array<ImageData> {
 /**
  * 激活目标类型
  */
-export type ActiveTarget = ACTIVE_TYPE;
+export type ActiveTarget = ACTIVE_TYPE | null;
 
 /**
  * Screenshot Context 接口

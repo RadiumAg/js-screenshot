@@ -74,15 +74,7 @@ export function DotController({
 
   const throttledUpdateAxis = useRef(animateThrottleFn(updateAxis)).current;
 
-  /**
-   * 检查是否在当前区域
-   */
-  const isCurrentArea = useMemoizedFn(
-    (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
-      return x >= minX && x <= maxX && y >= minY && y <= maxY;
-    },
-  );
-
+ 
   /**
    * 停止移动
    */

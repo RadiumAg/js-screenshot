@@ -1,11 +1,11 @@
-import { useEffect, useState, useRef } from 'preact/hooks';
 import Style from '@screenshots/theme/size-indicator.module.scss';
+import { useEffect, useRef, useState } from 'preact/hooks';
 
 export interface SizeIndicatorProps {
-  width: number;
-  height: number;
-  dotControllerX: number;
-  dotControllerY: number;
+  width: number
+  height: number
+  dotControllerX: number
+  dotControllerY: number
 }
 
 /**
@@ -37,7 +37,10 @@ export function SizeIndicator({
         left: `${position.left}px`,
       }}
     >
-      {width} * {height}
+      {width}
+      {' '}
+      *
+      {height}
     </div>
   );
 }

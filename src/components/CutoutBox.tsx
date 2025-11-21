@@ -371,7 +371,7 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
       setIsFirstInit(true);
       setActiveTarget(null);
     };
-  }, [drawCanvasElement, setIsLock, setIsFirstInit, setActiveTarget]);
+  }, []);
 
   // 计算控制点位置
   const dotControllerPositions = [

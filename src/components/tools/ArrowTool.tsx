@@ -4,6 +4,7 @@ import { useMount } from '@screenshots/hooks/useMount';
 import Style from '@screenshots/theme/arrow.module.scss';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useScreenshotContext } from '../context/ScreenshotContext';
+import { ACTIVE_TYPE } from '../utils/share';
 
 export interface ArrowToolProps {
   cutoutBoxX: number
@@ -81,7 +82,7 @@ export function ArrowTool({
 
   const handleClick = useMemoizedFn(() => {
     setIsLock(true);
-    setActiveTarget('arrow');
+    setActiveTarget(ACTIVE_TYPE.arrow);
   });
 
   const handleMouseDown = useMemoizedFn(
@@ -96,7 +97,7 @@ export function ArrowTool({
         cutoutBoxHeight,
       );
 
-      if (activeTarget !== 'arrow')
+      if (activeTarget !== ACTIVE_TYPE.arrow)
         return;
 
       isCurrentArea(
@@ -120,7 +121,7 @@ export function ArrowTool({
     (event: MouseEvent) => {
       if (!firstScreenShotImageDataRef.current || !contextRef.current)
         return;
-      if (!isDrawing || activeTarget !== 'arrow')
+      if (!isDrawing || activeTarget !== ACTIVE_TYPE.arrow)
         return;
 
       contextRef.current.putImageData(
@@ -134,7 +135,7 @@ export function ArrowTool({
   );
 
   const handleMouseUp = useMemoizedFn(() => {
-    if (!isDrawing || activeTarget !== 'arrow' || !contextRef.current)
+    if (!isDrawing || activeTarget !== ACTIVE_TYPE.arrow || !contextRef.current)
       return;
 
     setIsDrawing(false);

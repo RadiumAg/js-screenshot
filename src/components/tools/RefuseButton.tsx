@@ -3,7 +3,7 @@ import Style from '@screenshots/theme/refuse.module.scss';
 import { useScreenshotContext } from '../context/ScreenshotContext';
 
 export interface RefuseButtonProps {
-  onCancel: () => void;
+  onCancel: () => void
 }
 
 /**
@@ -15,10 +15,10 @@ export function RefuseButton({ onCancel }: RefuseButtonProps) {
   const handleClick = () => {
     // 清空操作历史
     operateHistory.clear();
-    
+
     // 移除 canvas
     drawCanvasElement?.remove();
-    
+
     // 调用取消回调
     onCancel();
   };

@@ -4,6 +4,7 @@ import { useMount } from '@screenshots/hooks/useMount';
 import Style from '@screenshots/theme/pen.module.scss';
 import { useEffect, useRef } from 'preact/hooks';
 import { useScreenshotContext } from '../context/ScreenshotContext';
+import { ACTIVE_TYPE } from '../utils/share';
 
 export interface PenToolProps {
   cutoutBoxX: number
@@ -49,13 +50,13 @@ export function PenTool({
 
   const handleClick = useMemoizedFn(() => {
     setIsLock(true);
-    setActiveTarget('pen');
+    setActiveTarget(ACTIVE_TYPE.pen);
     // Tool is now active
   });
 
   const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
-      if (activeTarget !== 'pen' || !contextRef.current)
+      if (activeTarget !== ACTIVE_TYPE.pen || !contextRef.current)
         return;
 
       if (
@@ -79,7 +80,7 @@ export function PenTool({
 
   const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
-      if (activeTarget !== 'pen' || !contextRef.current)
+      if (activeTarget !== ACTIVE_TYPE.pen || !contextRef.current)
         return;
 
       if (
@@ -92,7 +93,7 @@ export function PenTool({
           event.clientY,
         )
       ) {
-        setActiveTarget('pen');
+        setActiveTarget(ACTIVE_TYPE.pen);
         isMouseDownRef.current = true;
 
         contextRef.current.strokeStyle = 'blue';
