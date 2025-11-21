@@ -1,5 +1,5 @@
 import type { ScreenShotOptions } from './utils';
-import { setDrawCanvasElement, setSourceCanvasElement, setVideoElement } from './tools/canvas';
+import { setDrawCanvasElement, setSourceCanvasElement, setVideoElement } from './tools/share';
 import CutoutBox from './tools/cutout-box';
 import { __isDev__ } from './utils';
 

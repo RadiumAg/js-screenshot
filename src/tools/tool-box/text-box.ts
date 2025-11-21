@@ -10,7 +10,7 @@ import {
   operateHistory,
   setActiveTarget,
   setIsLock,
-} from '../canvas';
+} from '../share';
 
 /**
  * 文字

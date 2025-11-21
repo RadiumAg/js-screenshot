@@ -3,7 +3,7 @@ import type CutoutBox from '../cutout-box';
 import refuse from '@screenshots/assets/images/refuse.svg';
 import Style from '@screenshots/theme/refuse.module.scss';
 import BaseBox from '../base-box';
-import { operateHistory } from '../canvas';
+import { operateHistory } from '../share';
 
 class Refuse extends BaseBox {
   constructor(private cutoutBox: CutoutBox, private destoryArray: AnyFun[]) {

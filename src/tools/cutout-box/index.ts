@@ -10,7 +10,7 @@ import {
   setActiveTarget,
   setFirstInit,
   setIsLock,
-} from '../canvas';
+} from '../share';
 import ToolBox from '../tool-box/tool-box';
 import DotController from './dot-controller';
 
@@ -438,7 +438,6 @@ class CutoutBox extends BaseBox {
         this.y = event.clientY - height;
 
         updatePosition()?.then(() => {
-          Reflect.set(event.target || {}, 'isFirstInit', true);
           this.dotControllerArray
             .at(4)
             ?.el

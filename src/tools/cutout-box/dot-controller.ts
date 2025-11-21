@@ -6,10 +6,11 @@ import {
   activeTarget,
   dotControllerSize,
   drawCanvasElement,
+  isFirstInit,
   operateHistory,
   setActiveTarget,
   setFirstInit,
-} from '../canvas';
+} from '../share';
 
 type UpdateAxisCallback = (
   x: number,
@@ -83,8 +84,6 @@ class DotController extends BaseBox {
     this.el?.addEventListener('mousedown', (event) => {
       event.stopPropagation();
 
-      const isFirstMoveDown = Reflect.get(event.target || {}, 'isFirstInit');
-
       if (
         this.isCurrentArea(
           this.x,
@@ -94,7 +93,7 @@ class DotController extends BaseBox {
           event.clientX,
           event.clientY,
         )
-        || isFirstMoveDown
+        || isFirstInit
       ) {
         this.oldX = this.x;
         this.oldY = this.y;
@@ -106,7 +105,6 @@ class DotController extends BaseBox {
 
         isMouseDown = true;
         setActiveTarget(this);
-        Reflect.deleteProperty(event.target || {}, 'isFirstInit');
       }
     });
 

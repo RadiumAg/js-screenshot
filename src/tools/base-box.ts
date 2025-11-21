@@ -1,5 +1,5 @@
 import type { AnyFun } from '@screenshots/utils';
-import { drawCanvasElement, sourceCanvasElement } from './canvas';
+import { drawCanvasElement, sourceCanvasElement } from './share';
 
 abstract class BaseBox {
   x = 0;
