@@ -83,7 +83,7 @@ function getBuildConfig(format: ModuleFormat) {
   } as Record<string, OutputOptions>;
 
   const buildConfig: RollupWatchOptions = {
-    input: resolve(__dirname, '../src/screen-shot.ts'),
+    input: resolve(__dirname, '../src/screen-shot.tsx'),
     plugins: [
       alias({
         entries: [
@@ -118,10 +118,13 @@ function getBuildConfig(format: ModuleFormat) {
           declaration: format !== 'iife',
           rootDir: resolve(__dirname, '../src'),
           declarationDir: resolve(__dirname, `../dist/${format}`),
+          jsx: 'react-jsx',
+          jsxImportSource: 'preact',
         },
         include: [
           resolve(__dirname, './type.d.ts'),
           resolve(__dirname, '../src/**/*.ts'),
+          resolve(__dirname, '../src/**/*.tsx'),
         ],
         exclude: ['node_modules', '../script', '../playground'],
       }),
@@ -130,7 +133,7 @@ function getBuildConfig(format: ModuleFormat) {
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       }),
     ],
-    external: ['html2canvas'],
+    external: ['html2canvas', 'preact/jsx-runtime', 'preact', 'preact/hooks'],
     output: output[format],
   };
 

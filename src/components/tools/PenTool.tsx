@@ -1,0 +1,162 @@
+import pen from '@screenshots/assets/images/pen.svg';
+import Style from '@screenshots/theme/pen.module.scss';
+import { useCallback, useEffect, useRef } from 'preact/hooks';
+import { useScreenshotContext } from '../context/ScreenshotContext';
+
+export interface PenToolProps {
+  cutoutBoxX: number
+  cutoutBoxY: number
+  cutoutBoxWidth: number
+  cutoutBoxHeight: number
+}
+
+/**
+ * 画笔工具组件
+ */
+export function PenTool({
+  cutoutBoxX,
+  cutoutBoxY,
+  cutoutBoxWidth,
+  cutoutBoxHeight,
+}: PenToolProps) {
+  const {
+    activeTarget,
+    setActiveTarget,
+    setIsLock,
+    operateHistory,
+    drawCanvasElement,
+    dotControllerSize,
+  } = useScreenshotContext();
+
+  const isMouseDownRef = useRef(false);
+  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+
+  useEffect(() => {
+    if (drawCanvasElement) {
+      contextRef.current = drawCanvasElement.getContext('2d', {
+        willReadFrequently: true,
+      });
+    }
+  }, [drawCanvasElement]);
+
+  const isCurrentArea = useCallback(
+    (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
+      return x >= minX && x <= maxX && y >= minY && y <= maxY;
+    },
+    [],
+  );
+
+  const handleClick = useCallback(() => {
+    setIsLock(true);
+    setActiveTarget('pen');
+    // Tool is now active
+  }, [setIsLock, setActiveTarget]);
+
+  const handleMouseMove = useCallback(
+    (event: MouseEvent) => {
+      if (activeTarget !== 'pen' || !contextRef.current)
+        return;
+
+      if (
+        isCurrentArea(
+          cutoutBoxX + dotControllerSize / 2,
+          cutoutBoxX + cutoutBoxWidth - dotControllerSize / 2,
+          cutoutBoxY + dotControllerSize / 2,
+          cutoutBoxY + cutoutBoxHeight - dotControllerSize / 2,
+          event.clientX,
+          event.clientY,
+        )
+        && isMouseDownRef.current
+      ) {
+        contextRef.current.lineWidth = 15;
+        contextRef.current.lineCap = 'round';
+        contextRef.current.lineTo(event.clientX, event.clientY);
+        contextRef.current.stroke();
+      }
+    },
+    [
+      activeTarget,
+      cutoutBoxX,
+      cutoutBoxY,
+      cutoutBoxWidth,
+      cutoutBoxHeight,
+      dotControllerSize,
+      isCurrentArea,
+    ],
+  );
+
+  const handleMouseDown = useCallback(
+    (event: MouseEvent) => {
+      if (activeTarget !== 'pen' || !contextRef.current)
+        return;
+
+      if (
+        isCurrentArea(
+          cutoutBoxX + dotControllerSize / 2,
+          cutoutBoxX + cutoutBoxWidth - dotControllerSize / 2,
+          cutoutBoxY + dotControllerSize / 2,
+          cutoutBoxY + cutoutBoxHeight - dotControllerSize / 2,
+          event.clientX,
+          event.clientY,
+        )
+      ) {
+        setActiveTarget('pen');
+        isMouseDownRef.current = true;
+
+        contextRef.current.strokeStyle = 'blue';
+        contextRef.current.beginPath();
+        contextRef.current.moveTo(event.clientX, event.clientY);
+      }
+      else {
+        if (drawCanvasElement) {
+          drawCanvasElement.style.cursor = '';
+        }
+      }
+    },
+    [
+      activeTarget,
+      cutoutBoxX,
+      cutoutBoxY,
+      cutoutBoxWidth,
+      cutoutBoxHeight,
+      dotControllerSize,
+      isCurrentArea,
+      setActiveTarget,
+      drawCanvasElement,
+    ],
+  );
+
+  const handleMouseUp = useCallback(() => {
+    if (isMouseDownRef.current && contextRef.current) {
+      const imageData = contextRef.current.getImageData(
+        cutoutBoxX,
+        cutoutBoxY,
+        cutoutBoxWidth,
+        cutoutBoxHeight,
+      );
+      operateHistory.push(imageData);
+    }
+    isMouseDownRef.current = false;
+  }, [cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, operateHistory]);
+
+  useEffect(() => {
+    if (!drawCanvasElement)
+      return;
+
+    drawCanvasElement.addEventListener('mousemove', handleMouseMove as any);
+    drawCanvasElement.addEventListener('mousedown', handleMouseDown as any);
+    drawCanvasElement.addEventListener('mouseup', handleMouseUp as any);
+
+    return () => {
+      drawCanvasElement.removeEventListener('mousemove', handleMouseMove as any);
+      drawCanvasElement.removeEventListener('mousedown', handleMouseDown as any);
+      drawCanvasElement.removeEventListener('mouseup', handleMouseUp as any);
+    };
+  }, [drawCanvasElement, handleMouseMove, handleMouseDown, handleMouseUp]);
+
+  return (
+    <div class={Style.pen} onClick={handleClick}>
+      <img src={pen} alt="pen" />
+    </div>
+  );
+}
