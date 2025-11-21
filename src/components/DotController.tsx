@@ -117,8 +117,6 @@ export function DotController({
     (event: MouseEvent) => {
       event.stopPropagation();
 
-      const isFirstMoveDown = Reflect.get(event.target || {}, 'isFirstInit');
-
       if (
         isCurrentArea(
           positionRef.current.x,
@@ -128,7 +126,6 @@ export function DotController({
           event.clientX,
           event.clientY,
         )
-        || isFirstMoveDown
       ) {
         oldPositionRef.current = { ...positionRef.current };
         oldClientRef.current = { x: event.clientX, y: event.clientY };
