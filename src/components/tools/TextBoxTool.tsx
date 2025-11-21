@@ -1,5 +1,6 @@
 import textBox from '@screenshots/assets/images/text-box.svg';
 import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
+import { useMount } from '@screenshots/hooks/useMount';
 import Style from '@screenshots/theme/text-box.module.scss';
 import { useEffect, useRef } from 'preact/hooks';
 import { useScreenshotContext } from '../context/ScreenshotContext';
@@ -315,7 +316,7 @@ export function TextBoxTool({
     },
   );
 
-  useEffect(() => {
+  useMount(() => {
     if (!drawCanvasElement)
       return;
 
@@ -325,7 +326,7 @@ export function TextBoxTool({
       drawCanvasElement.removeEventListener('mousedown', handleMouseDown as any);
       preTextareaRef.current?.remove();
     };
-  }, [drawCanvasElement, handleMouseDown]);
+  });
 
   return (
     <div class={Style['text-box']} onClick={handleClick}>

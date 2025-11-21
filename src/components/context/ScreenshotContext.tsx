@@ -1,6 +1,6 @@
 import type { ComponentChildren } from 'preact';
 import { createContext } from 'preact';
-import { useContext, useRef, useState } from 'preact/hooks';
+import { useContext, useMemo, useRef, useState } from 'preact/hooks';
 
 /**
  * 操作历史记录类
@@ -100,7 +100,7 @@ export function ScreenshotProvider({ children }: { children: ComponentChildren }
 
   const operateHistoryRef = useRef(new OperateHistory());
 
-  const value: ScreenshotContextValue = {
+  const value: ScreenshotContextValue = useMemo(() => ({
     drawCanvasElement,
     sourceCanvasElement,
     videoElement,
@@ -115,12 +115,13 @@ export function ScreenshotProvider({ children }: { children: ComponentChildren }
     isFirstInit,
     setIsFirstInit,
     dotControllerSize: 10,
-  };
+  }
+  ), [activeTarget, drawCanvasElement, isFirstInit, isLock, sourceCanvasElement, videoElement]);
 
   return (
-    <ScreenshotContext.Provider value={value}>
+    <ScreenshotContext value={value}>
       {children}
-    </ScreenshotContext.Provider>
+    </ScreenshotContext>
   );
 }
 
@@ -128,6 +129,7 @@ export function ScreenshotProvider({ children }: { children: ComponentChildren }
  * 使用 Screenshot Context 的 Hook
  */
 export function useScreenshotContext() {
+  // eslint-disable-next-line react/no-use-context
   const context = useContext(ScreenshotContext);
   if (!context) {
     throw new Error('useScreenshotContext must be used within ScreenshotProvider');

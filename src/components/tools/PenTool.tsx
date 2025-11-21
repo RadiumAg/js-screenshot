@@ -1,5 +1,6 @@
 import pen from '@screenshots/assets/images/pen.svg';
 import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
+import { useMount } from '@screenshots/hooks/useMount';
 import Style from '@screenshots/theme/pen.module.scss';
 import { useEffect, useRef } from 'preact/hooks';
 import { useScreenshotContext } from '../context/ScreenshotContext';
@@ -119,7 +120,7 @@ export function PenTool({
     isMouseDownRef.current = false;
   });
 
-  useMO(() => {
+  useMount(() => {
     if (!drawCanvasElement)
       return;
 
@@ -132,7 +133,7 @@ export function PenTool({
       drawCanvasElement.removeEventListener('mousedown', handleMouseDown as any);
       drawCanvasElement.removeEventListener('mouseup', handleMouseUp as any);
     };
-  }, [drawCanvasElement, handleMouseMove, handleMouseDown, handleMouseUp]);
+  });
 
   return (
     <div class={Style.pen} onClick={handleClick}>
