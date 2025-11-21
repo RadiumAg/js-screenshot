@@ -1,11 +1,11 @@
 // Hooks
 export { useCanvas } from './hooks/useCanvas';
-export { usePosition } from './hooks/usePosition';
 export { useEventListeners } from './hooks/useEventListeners';
+export type { EventListenerMap } from './hooks/useEventListeners';
 
-// Utils
-export { renderComponent, createAndRenderComponent, destroyComponentContainer, getComponentElement } from './utils/renderUtils';
+export { usePosition } from './hooks/usePosition';
 
 // Types
-export type { Position, Size, PositionState } from './hooks/usePosition';
-export type { EventListenerMap } from './hooks/useEventListeners';
+export type { Position, PositionState, Size } from './hooks/usePosition';
+// Utils
+export { createAndRenderComponent, destroyComponentContainer, getComponentElement, renderComponent } from './utils/renderUtils';

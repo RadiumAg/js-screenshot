@@ -316,20 +316,7 @@ export function TextBoxTool({
       document.body.append(textBoxTextarea);
       textBoxTextarea.focus();
     },
-    [
-      isLock,
-      activeTarget,
-      cutoutBoxX,
-      cutoutBoxY,
-      cutoutBoxWidth,
-      cutoutBoxHeight,
-      dotControllerSize,
-      isCurrentArea,
-      setStyle,
-      setPosition,
-      renderToCanvas,
-      operateHistory,
-    ],
+    [isLock, activeTarget, isCurrentArea, cutoutBoxX, dotControllerSize, cutoutBoxWidth, cutoutBoxY, cutoutBoxHeight, shifting.minWidth, shifting.paddingTopBottom, shifting.paddingLeftRight, setStyle, setPosition, renderToCanvas, operateHistory],
   );
 
   useEffect(() => {

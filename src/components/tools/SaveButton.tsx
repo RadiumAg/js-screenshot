@@ -4,10 +4,10 @@ import { __isDev__, useDownLoad } from '@screenshots/utils';
 import { useScreenshotContext } from '../context/ScreenshotContext';
 
 export interface SaveButtonProps {
-  cutoutBoxX: number;
-  cutoutBoxY: number;
-  cutoutBoxWidth: number;
-  cutoutBoxHeight: number;
+  cutoutBoxX: number
+  cutoutBoxY: number
+  cutoutBoxWidth: number
+  cutoutBoxHeight: number
 }
 
 /**
@@ -23,10 +23,12 @@ export function SaveButton({
   const download = useDownLoad();
 
   const handleClick = () => {
-    if (!drawCanvasElement) return;
+    if (!drawCanvasElement)
+      return;
 
     const context = drawCanvasElement.getContext('2d');
-    if (!context) return;
+    if (!context)
+      return;
 
     const screenShotData = context.getImageData(
       cutoutBoxX,
@@ -56,7 +58,8 @@ export function SaveButton({
 
     screenCanvas.toBlob(
       (blob) => {
-        if (!blob) return;
+        if (!blob)
+          return;
         const url = URL.createObjectURL(blob);
         download('截图', url);
       },

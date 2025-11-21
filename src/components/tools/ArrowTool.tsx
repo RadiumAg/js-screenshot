@@ -1,13 +1,13 @@
-import { useEffect, useState, useRef, useCallback } from 'preact/hooks';
 import arrow from '@screenshots/assets/images/arrow.svg';
 import Style from '@screenshots/theme/arrow.module.scss';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { useScreenshotContext } from '../context/ScreenshotContext';
 
 export interface ArrowToolProps {
-  cutoutBoxX: number;
-  cutoutBoxY: number;
-  cutoutBoxWidth: number;
-  cutoutBoxHeight: number;
+  cutoutBoxX: number
+  cutoutBoxY: number
+  cutoutBoxWidth: number
+  cutoutBoxHeight: number
 }
 
 /**
@@ -48,12 +48,13 @@ export function ArrowTool({
     (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
       return x >= minX && x <= maxX && y >= minY && y <= maxY;
     },
-    []
+    [],
   );
 
   const drawArrow = useCallback(
     (fromX: number, fromY: number, toX: number, toY: number) => {
-      if (!contextRef.current) return;
+      if (!contextRef.current)
+        return;
 
       const angle = Math.atan2(toY - fromY, toX - fromX);
 
@@ -75,7 +76,7 @@ export function ArrowTool({
       );
       contextRef.current.stroke();
     },
-    []
+    [],
   );
 
   const handleClick = useCallback(() => {
@@ -85,7 +86,8 @@ export function ArrowTool({
 
   const handleMouseDown = useCallback(
     (event: MouseEvent) => {
-      if (!contextRef.current) return;
+      if (!contextRef.current)
+        return;
 
       firstScreenShotImageDataRef.current = contextRef.current.getImageData(
         cutoutBoxX,
@@ -94,7 +96,8 @@ export function ArrowTool({
         cutoutBoxHeight,
       );
 
-      if (activeTarget !== 'arrow') return;
+      if (activeTarget !== 'arrow')
+        return;
 
       isCurrentArea(
         cutoutBoxX,
@@ -111,13 +114,15 @@ export function ArrowTool({
       contextRef.current.strokeStyle = arrowColor;
       contextRef.current.lineWidth = arrowWidth;
     },
-    [activeTarget, cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, isCurrentArea]
+    [activeTarget, cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, isCurrentArea],
   );
 
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {
-      if (!firstScreenShotImageDataRef.current || !contextRef.current) return;
-      if (!isDrawing || activeTarget !== 'arrow') return;
+      if (!firstScreenShotImageDataRef.current || !contextRef.current)
+        return;
+      if (!isDrawing || activeTarget !== 'arrow')
+        return;
 
       contextRef.current.putImageData(
         firstScreenShotImageDataRef.current,
@@ -127,11 +132,12 @@ export function ArrowTool({
 
       drawArrow(startPoint.x, startPoint.y, event.clientX, event.clientY);
     },
-    [isDrawing, activeTarget, cutoutBoxX, cutoutBoxY, startPoint, drawArrow]
+    [isDrawing, activeTarget, cutoutBoxX, cutoutBoxY, startPoint, drawArrow],
   );
 
   const handleMouseUp = useCallback(() => {
-    if (!isDrawing || activeTarget !== 'arrow' || !contextRef.current) return;
+    if (!isDrawing || activeTarget !== 'arrow' || !contextRef.current)
+      return;
 
     setIsDrawing(false);
 
@@ -145,7 +151,8 @@ export function ArrowTool({
   }, [isDrawing, activeTarget, cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, operateHistory]);
 
   useEffect(() => {
-    if (!drawCanvasElement) return;
+    if (!drawCanvasElement)
+      return;
 
     drawCanvasElement.addEventListener('mousedown', handleMouseDown as any);
     drawCanvasElement.addEventListener('mousemove', handleMouseMove as any);

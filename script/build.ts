@@ -90,7 +90,7 @@ function getBuildConfig(format: ModuleFormat) {
           { find: '@screenshots', replacement: resolve(__dirname, '../src') },
         ],
       }),
-      image({ dom: true }),
+      image({ dom: false }),
       postcss({
         modules: true,
         extract: true,

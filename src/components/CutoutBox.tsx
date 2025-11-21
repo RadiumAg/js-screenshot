@@ -340,10 +340,17 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
   useEffect(() => {
     if (!drawCanvasElement)
       return;
+    const cutoutBoxWidth = drawCanvasElement.width / 2;
+    const cutoutBoxHeight = drawCanvasElement.height / 2;
 
     setSize({
-      width: drawCanvasElement.width,
-      height: drawCanvasElement.height,
+      width: cutoutBoxWidth,
+      height: cutoutBoxHeight,
+    });
+
+    setPosition({
+      x: (drawCanvasElement.width - cutoutBoxWidth) / 2,
+      y: (drawCanvasElement.height - cutoutBoxHeight) / 2,
     });
 
     updatePosition();
