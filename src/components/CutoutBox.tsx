@@ -416,8 +416,8 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         <DotController
           key={index}
           cursor={dotPos.cursor}
-          cutoutBoxX={position.x}
-          cutoutBoxY={position.y}
+          cutoutBoxX={dotPos.x}
+          cutoutBoxY={dotPos.y}
           cutoutBoxWidth={size.width}
           cutoutBoxHeight={size.height}
           onUpdateAxis={handleDotControllerUpdateAxis}

@@ -12,14 +12,15 @@ class ScreenShot {
       try {
         // 创建并渲染 ScreenShot 组件
         this.container = createAndRenderComponent(
-          <ScreenShotComponent 
+          <ScreenShotComponent
             options={this.screenShotOptions}
             onComplete={(result) => {
               resolve(result);
             }}
-          />
+          />,
         );
-      } catch (error) {
+      }
+      catch (error) {
         reject(error);
       }
     });

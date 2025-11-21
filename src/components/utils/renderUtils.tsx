@@ -1,5 +1,5 @@
-import { render } from 'preact';
 import type { ComponentChildren } from 'preact';
+import { render } from 'preact';
 
 /**
  * 渲染 Preact 组件到指定容器
@@ -19,10 +19,10 @@ export function createAndRenderComponent(component: ComponentChildren): HTMLElem
   container.style.left = '0';
   container.style.pointerEvents = 'none';
   container.style.zIndex = '9999';
-  
+
   document.body.appendChild(container);
   render(component, container);
-  
+
   return container;
 }
 

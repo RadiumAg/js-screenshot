@@ -203,25 +203,6 @@ export function DotController({
     [activeTarget, throttledUpdateAxis],
   );
 
-  // 设置事件监听
-  useEffect(() => {
-    const el = elRef.current;
-    if (!el)
-      return;
-
-    el.addEventListener('mouseenter', handleMouseEnter);
-    el.addEventListener('mouseleave', handleMouseLeave);
-    el.addEventListener('mousedown', handleMouseDown as any);
-    el.addEventListener('mouseup', handleMouseUp as any);
-
-    return () => {
-      el.removeEventListener('mouseenter', handleMouseEnter);
-      el.removeEventListener('mouseleave', handleMouseLeave);
-      el.removeEventListener('mousedown', handleMouseDown as any);
-      el.removeEventListener('mouseup', handleMouseUp as any);
-    };
-  }, [handleMouseEnter, handleMouseLeave, handleMouseDown, handleMouseUp]);
-
   // 设置全局事件监听
   useEffect(() => {
     document.body.addEventListener('mousemove', handleGlobalMouseMove as any);
@@ -247,6 +228,11 @@ export function DotController({
         height: `${dotControllerSize}px`,
         position: 'fixed',
       }}
+
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
     />
   );
 }

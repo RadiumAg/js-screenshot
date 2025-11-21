@@ -1,6 +1,6 @@
-import { createContext } from 'preact';
-import { useContext, useState, useRef } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
+import { createContext } from 'preact';
+import { useContext, useRef, useState } from 'preact/hooks';
 
 /**
  * 操作历史记录类
@@ -58,31 +58,31 @@ export type ActiveTarget = any | null;
  */
 export interface ScreenshotContextValue {
   // Canvas 元素
-  drawCanvasElement: HTMLCanvasElement | null;
-  sourceCanvasElement: HTMLCanvasElement | null;
-  videoElement: HTMLVideoElement | null;
-  
+  drawCanvasElement: HTMLCanvasElement | null
+  sourceCanvasElement: HTMLCanvasElement | null
+  videoElement: HTMLVideoElement | null
+
   // 设置 Canvas 元素的方法
-  setDrawCanvasElement: (canvas: HTMLCanvasElement | null) => void;
-  setSourceCanvasElement: (canvas: HTMLCanvasElement | null) => void;
-  setVideoElement: (video: HTMLVideoElement | null) => void;
-  
+  setDrawCanvasElement: (canvas: HTMLCanvasElement | null) => void
+  setSourceCanvasElement: (canvas: HTMLCanvasElement | null) => void
+  setVideoElement: (video: HTMLVideoElement | null) => void
+
   // 操作历史
-  operateHistory: OperateHistory;
-  
+  operateHistory: OperateHistory
+
   // 激活的目标
-  activeTarget: ActiveTarget;
-  setActiveTarget: (target: ActiveTarget) => void;
-  
+  activeTarget: ActiveTarget
+  setActiveTarget: (target: ActiveTarget) => void
+
   // 状态标志
-  isLock: boolean;
-  setIsLock: (value: boolean) => void;
-  
-  isFirstInit: boolean;
-  setIsFirstInit: (value: boolean) => void;
-  
+  isLock: boolean
+  setIsLock: (value: boolean) => void
+
+  isFirstInit: boolean
+  setIsFirstInit: (value: boolean) => void
+
   // 常量
-  dotControllerSize: number;
+  dotControllerSize: number
 }
 
 const ScreenshotContext = createContext<ScreenshotContextValue | null>(null);
@@ -97,9 +97,9 @@ export function ScreenshotProvider({ children }: { children: ComponentChildren }
   const [activeTarget, setActiveTarget] = useState<ActiveTarget>(null);
   const [isLock, setIsLock] = useState(false);
   const [isFirstInit, setIsFirstInit] = useState(true);
-  
+
   const operateHistoryRef = useRef(new OperateHistory());
-  
+
   const value: ScreenshotContextValue = {
     drawCanvasElement,
     sourceCanvasElement,
@@ -116,7 +116,7 @@ export function ScreenshotProvider({ children }: { children: ComponentChildren }
     setIsFirstInit,
     dotControllerSize: 10,
   };
-  
+
   return (
     <ScreenshotContext.Provider value={value}>
       {children}
