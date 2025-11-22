@@ -1,8 +1,9 @@
 enum ACTIVE_TYPE {
-  cutoutBox,
-  mosaic,
-  arrow,
-  pen,
+  cutoutBox = 'cutoutBox',
+  mosaic = 'mosaic',
+  arrow = 'arrow',
+  pen = 'pen',
+  dotController = 'dotController',
 };
 
 export { ACTIVE_TYPE };

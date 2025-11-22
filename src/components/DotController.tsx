@@ -4,6 +4,7 @@ import Style from '@screenshots/theme/dot-controller.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
 import { useEffect, useRef } from 'preact/hooks';
 import { useScreenshotContext } from './context/ScreenshotContext';
+import { ACTIVE_TYPE } from './utils/share';
 
 export interface DotControllerProps {
   cursor: string
@@ -74,7 +75,6 @@ export function DotController({
 
   const throttledUpdateAxis = useRef(animateThrottleFn(updateAxis)).current;
 
- 
   /**
    * 停止移动
    */
@@ -120,7 +120,7 @@ export function DotController({
       };
 
       isMouseDownRef.current = true;
-      setActiveTarget('dotController');
+      setActiveTarget(ACTIVE_TYPE.dotController);
     },
   );
 
@@ -128,8 +128,9 @@ export function DotController({
    * 处理鼠标松开
    */
   const handleMouseUp = useMemoizedFn(() => {
-    if (activeTarget !== 'dotController')
+    if (activeTarget !== ACTIVE_TYPE.dotController)
       return;
+
     if (!contextRef.current)
       return;
 
@@ -149,15 +150,16 @@ export function DotController({
    */
   const handleGlobalMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
-      if (activeTarget !== null && activeTarget === 'dotController') {
-        if (isMouseDownRef.current) {
-          positionRef.current = {
-            x: oldPositionRef.current.x + event.clientX - oldClientRef.current.x,
-            y: oldPositionRef.current.y + event.clientY - oldClientRef.current.y,
-          };
+      if (activeTarget !== ACTIVE_TYPE.dotController)
+        return;
 
-          throttledUpdateAxis();
-        }
+      if (isMouseDownRef.current) {
+        positionRef.current = {
+          x: oldPositionRef.current.x + event.clientX - oldClientRef.current.x,
+          y: oldPositionRef.current.y + event.clientY - oldClientRef.current.y,
+        };
+
+        throttledUpdateAxis();
       }
     },
   );
@@ -176,7 +178,7 @@ export function DotController({
   // 初始化位置
   useEffect(() => {
     updatePosition(cutoutBoxX, cutoutBoxY);
-  });
+  },[cutoutBoxX, cutoutBoxY]);
 
   // 初始化 context
   useEffect(() => {

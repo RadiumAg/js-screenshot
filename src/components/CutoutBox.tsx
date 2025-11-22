@@ -21,12 +21,11 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
     sourceCanvasElement,
     operateHistory,
     activeTarget,
-    setActiveTarget,
     isLock,
-    setIsLock,
-    isFirstInit,
-    setIsFirstInit,
     dotControllerSize,
+    setIsLock,
+    setIsFirstInit,
+    setActiveTarget,
   } = useScreenshotContext();
 
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -220,7 +219,10 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
    */
   const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
-      if (activeTarget !== null && activeTarget !== 'cutoutBox')
+      if (activeTarget == null)
+        return;
+
+      if (activeTarget !== ACTIVE_TYPE.cutoutBox)
         return;
 
       if (isLock || !drawCanvasElement) {
