@@ -1,24 +1,25 @@
 import save from '@screenshots/assets/images/save.svg';
 import Style from '@screenshots/theme/save.module.scss';
 import { __isDev__, useDownLoad } from '@screenshots/utils';
+import type { FC } from 'preact/compat';
 import { useScreenshotContext } from '../context/screenshot-context';
 
 export interface SaveButtonProps {
-  cutoutBoxX: number
-  cutoutBoxY: number
-  cutoutBoxWidth: number
-  cutoutBoxHeight: number
+  cutoutBoxX: number;
+  cutoutBoxY: number;
+  cutoutBoxWidth: number;
+  cutoutBoxHeight: number;
 }
 
 /**
  * 保存按钮组件
  */
-export function SaveButton({
+export const SaveButton: FC<SaveButtonProps> = ({
   cutoutBoxX,
   cutoutBoxY,
   cutoutBoxWidth,
   cutoutBoxHeight,
-}: SaveButtonProps) {
+}) => {
   const { drawCanvasElement } = useScreenshotContext();
   const download = useDownLoad();
 

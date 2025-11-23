@@ -2,6 +2,7 @@ import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/cutout-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
+import type { FC } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useScreenshotContext } from './context/screenshot-context';
 import DotController from './dot-controller';
@@ -10,13 +11,13 @@ import { SizeIndicator } from './tools/size-indicator';
 import { ACTIVE_TYPE } from './utils/share';
 
 export interface CutoutBoxProps {
-  onComplete?: (result: any) => void
+  onComplete?: (result: any) => void;
 }
 
 /**
  * 裁剪框组件 - Preact 函数式组件版本
  */
-export function CutoutBox({ onComplete }: CutoutBoxProps) {
+export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
   const {
     container,
     drawCanvasElement,

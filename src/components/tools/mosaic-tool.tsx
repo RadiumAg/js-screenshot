@@ -2,26 +2,27 @@ import mosaic from '@screenshots/assets/images/mosaic.svg';
 import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/mosaic.module.scss';
+import type { FC } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useScreenshotContext } from '../context/screenshot-context';
 import { ACTIVE_TYPE } from '../utils/share';
 
 export interface MosaicToolProps {
-  cutoutBoxX: number
-  cutoutBoxY: number
-  cutoutBoxWidth: number
-  cutoutBoxHeight: number
+  cutoutBoxX: number;
+  cutoutBoxY: number;
+  cutoutBoxWidth: number;
+  cutoutBoxHeight: number;
 }
 
 /**
  * 马赛克工具组件
  */
-export function MosaicTool({
+export const MosaicTool: FC<MosaicToolProps> = ({
   cutoutBoxX,
   cutoutBoxY,
   cutoutBoxWidth,
   cutoutBoxHeight,
-}: MosaicToolProps) {
+}) => {
   const {
     activeTarget,
     operateHistory,

@@ -1,20 +1,21 @@
 import type { ScreenShotOptions } from '@screenshots/utils';
 import { useMount } from '@screenshots/hooks/use-mount';
 import { __isDev__ } from '@screenshots/utils';
+import type { FC } from 'preact/compat';
 import { useEffect, useState } from 'preact/hooks';
 import { ScreenshotProvider, useScreenshotContext } from './context/screenshot-context';
 import { CutoutBox } from './cutout-box';
 import { useCanvas } from './hooks/use-canvas';
 
 export interface ScreenShotProps {
-  options: ScreenShotOptions
-  onComplete?: (result: any) => void
+  options: ScreenShotOptions;
+  onComplete?: (result: any) => void;
 }
 
 /**
  * ScreenShot 内部组件
  */
-function ScreenShotInner({ options, onComplete }: ScreenShotProps) {
+const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete }) => {
   const [isInitialized, setIsInitialized] = useState(false);
   const {
     setDrawCanvasElement,
@@ -106,10 +107,10 @@ function ScreenShotInner({ options, onComplete }: ScreenShotProps) {
 /**
  * ScreenShot 函数式组件（带 Provider）
  */
-export function ScreenShot({ options, container, onComplete }: ScreenShotProps & { container: HTMLDivElement }) {
+export const ScreenShot: FC<ScreenShotProps & { container: HTMLDivElement }> = ({ options, container, onComplete }) => {
   return (
     <ScreenshotProvider container={container}>
       <ScreenShotInner options={options} onComplete={onComplete} />
     </ScreenshotProvider>
   );
-}
+};

@@ -1,22 +1,23 @@
 import Style from '@screenshots/theme/size-indicator.module.scss';
+import type { FC } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
 
 export interface SizeIndicatorProps {
-  width: number
-  height: number
-  dotControllerX: number
-  dotControllerY: number
+  width: number;
+  height: number;
+  dotControllerX: number;
+  dotControllerY: number;
 }
 
 /**
  * 尺寸指示器组件
  */
-export function SizeIndicator({
+export const SizeIndicator: FC<SizeIndicatorProps> = ({
   width,
   height,
   dotControllerX,
   dotControllerY,
-}: SizeIndicatorProps) {
+}) => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const elRef = useRef<HTMLDivElement>(null);
 

@@ -1,5 +1,6 @@
 import Style from '@screenshots/theme/tool-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
+import type { FC } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
 import { ArrowTool } from './tools/arrow-tool';
 import { MosaicTool } from './tools/mosaic-tool';
@@ -9,23 +10,23 @@ import { SaveButton } from './tools/save-button';
 import { TextBoxTool } from './tools/text-box-tool';
 
 export interface ToolBoxProps {
-  cutoutBoxX: number
-  cutoutBoxY: number
-  cutoutBoxWidth: number
-  cutoutBoxHeight: number
-  onCancel: () => void
+  cutoutBoxX: number;
+  cutoutBoxY: number;
+  cutoutBoxWidth: number;
+  cutoutBoxHeight: number;
+  onCancel: () => void;
 }
 
 /**
  * 工具箱组件
  */
-export function ToolBox({
+export const ToolBox: FC<ToolBoxProps> = ({
   cutoutBoxX,
   cutoutBoxY,
   cutoutBoxWidth,
   cutoutBoxHeight,
   onCancel,
-}: ToolBoxProps) {
+}) => {
   const elRef = useRef<HTMLDivElement>(null);
   const positionRef = useRef({ x: 0, y: 0 });
 

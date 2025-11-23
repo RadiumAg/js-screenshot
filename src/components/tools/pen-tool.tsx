@@ -2,26 +2,27 @@ import pen from '@screenshots/assets/images/pen.svg';
 import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/pen.module.scss';
+import type { FC } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
 import { useScreenshotContext } from '../context/screenshot-context';
 import { ACTIVE_TYPE } from '../utils/share';
 
 export interface PenToolProps {
-  cutoutBoxX: number
-  cutoutBoxY: number
-  cutoutBoxWidth: number
-  cutoutBoxHeight: number
+  cutoutBoxX: number;
+  cutoutBoxY: number;
+  cutoutBoxWidth: number;
+  cutoutBoxHeight: number;
 }
 
 /**
  * 画笔工具组件
  */
-export function PenTool({
+export const PenTool: FC<PenToolProps> = ({
   cutoutBoxX,
   cutoutBoxY,
   cutoutBoxWidth,
   cutoutBoxHeight,
-}: PenToolProps) {
+}) => {
   const {
     activeTarget,
     setActiveTarget,

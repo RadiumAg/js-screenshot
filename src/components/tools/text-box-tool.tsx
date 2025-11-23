@@ -2,25 +2,26 @@ import textBox from '@screenshots/assets/images/text-box.svg';
 import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/text-box.module.scss';
+import type { FC } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
 import { useScreenshotContext } from '../context/screenshot-context';
 
 export interface TextBoxToolProps {
-  cutoutBoxX: number
-  cutoutBoxY: number
-  cutoutBoxWidth: number
-  cutoutBoxHeight: number
+  cutoutBoxX: number;
+  cutoutBoxY: number;
+  cutoutBoxWidth: number;
+  cutoutBoxHeight: number;
 }
 
 /**
  * 文本框工具组件
  */
-export function TextBoxTool({
+export const TextBoxTool: FC<TextBoxToolProps> = ({
   cutoutBoxX,
   cutoutBoxY,
   cutoutBoxWidth,
   cutoutBoxHeight,
-}: TextBoxToolProps) {
+}) => {
   const {
     activeTarget,
     setActiveTarget,
