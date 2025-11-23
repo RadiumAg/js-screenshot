@@ -1,5 +1,5 @@
 import type { ScreenShotOptions } from '@screenshots/utils';
-import { useMount } from '@screenshots/hooks/useMount';
+import { useMount } from '@screenshots/hooks/use-mount';
 import { __isDev__ } from '@screenshots/utils';
 import { useEffect, useState } from 'preact/hooks';
 import { ScreenshotProvider, useScreenshotContext } from './context/screenshot-context';

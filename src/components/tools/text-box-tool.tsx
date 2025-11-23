@@ -1,6 +1,6 @@
 import textBox from '@screenshots/assets/images/text-box.svg';
-import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
-import { useMount } from '@screenshots/hooks/useMount';
+import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
+import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/text-box.module.scss';
 import { useEffect, useRef } from 'preact/hooks';
 import { useScreenshotContext } from '../context/screenshot-context';

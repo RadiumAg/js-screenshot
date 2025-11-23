@@ -1,5 +1,5 @@
-import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
-import { useMount } from '@screenshots/hooks/useMount';
+import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
+import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/cutout-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
 import { useEffect, useRef, useState } from 'preact/hooks';

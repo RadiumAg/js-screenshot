@@ -1,4 +1,4 @@
-import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
+import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useState } from 'preact/hooks';
 
 export interface Position {

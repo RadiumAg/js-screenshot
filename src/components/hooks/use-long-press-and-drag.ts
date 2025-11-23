@@ -1,5 +1,5 @@
 import type { RefObject } from 'preact';
-import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
+import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useEffect, useRef } from 'preact/hooks';
 
 interface Option {
