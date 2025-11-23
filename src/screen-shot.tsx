@@ -13,6 +13,7 @@ class ScreenShot {
         // 创建并渲染 ScreenShot 组件
         this.container = createAndRenderComponent(
           <ScreenShotComponent
+            container={null as any}
             options={this.screenShotOptions}
             onComplete={(result) => {
               resolve(result);

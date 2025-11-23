@@ -70,16 +70,12 @@ function ScreenShotInner({ options, onComplete }: ScreenShotProps) {
       videoElement.addEventListener('play', () => {
         const width = window.innerWidth;
         const height = window.innerHeight;
-
         sourceCanvasElement.width = width;
         sourceCanvasElement.height = height;
         drawCanvasElement.height = height;
         drawCanvasElement.width = width;
-
         document.body.append(drawCanvasElement);
-
         updateCanvas();
-
         setIsInitialized(true);
         resolve();
       });
@@ -110,9 +106,9 @@ function ScreenShotInner({ options, onComplete }: ScreenShotProps) {
 /**
  * ScreenShot 函数式组件（带 Provider）
  */
-export function ScreenShot({ options, onComplete }: ScreenShotProps) {
+export function ScreenShot({ options, container, onComplete }: ScreenShotProps & { container: HTMLDivElement }) {
   return (
-    <ScreenshotProvider>
+    <ScreenshotProvider container={container}>
       <ScreenShotInner options={options} onComplete={onComplete} />
     </ScreenshotProvider>
   );

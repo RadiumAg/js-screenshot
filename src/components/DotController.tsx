@@ -1,184 +1,48 @@
-import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
-import { useMount } from '@screenshots/hooks/useMount';
+import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/dot-controller.module.scss';
-import { animateThrottleFn } from '@screenshots/utils';
+import { memo } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
 import { useScreenshotContext } from './context/ScreenshotContext';
+import { useLongPressAndDrag } from './hooks/useLongPressAndDrag';
 import { ACTIVE_TYPE } from './utils/share';
 
 export interface DotControllerProps {
   cursor: string
-  cutoutBoxX: number
-  cutoutBoxY: number
-  cutoutBoxWidth: number
-  cutoutBoxHeight: number
-  onUpdateAxis: (x: number, y: number, oldX: number, oldY: number, oldCutoutBox: any) => void
+  left: number
+  top: number
+  onUpdateAxis: (xDistance: number, yDistance: number) => void
 }
 
 /**
  * DotController 组件 - 裁剪框控制点
  */
-export function DotController({
+const DotController: FC<DotControllerProps> = ({
   cursor,
-  cutoutBoxX,
-  cutoutBoxY,
-  cutoutBoxWidth,
-  cutoutBoxHeight,
+  left,
+  top,
   onUpdateAxis,
-}: DotControllerProps) {
+}) => {
   const {
+    container,
     activeTarget,
-    setActiveTarget,
-    setIsFirstInit,
-    operateHistory,
     drawCanvasElement,
     dotControllerSize,
+    setActiveTarget,
   } = useScreenshotContext();
-
+  const activeType = ACTIVE_TYPE.dotController + cursor;
   const elRef = useRef<HTMLDivElement>(null);
-  const positionRef = useRef({ x: 0, y: 0 });
-  const oldPositionRef = useRef({ x: 0, y: 0 });
-  const oldClientRef = useRef({ x: 0, y: 0 });
-  const oldCutoutBoxRef = useRef<any>(null);
-  const isMouseDownRef = useRef(false);
-
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  /**
-   * 更新控制点位置
-   */
-  const updatePosition = useMemoizedFn((x: number, y: number) => {
-    if (!elRef.current)
+  useLongPressAndDrag({ target: elRef, container, onDrag(distance) {
+    if (activeTarget !== activeType)
       return;
 
-    positionRef.current = {
-      x: x - dotControllerSize / 2,
-      y: y - dotControllerSize / 2,
-    };
-
-    elRef.current.style.left = `${positionRef.current.x}px`;
-    elRef.current.style.top = `${positionRef.current.y}px`;
-  });
-
-  /**
-   * 更新轴坐标
-   */
-  const updateAxis = useMemoizedFn(() => {
-    onUpdateAxis(
-      positionRef.current.x,
-      positionRef.current.y,
-      oldPositionRef.current.x,
-      oldPositionRef.current.y,
-      oldCutoutBoxRef.current,
-    );
-  });
-
-  const throttledUpdateAxis = useRef(animateThrottleFn(updateAxis)).current;
-
-  /**
-   * 停止移动
-   */
-  const stopMove = useMemoizedFn(() => {
-    isMouseDownRef.current = false;
+    onUpdateAxis(distance.xDistance, distance.yDistance);
+  }, onMouseUp() {
     setActiveTarget(null);
-    setIsFirstInit(false);
-  });
-
-  /**
-   * 处理鼠标进入
-   */
-  const handleMouseEnter = useMemoizedFn(() => {
-    if (activeTarget == null) {
-      document.body.style.cursor = cursor;
-    }
-  });
-
-  /**
-   * 处理鼠标离开
-   */
-  const handleMouseLeave = useMemoizedFn(() => {
-    if (activeTarget == null) {
-      document.body.style.cursor = '';
-    }
-  });
-
-  /**
-   * 处理鼠标按下
-   */
-  const handleMouseDown = useMemoizedFn(
-    (event: MouseEvent) => {
-      event.stopPropagation();
-
-      oldPositionRef.current = { ...positionRef.current };
-      oldClientRef.current = { x: event.clientX, y: event.clientY };
-
-      oldCutoutBoxRef.current = {
-        x: cutoutBoxX,
-        y: cutoutBoxY,
-        width: cutoutBoxWidth,
-        height: cutoutBoxHeight,
-      };
-
-      isMouseDownRef.current = true;
-      setActiveTarget(ACTIVE_TYPE.dotController);
-    },
-  );
-
-  /**
-   * 处理鼠标松开
-   */
-  const handleMouseUp = useMemoizedFn(() => {
-    if (activeTarget !== ACTIVE_TYPE.dotController)
-      return;
-
-    if (!contextRef.current)
-      return;
-
-    operateHistory.push(
-      contextRef.current.getImageData(
-        cutoutBoxX,
-        cutoutBoxY,
-        cutoutBoxWidth,
-        cutoutBoxHeight,
-      ),
-    );
-    stopMove();
-  });
-
-  /**
-   * 处理全局鼠标移动
-   */
-  const handleGlobalMouseMove = useMemoizedFn(
-    (event: MouseEvent) => {
-      if (activeTarget !== ACTIVE_TYPE.dotController)
-        return;
-
-      if (isMouseDownRef.current) {
-        positionRef.current = {
-          x: oldPositionRef.current.x + event.clientX - oldClientRef.current.x,
-          y: oldPositionRef.current.y + event.clientY - oldClientRef.current.y,
-        };
-
-        throttledUpdateAxis();
-      }
-    },
-  );
-
-  // 设置全局事件监听
-  useMount(() => {
-    document.body.addEventListener('mousemove', handleGlobalMouseMove);
-    document.body.addEventListener('mouseup', stopMove);
-
-    return () => {
-      document.body.removeEventListener('mousemove', handleGlobalMouseMove as any);
-      document.body.removeEventListener('mouseup', stopMove as any);
-    };
-  });
-
-  // 初始化位置
-  useEffect(() => {
-    updatePosition(cutoutBoxX, cutoutBoxY);
-  },[cutoutBoxX, cutoutBoxY]);
+  }, onMouseDown() {
+    setActiveTarget(activeType);
+  } });
 
   // 初始化 context
   useEffect(() => {
@@ -194,14 +58,15 @@ export function DotController({
       ref={elRef}
       class={Style['dot-controller']}
       style={{
+        left,
+        top,
         width: `${dotControllerSize}px`,
         height: `${dotControllerSize}px`,
         position: 'fixed',
       }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
+
     />
   );
-}
+};
+
+export default memo(DotController);

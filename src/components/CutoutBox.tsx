@@ -27,30 +27,14 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
     setIsFirstInit,
     setActiveTarget,
   } = useScreenshotContext();
-
+  const shifting = dotControllerSize / 2;
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [isMouseDown, setIsMouseDown] = useState(false);
-
-  const startYRef = useRef(0);
   const oldPositionRef = useRef({ x: 0, y: 0 });
   const oldClientRef = useRef({ x: 0, y: 0 });
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const sourceContextRef = useRef<CanvasRenderingContext2D | null>(null);
-
-  // 初始化 context
-  useEffect(() => {
-    if (drawCanvasElement) {
-      contextRef.current = drawCanvasElement.getContext('2d', {
-        willReadFrequently: true,
-      });
-    }
-    if (sourceCanvasElement) {
-      sourceContextRef.current = sourceCanvasElement.getContext('2d', {
-        willReadFrequently: true,
-      });
-    }
-  }, [drawCanvasElement, sourceCanvasElement]);
 
   /**
    * 设置半透明遮罩
@@ -101,12 +85,10 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
   const updatePosition = useMemoizedFn(() => {
     if (!sourceContextRef.current || !contextRef.current)
       return;
-
     updateBackground();
-
     const imgData = sourceContextRef.current.getImageData(
       position.x,
-      position.y + startYRef.current,
+      position.y,
       size.width || 1,
       size.height || 1,
     );
@@ -126,50 +108,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
   const isCurrentArea = useMemoizedFn(
     (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
       return x >= minX && x <= maxX && y >= minY && y <= maxY;
-    },
-  );
-
-  /**
-   * 处理控制点更新轴坐标
-   */
-  const handleDotControllerUpdateAxis = useMemoizedFn(
-    (x: number, y: number, oldX: number, oldY: number, oldCutoutBox: any) => {
-      if (!sourceContextRef.current || !contextRef.current)
-        return;
-
-      updateBackground();
-
-      // 根据控制点位置计算新的裁剪框尺寸和位置
-      const imageWidth = oldCutoutBox.width + (oldX - x);
-      const imageHeight = oldCutoutBox.height + (oldY - y);
-
-      setSize({
-        width: Math.abs(imageWidth),
-        height: Math.abs(imageHeight),
-      });
-
-      if (imageWidth > 0) {
-        setPosition(prev => ({ ...prev, x: x + dotControllerSize / 2 }));
-      }
-      else {
-        setPosition(prev => ({ ...prev, x: oldCutoutBox.x + oldCutoutBox.width }));
-      }
-
-      if (imageHeight > 0) {
-        setPosition(prev => ({ ...prev, y: y + dotControllerSize / 2 }));
-      }
-      else {
-        setPosition(prev => ({ ...prev, y: oldCutoutBox.y + oldCutoutBox.height }));
-      }
-
-      const imgData = sourceContextRef.current.getImageData(
-        position.x,
-        position.y + startYRef.current,
-        size.width || 1,
-        size.height || 1,
-      );
-
-      contextRef.current.putImageData(imgData, position.x, position.y);
     },
   );
 
@@ -219,9 +157,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
    */
   const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
-      if (activeTarget == null)
-        return;
-
       if (activeTarget !== ACTIVE_TYPE.cutoutBox)
         return;
 
@@ -334,13 +269,8 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
     updatePosition();
   });
 
-  // 监听位置变化，更新渲染
-  useEffect(() => {
-    updatePosition();
-  }, [position, size, updatePosition]);
-
   // 设置事件监听
-  useEffect(() => {
+  useMount(() => {
     document.body.addEventListener('mousedown', handleMouseDown);
     document.body.addEventListener('mouseup', handleMouseUp);
     document.body.addEventListener('mousemove', handleMouseMove);
@@ -363,7 +293,7 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
       // 清理
       document.body.style.cursor = '';
     };
-  }, []);
+  });
 
   // 清理函数
   useEffect(() => {
@@ -375,16 +305,145 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
     };
   }, []);
 
+  // 初始化 context
+  useMount(() => {
+    if (drawCanvasElement) {
+      contextRef.current = drawCanvasElement.getContext('2d', {
+        willReadFrequently: true,
+      });
+    }
+    if (sourceCanvasElement) {
+      sourceContextRef.current = sourceCanvasElement.getContext('2d', {
+        willReadFrequently: true,
+      });
+    }
+  });
+
   // 计算控制点位置
   const dotControllerPositions = [
-    { x: position.x, y: position.y, cursor: 'nwse-resize' },
-    { x: position.x + size.width / 2, y: position.y, cursor: 'ns-resize' },
-    { x: position.x + size.width, y: position.y, cursor: 'nesw-resize' },
-    { x: position.x + size.width, y: position.y + size.height / 2, cursor: 'ew-resize' },
-    { x: position.x + size.width, y: position.y + size.height, cursor: 'nwse-resize' },
-    { x: position.x + size.width / 2, y: position.y + size.height, cursor: 'ns-resize' },
-    { x: position.x, y: position.y + size.height, cursor: 'nesw-resize' },
-    { x: position.x, y: position.y + size.height / 2, cursor: 'ew-resize' },
+    { x: position.x - shifting, y: position.y - shifting, cursor: 'nwse-resize', onUpdateAxis(xDistance: number, yDistance: number) {
+      if (!sourceContextRef.current || !contextRef.current)
+        return;
+      setPosition((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.x = oldValue.x + xDistance;
+        newValue.y = oldValue.y + yDistance;
+        return newValue;
+      });
+      setSize((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.width = oldValue.width - xDistance;
+        newValue.height = oldValue.height - yDistance;
+        return newValue;
+      });
+      updateBackground();
+      throttledUpdatePosition();
+    } }, // 左上
+    { x: position.x + size.width / 2 - shifting, y: position.y - shifting, cursor: 'ns-resize', onUpdateAxis(xDistance: number, yDistance: number) {
+      if (!sourceContextRef.current || !contextRef.current)
+        return;
+      setPosition((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.y = oldValue.y + yDistance;
+        return newValue;
+      });
+      setSize((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.height = oldValue.height - yDistance;
+        return newValue;
+      });
+
+      updateBackground();
+      throttledUpdatePosition();
+    } }, // 上中
+    { x: position.x + size.width - shifting, y: position.y - shifting, cursor: 'nesw-resize', onUpdateAxis(xDistance: number, yDistance: number) {
+      if (!sourceContextRef.current || !contextRef.current)
+        return;
+      setSize((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.width = oldValue.width + xDistance;
+        newValue.height = oldValue.height - yDistance;
+        return newValue;
+      });
+      setPosition((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.y = oldValue.y + yDistance;
+        return newValue;
+      });
+
+      updateBackground();
+      throttledUpdatePosition();
+    } }, // 上右
+    { x: position.x + size.width - shifting, y: position.y + size.height / 2, cursor: 'ew-resize', onUpdateAxis(xDistance: number, yDistance: number) {
+      if (!sourceContextRef.current || !contextRef.current)
+        return;
+      setSize((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.width = oldValue.width + xDistance;
+        return newValue;
+      });
+
+      updateBackground();
+      throttledUpdatePosition();
+    } }, // 右中
+    { x: position.x + size.width - shifting, y: position.y + size.height - shifting, cursor: 'nwse-resize', onUpdateAxis(xDistance: number, yDistance: number) {
+      if (!sourceContextRef.current || !contextRef.current)
+        return;
+      setSize((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.width = oldValue.width + xDistance;
+        newValue.height = oldValue.height + yDistance;
+        return newValue;
+      });
+      updateBackground();
+      throttledUpdatePosition();
+    } }, // 右下
+    { x: position.x + size.width / 2, y: position.y + size.height - shifting, cursor: 'ns-resize', onUpdateAxis(xDistance: number, yDistance: number) {
+      if (!sourceContextRef.current || !contextRef.current)
+        return;
+      setSize((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.height = oldValue.height + yDistance;
+        return newValue;
+      });
+      updateBackground();
+      throttledUpdatePosition();
+    } }, // 下中
+    { x: position.x - shifting, y: position.y + size.height - shifting, cursor: 'nesw-resize', onUpdateAxis(xDistance: number, yDistance: number) {
+      if (!sourceContextRef.current || !contextRef.current)
+        return;
+      setPosition((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.x = oldValue.x + xDistance;
+        return newValue;
+      });
+      setSize((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.width = oldValue.width - xDistance;
+        newValue.height = oldValue.height + yDistance;
+        return newValue;
+      });
+
+      updateBackground();
+      throttledUpdatePosition();
+    } }, // 下左
+    { x: position.x - shifting, y: position.y + size.height / 2 - shifting, cursor: 'ew-resize', onUpdateAxis(xDistance: number, yDistance: number) {
+      if (!sourceContextRef.current || !contextRef.current)
+        return;
+      setPosition((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.x = oldValue.x + xDistance;
+        return newValue;
+      });
+      setSize((oldValue) => {
+        const newValue = { ...oldValue };
+        newValue.width = oldValue.width - xDistance;
+        return newValue;
+      });
+
+      updateBackground();
+      throttledUpdatePosition();
+    } }, // 左中
   ];
 
   return (
@@ -393,12 +452,10 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
       {dotControllerPositions.map((dotPos, index) => (
         <DotController
           key={index}
+          left={dotPos.x}
+          top={dotPos.y}
           cursor={dotPos.cursor}
-          cutoutBoxX={dotPos.x}
-          cutoutBoxY={dotPos.y}
-          cutoutBoxWidth={size.width}
-          cutoutBoxHeight={size.height}
-          onUpdateAxis={handleDotControllerUpdateAxis}
+          onUpdateAxis={dotPos.onUpdateAxis}
         />
       ))}
 

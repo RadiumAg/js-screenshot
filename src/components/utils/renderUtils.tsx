@@ -1,5 +1,5 @@
-import type { ComponentChildren } from 'preact';
-import { render } from 'preact';
+import type { ComponentChildren, VNode } from 'preact';
+import { cloneElement, render } from 'preact';
 
 /**
  * 渲染 Preact 组件到指定容器
@@ -12,16 +12,19 @@ export function renderComponent(component: ComponentChildren, container?: HTMLEl
 /**
  * 创建一个临时容器并渲染组件
  */
-export function createAndRenderComponent(component: ComponentChildren): HTMLElement {
+export function createAndRenderComponent(component: VNode): HTMLElement {
   const container = document.createElement('div');
   container.style.position = 'fixed';
   container.style.top = '0';
+  container.style.width = '100%';
+  container.style.height = '100%';
   container.style.left = '0';
   // container.style.pointerEvents = 'none';
   container.style.zIndex = '9999';
 
   document.body.appendChild(container);
-  render(component, container);
+  // eslint-disable-next-line react/no-clone-element
+  render(cloneElement(component, { container }), container);
 
   return container;
 }

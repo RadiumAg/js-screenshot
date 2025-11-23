@@ -2,6 +2,7 @@
 .dot-controller {
   z-index: 999;
   position: fixed;
+  user-select: none;
   border-radius: 50%;
   background-color: #fff000;
 }

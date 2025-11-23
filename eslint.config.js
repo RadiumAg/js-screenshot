@@ -6,6 +6,7 @@ export default antfu({
   rules: {
     'style/semi': ['error', 'always'],
     'no-useless-return': 'off',
+    'antfu/top-level-function': 'off'
   },
   ignores: ['node_modules', 'package.json', 'babel.config.js', 'lib', 'es', 'dist'],
 });

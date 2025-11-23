@@ -52,12 +52,13 @@ class OperateHistory extends Array<ImageData> {
 /**
  * 激活目标类型
  */
-export type ActiveTarget = ACTIVE_TYPE | null;
+export type ActiveTarget = string | null;
 
 /**
  * Screenshot Context 接口
  */
 export interface ScreenshotContextValue {
+  container: HTMLDivElement // 渲染的容器元素
   // Canvas 元素
   drawCanvasElement: HTMLCanvasElement | null
   sourceCanvasElement: HTMLCanvasElement | null
@@ -91,7 +92,7 @@ const ScreenshotContext = createContext<ScreenshotContextValue | null>(null);
 /**
  * Screenshot Context Provider
  */
-export function ScreenshotProvider({ children }: { children: ComponentChildren }) {
+export function ScreenshotProvider({ children, container}: { children: ComponentChildren, container: HTMLDivElement }) {
   const [drawCanvasElement, setDrawCanvasElement] = useState<HTMLCanvasElement | null>(null);
   const [sourceCanvasElement, setSourceCanvasElement] = useState<HTMLCanvasElement | null>(null);
   const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(null);
@@ -103,21 +104,22 @@ export function ScreenshotProvider({ children }: { children: ComponentChildren }
 
   const value: ScreenshotContextValue = useMemo(() => ({
     drawCanvasElement,
+    container,
     sourceCanvasElement,
     videoElement,
+    operateHistory: operateHistoryRef.current,
+    activeTarget,
+    isLock,
+    isFirstInit,
+    dotControllerSize: 10,
     setDrawCanvasElement,
     setSourceCanvasElement,
     setVideoElement,
-    operateHistory: operateHistoryRef.current,
-    activeTarget,
-    setActiveTarget,
-    isLock,
-    setIsLock,
-    isFirstInit,
     setIsFirstInit,
-    dotControllerSize: 10,
+    setIsLock,
+    setActiveTarget,
   }
-  ), [activeTarget, drawCanvasElement, isFirstInit, isLock, sourceCanvasElement, videoElement]);
+  ), [activeTarget, container, drawCanvasElement, isFirstInit, isLock, sourceCanvasElement, videoElement]);
 
   return (
     <ScreenshotContext value={value}>
