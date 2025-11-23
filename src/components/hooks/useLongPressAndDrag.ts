@@ -8,6 +8,8 @@ interface Option {
   onDrag: (distance: { xDistance: number, yDistance: number }) => void
   onMouseUp?: () => void
   onMouseDown?: () => void
+  onMouseOver?: () => void
+  onMouseOut?: () => void
 }
 
 const useLongPressAndDrag = (option: Option) => {

@@ -1,9 +1,10 @@
 import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
 import { useMount } from '@screenshots/hooks/useMount';
+import Style from '@screenshots/theme/cutout-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useScreenshotContext } from './context/ScreenshotContext';
-import { DotController } from './DotController';
+import DotController from './DotController';
 import { ToolBox } from './ToolBox';
 import { SizeIndicator } from './tools/SizeIndicator';
 import { ACTIVE_TYPE } from './utils/share';
@@ -17,6 +18,7 @@ export interface CutoutBoxProps {
  */
 export function CutoutBox({ onComplete }: CutoutBoxProps) {
   const {
+    container,
     drawCanvasElement,
     sourceCanvasElement,
     operateHistory,
@@ -119,22 +121,10 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
       if (isLock)
         return;
 
-      if (
-        isCurrentArea(
-          position.x,
-          position.x + size.width,
-          position.y,
-          position.y + size.height,
-          event.clientX,
-          event.clientY,
-        )
-        && event.button === 0
-      ) {
-        oldClientRef.current = { x: event.clientX, y: event.clientY };
-        oldPositionRef.current = { x: position.x, y: position.y };
-        setIsMouseDown(true);
-        setActiveTarget(ACTIVE_TYPE.cutoutBox);
-      }
+      oldClientRef.current = { x: event.clientX, y: event.clientY };
+      oldPositionRef.current = { x: position.x, y: position.y };
+      setIsMouseDown(true);
+      setActiveTarget(ACTIVE_TYPE.cutoutBox);
     },
   );
 
@@ -183,32 +173,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
 
         setPosition({ x: newX, y: newY });
         throttledUpdatePosition();
-      }
-    },
-  );
-
-  /**
-   * 处理 Canvas 鼠标移动（用于光标样式）
-   */
-  const handleCanvasMouseMove = useMemoizedFn(
-    (event: MouseEvent) => {
-      if (activeTarget != null)
-        return;
-
-      if (
-        isCurrentArea(
-          position.x,
-          position.x + size.width,
-          position.y,
-          position.y + size.height,
-          event.clientX,
-          event.clientY,
-        )
-      ) {
-        document.body.style.cursor = isLock ? '' : 'move';
-      }
-      else {
-        document.body.style.cursor = '';
       }
     },
   );
@@ -266,31 +230,19 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
       y: (drawCanvasElement.height - cutoutBoxHeight) / 2,
     });
 
-    updatePosition();
+    throttledUpdatePosition();
   });
 
   // 设置事件监听
   useMount(() => {
-    document.body.addEventListener('mousedown', handleMouseDown);
-    document.body.addEventListener('mouseup', handleMouseUp);
-    document.body.addEventListener('mousemove', handleMouseMove);
-    document.body.addEventListener('keydown', handleKeyDown);
-
-    if (drawCanvasElement) {
-      drawCanvasElement.addEventListener('mousemove', handleCanvasMouseMove);
-    }
+    drawCanvasElement?.addEventListener('mouseup', handleMouseUp);
+    container.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.body.removeEventListener('mousedown', handleMouseDown);
-      document.body.removeEventListener('mouseup', handleMouseUp);
-      document.body.removeEventListener('mousemove', handleMouseMove);
-      document.body.removeEventListener('keydown', handleKeyDown);
-
-      if (drawCanvasElement) {
-        drawCanvasElement.removeEventListener('mousemove', handleCanvasMouseMove);
-      }
-
-      // 清理
+      drawCanvasElement?.removeEventListener('mouseup', handleMouseUp);
+      container.removeEventListener('mousemove', handleMouseMove);
+      container.removeEventListener('keydown', handleKeyDown);
       document.body.style.cursor = '';
     };
   });
@@ -336,7 +288,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         newValue.height = oldValue.height - yDistance;
         return newValue;
       });
-      updateBackground();
       throttledUpdatePosition();
     } }, // 左上
     { x: position.x + size.width / 2 - shifting, y: position.y - shifting, cursor: 'ns-resize', onUpdateAxis(xDistance: number, yDistance: number) {
@@ -352,8 +303,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         newValue.height = oldValue.height - yDistance;
         return newValue;
       });
-
-      updateBackground();
       throttledUpdatePosition();
     } }, // 上中
     { x: position.x + size.width - shifting, y: position.y - shifting, cursor: 'nesw-resize', onUpdateAxis(xDistance: number, yDistance: number) {
@@ -370,8 +319,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         newValue.y = oldValue.y + yDistance;
         return newValue;
       });
-
-      updateBackground();
       throttledUpdatePosition();
     } }, // 上右
     { x: position.x + size.width - shifting, y: position.y + size.height / 2, cursor: 'ew-resize', onUpdateAxis(xDistance: number, yDistance: number) {
@@ -382,8 +329,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         newValue.width = oldValue.width + xDistance;
         return newValue;
       });
-
-      updateBackground();
       throttledUpdatePosition();
     } }, // 右中
     { x: position.x + size.width - shifting, y: position.y + size.height - shifting, cursor: 'nwse-resize', onUpdateAxis(xDistance: number, yDistance: number) {
@@ -395,7 +340,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         newValue.height = oldValue.height + yDistance;
         return newValue;
       });
-      updateBackground();
       throttledUpdatePosition();
     } }, // 右下
     { x: position.x + size.width / 2, y: position.y + size.height - shifting, cursor: 'ns-resize', onUpdateAxis(xDistance: number, yDistance: number) {
@@ -406,7 +350,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         newValue.height = oldValue.height + yDistance;
         return newValue;
       });
-      updateBackground();
       throttledUpdatePosition();
     } }, // 下中
     { x: position.x - shifting, y: position.y + size.height - shifting, cursor: 'nesw-resize', onUpdateAxis(xDistance: number, yDistance: number) {
@@ -424,7 +367,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         return newValue;
       });
 
-      updateBackground();
       throttledUpdatePosition();
     } }, // 下左
     { x: position.x - shifting, y: position.y + size.height / 2 - shifting, cursor: 'ew-resize', onUpdateAxis(xDistance: number, yDistance: number) {
@@ -440,8 +382,6 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
         newValue.width = oldValue.width - xDistance;
         return newValue;
       });
-
-      updateBackground();
       throttledUpdatePosition();
     } }, // 左中
   ];
@@ -458,6 +398,18 @@ export function CutoutBox({ onComplete }: CutoutBoxProps) {
           onUpdateAxis={dotPos.onUpdateAxis}
         />
       ))}
+
+      <div
+        onMouseDown={handleMouseDown}
+        className={Style['cutout-box']}
+        style={{
+          left: position.x,
+          top: position.y,
+          width: size.width - shifting,
+          height: size.height - shifting,
+        }}
+      >
+      </div>
 
       {/* 工具箱 */}
       <ToolBox

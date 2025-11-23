@@ -56,16 +56,22 @@ const DotController: FC<DotControllerProps> = ({
   return (
     <div
       ref={elRef}
-      class={Style['dot-controller']}
       style={{
         left,
         top,
-        width: `${dotControllerSize}px`,
-        height: `${dotControllerSize}px`,
+        cursor,
         position: 'fixed',
       }}
-
-    />
+      class={Style['dot-controller-container']}
+    >
+      <div
+        style={{
+          width: `${dotControllerSize}px`,
+          height: `${dotControllerSize}px`,
+        }}
+        class={Style['dot-controller']}
+      />
+    </div>
   );
 };
 

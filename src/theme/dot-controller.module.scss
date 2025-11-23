@@ -1,8 +1,12 @@
-/** @format */
-.dot-controller {
-  z-index: 999;
+.dot-controller-container {
+  z-index: 1000;
   position: fixed;
+  padding: 10px;
+  transform: translate(-10px, -10px);
   user-select: none;
+}
+
+.dot-controller {
   border-radius: 50%;
   background-color: #fff000;
 }
