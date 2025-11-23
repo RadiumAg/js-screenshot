@@ -4,7 +4,7 @@ import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/mosaic.module.scss';
 import type { FC } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { useScreenshotContext } from '../context/screenshot-context';
+import { useScreenshotStore } from '../../store/screenshot-store';
 import { ACTIVE_TYPE } from '../utils/share';
 
 export interface MosaicToolProps {
@@ -29,7 +29,7 @@ export const MosaicTool: FC<MosaicToolProps> = ({
     drawCanvasElement,
     setActiveTarget,
     setIsLock,
-  } = useScreenshotContext();
+  } = useScreenshotStore();
 
   const [isDrawing, setIsDrawing] = useState(false);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);

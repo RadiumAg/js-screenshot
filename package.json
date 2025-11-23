@@ -22,7 +22,8 @@
   "dependencies": {
     "@preact/compat": "^18.3.1",
     "html2canvas": "^1.4.1",
-    "preact": "^10.27.2"
+    "preact": "^10.27.2",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",

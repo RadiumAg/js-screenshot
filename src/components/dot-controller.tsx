@@ -2,7 +2,7 @@ import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/dot-controller.module.scss';
 import { memo } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
-import { useScreenshotContext } from './context/screenshot-context';
+import { useScreenshotStore } from '../store/screenshot-store';
 import { useLongPressAndDrag } from './hooks/use-long-press-and-drag';
 import { ACTIVE_TYPE } from './utils/share';
 
@@ -28,7 +28,7 @@ const DotController: FC<DotControllerProps> = ({
     drawCanvasElement,
     dotControllerSize,
     setActiveTarget,
-  } = useScreenshotContext();
+  } = useScreenshotStore();
   const activeType = ACTIVE_TYPE.dotController + cursor;
   const elRef = useRef<HTMLDivElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);

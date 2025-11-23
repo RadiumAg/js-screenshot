@@ -3,9 +3,9 @@ import { useMount } from '@screenshots/hooks/use-mount';
 import { __isDev__ } from '@screenshots/utils';
 import type { FC } from 'preact/compat';
 import { useEffect, useState } from 'preact/hooks';
-import { ScreenshotProvider, useScreenshotContext } from './context/screenshot-context';
 import { CutoutBox } from './cutout-box';
 import { useCanvas } from './hooks/use-canvas';
+import { useScreenshotStore } from '../store/screenshot-store';
 
 export interface ScreenShotProps {
   options: ScreenShotOptions;
@@ -21,7 +21,7 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete }) => {
     setDrawCanvasElement,
     setSourceCanvasElement,
     setVideoElement,
-  } = useScreenshotContext();
+  } = useScreenshotStore();
 
   const { createCanvas } = useCanvas();
 
@@ -105,12 +105,16 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete }) => {
 }
 
 /**
- * ScreenShot 函数式组件（带 Provider）
+ * ScreenShot 函数式组件
  */
 export const ScreenShot: FC<ScreenShotProps & { container: HTMLDivElement }> = ({ options, container, onComplete }) => {
-  return (
-    <ScreenshotProvider container={container}>
-      <ScreenShotInner options={options} onComplete={onComplete} />
-    </ScreenshotProvider>
-  );
+  // 初始化store中的container
+  const { setContainer } = useScreenshotStore();
+  
+  // 设置容器
+  useEffect(() => {
+    setContainer(container);
+  }, [container, setContainer]);
+  
+  return <ScreenShotInner options={options} onComplete={onComplete} />;
 };

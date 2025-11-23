@@ -1,17 +1,17 @@
+import type { FC } from 'preact/compat';
 import arrow from '@screenshots/assets/images/arrow.svg';
 import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/arrow.module.scss';
-import type { FC } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { useScreenshotContext } from '../context/screenshot-context';
+import { useScreenshotStore } from '../../store/screenshot-store';
 import { ACTIVE_TYPE } from '../utils/share';
 
 export interface ArrowToolProps {
-  cutoutBoxX: number;
-  cutoutBoxY: number;
-  cutoutBoxWidth: number;
-  cutoutBoxHeight: number;
+  cutoutBoxX: number
+  cutoutBoxY: number
+  cutoutBoxWidth: number
+  cutoutBoxHeight: number
 }
 
 /**
@@ -29,7 +29,7 @@ export const ArrowTool: FC<ArrowToolProps> = ({
     setIsLock,
     operateHistory,
     drawCanvasElement,
-  } = useScreenshotContext();
+  } = useScreenshotStore();
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
@@ -170,4 +170,4 @@ export const ArrowTool: FC<ArrowToolProps> = ({
       <img src={arrow} alt="arrow" />
     </div>
   );
-}
+};

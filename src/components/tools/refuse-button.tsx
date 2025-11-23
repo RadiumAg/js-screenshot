@@ -1,7 +1,7 @@
 import refuse from '@screenshots/assets/images/refuse.svg';
 import Style from '@screenshots/theme/refuse.module.scss';
 import type { FC } from 'preact/compat';
-import { useScreenshotContext } from '../context/screenshot-context';
+import { useScreenshotStore } from '../../store/screenshot-store';
 
 export interface RefuseButtonProps {
   onCancel: () => void;
@@ -11,7 +11,7 @@ export interface RefuseButtonProps {
  * 取消按钮组件
  */
 export const RefuseButton: FC<RefuseButtonProps> = ({ onCancel }) => {
-  const { operateHistory, drawCanvasElement } = useScreenshotContext();
+  const { operateHistory, drawCanvasElement } = useScreenshotStore();
 
   const handleClick = () => {
     // 清空操作历史

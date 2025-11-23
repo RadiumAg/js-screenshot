@@ -4,7 +4,7 @@ import Style from '@screenshots/theme/cutout-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
 import type { FC } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { useScreenshotContext } from './context/screenshot-context';
+import { useScreenshotStore } from '../store/screenshot-store';
 import DotController from './dot-controller';
 import { ToolBox } from './tool-box';
 import { SizeIndicator } from './tools/size-indicator';
@@ -29,7 +29,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     setIsLock,
     setIsFirstInit,
     setActiveTarget,
-  } = useScreenshotContext();
+  } = useScreenshotStore();
   const shifting = dotControllerSize / 2;
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 0, height: 0 });

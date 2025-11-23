@@ -1,16 +1,16 @@
+import type { FC } from 'preact/compat';
 import textBox from '@screenshots/assets/images/text-box.svg';
 import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/text-box.module.scss';
-import type { FC } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
-import { useScreenshotContext } from '../context/screenshot-context';
+import { useScreenshotStore } from '../../store/screenshot-store';
 
 export interface TextBoxToolProps {
-  cutoutBoxX: number;
-  cutoutBoxY: number;
-  cutoutBoxWidth: number;
-  cutoutBoxHeight: number;
+  cutoutBoxX: number
+  cutoutBoxY: number
+  cutoutBoxWidth: number
+  cutoutBoxHeight: number
 }
 
 /**
@@ -30,7 +30,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     operateHistory,
     drawCanvasElement,
     dotControllerSize,
-  } = useScreenshotContext();
+  } = useScreenshotStore();
 
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const preTextareaRef = useRef<HTMLDivElement | null>(null);
@@ -334,4 +334,4 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
       <img src={textBox} alt="text" />
     </div>
   );
-}
+};

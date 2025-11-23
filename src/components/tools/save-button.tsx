@@ -2,7 +2,7 @@ import save from '@screenshots/assets/images/save.svg';
 import Style from '@screenshots/theme/save.module.scss';
 import { __isDev__, useDownLoad } from '@screenshots/utils';
 import type { FC } from 'preact/compat';
-import { useScreenshotContext } from '../context/screenshot-context';
+import { useScreenshotStore } from '../../store/screenshot-store';
 
 export interface SaveButtonProps {
   cutoutBoxX: number;
@@ -20,7 +20,7 @@ export const SaveButton: FC<SaveButtonProps> = ({
   cutoutBoxWidth,
   cutoutBoxHeight,
 }) => {
-  const { drawCanvasElement } = useScreenshotContext();
+  const { drawCanvasElement } = useScreenshotStore();
   const download = useDownLoad();
 
   const handleClick = () => {

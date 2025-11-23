@@ -1,5 +1,4 @@
 import type { ComponentChildren } from 'preact';
-import type { ACTIVE_TYPE } from '../utils/share';
 import { createContext } from 'preact';
 import { useContext, useMemo, useRef, useState } from 'preact/hooks';
 
