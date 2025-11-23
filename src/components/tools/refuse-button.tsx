@@ -1,6 +1,6 @@
 import refuse from '@screenshots/assets/images/refuse.svg';
 import Style from '@screenshots/theme/refuse.module.scss';
-import { useScreenshotContext } from '../context/ScreenshotContext';
+import { useScreenshotContext } from '../context/screenshot-context';
 
 export interface RefuseButtonProps {
   onCancel: () => void

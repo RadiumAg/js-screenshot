@@ -3,10 +3,10 @@ import { useMount } from '@screenshots/hooks/useMount';
 import Style from '@screenshots/theme/cutout-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { useScreenshotContext } from './context/ScreenshotContext';
-import DotController from './DotController';
-import { ToolBox } from './ToolBox';
-import { SizeIndicator } from './tools/SizeIndicator';
+import { useScreenshotContext } from './context/screenshot-context';
+import DotController from './dot-controller';
+import { ToolBox } from './tool-box';
+import { SizeIndicator } from './tools/size-indicator';
 import { ACTIVE_TYPE } from './utils/share';
 
 export interface CutoutBoxProps {

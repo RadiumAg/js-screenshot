@@ -1,7 +1,7 @@
 import save from '@screenshots/assets/images/save.svg';
 import Style from '@screenshots/theme/save.module.scss';
 import { __isDev__, useDownLoad } from '@screenshots/utils';
-import { useScreenshotContext } from '../context/ScreenshotContext';
+import { useScreenshotContext } from '../context/screenshot-context';
 
 export interface SaveButtonProps {
   cutoutBoxX: number

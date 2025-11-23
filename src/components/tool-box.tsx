@@ -1,12 +1,12 @@
 import Style from '@screenshots/theme/tool-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
 import { useEffect, useRef } from 'preact/hooks';
-import { ArrowTool } from './tools/ArrowTool';
-import { MosaicTool } from './tools/MosaicTool';
-import { PenTool } from './tools/PenTool';
-import { RefuseButton } from './tools/RefuseButton';
-import { SaveButton } from './tools/SaveButton';
-import { TextBoxTool } from './tools/TextBoxTool';
+import { ArrowTool } from './tools/arrow-tool';
+import { MosaicTool } from './tools/mosaic-tool';
+import { PenTool } from './tools/pen-tool';
+import { RefuseButton } from './tools/refuse-button';
+import { SaveButton } from './tools/save-button';
+import { TextBoxTool } from './tools/text-box-tool';
 
 export interface ToolBoxProps {
   cutoutBoxX: number

@@ -220,6 +220,81 @@ function loadImage(src: string) {
 
 ## 模块化规范
 
+### 文件命名规范
+- **必须**使用短横线连接的小写字母形式命名文件（如 `cutout-box.tsx`）
+- **禁止**使用驼峰命名法命名文件（如 `cutoutBox.tsx`）
+- **必须**保持文件名与其导出的主要组件/功能名称的一致性
+- **必须**使用语义化的文件名，清晰表达文件用途
+
+```typescript
+// ✅ 正确做法 - 文件名: cutout-box.tsx
+export const CutoutBox: FC<CutoutBoxProps> = ({ ... }) => {
+  // 组件实现
+};
+
+// ✅ 正确做法 - 文件名: text-box.tsx
+export const TextBox: FC<TextBoxProps> = ({ ... }) => {
+  // 组件实现
+};
+
+// ✅ 正确做法 - 文件名: canvas-manager.ts
+export class CanvasManager {
+  // 类实现
+};
+
+// ❌ 错误做法 - 文件名: cutoutBox.tsx
+// 应该重命名为: cutout-box.tsx
+
+// ❌ 错误做法 - 文件名: textBoxComponent.tsx
+// 应该重命名为: text-box.tsx
+
+// ❌ 错误做法 - 文件名: CanvasManager.ts
+// 应该重命名为: canvas-manager.ts
+```
+
+### 目录命名规范
+- **必须**使用短横线连接的小写字母形式命名目录
+- **禁止**使用驼峰命名法或下划线命名法命名目录
+- **必须**使用有意义的目录名，反映其包含内容的功能
+
+```typescript
+// ✅ 正确做法的目录结构
+src/
+├── components/
+│   ├── cutout-box/
+│   │   ├── cutout-box.tsx
+│   │   ├── cutout-box.module.scss
+│   │   └── index.ts
+│   ├── text-box/
+│   │   ├── text-box.tsx
+│   │   ├── text-box.module.scss
+│   │   └── index.ts
+│   └── dot-controller/
+│       ├── dot-controller.tsx
+│       └── dot-controller.module.scss
+├── hooks/
+│   ├── use-long-press.ts
+│   ├── use-memoized-fn.ts
+│   └── use-mount.ts
+└── utils/
+    ├── canvas-utils.ts
+    ├── file-utils.ts
+    └── event-utils.ts
+
+// ❌ 错误做法的目录结构
+src/
+├── components/
+│   ├── cutoutBox/  // 驼峰命名
+│   ├── textBoxComponent/  // 驼峰命名
+│   └── dotController/  // 驼峰命名
+├── hooks/
+│   ├── useLongPress.ts  // 驼峰命名
+│   └── useMemoizedFn.ts  // 驼峰命名
+└── utils/
+    ├── canvasUtils.ts  // 驼峰命名
+    └── fileUtils.ts  // 驼峰命名
+```
+
 ### 导入导出
 - **必须**使用具名导入导出
 - **必须**避免使用 `export default`
@@ -376,4 +451,193 @@ const data: ComplexData = { /* ... */ };
 // ❌ 错误做法
 const message: string = 'Hello'; // 不必要的类型注解
 const data = {} as ComplexData; // 类型断言不安全
+```
+
+## React 组件声明规范
+
+### 函数式组件声明
+- **必须**使用 `const ComponentName: FC<PropsType> = () => {}` 形式声明组件
+- **必须**从 'react' 或 'preact' 导入 `FC` 类型
+- **必须**为组件 Props 定义明确的接口或类型
+
+```typescript
+// ✅ 正确做法
+import type { FC } from 'preact';
+
+interface ButtonProps {
+  text: string;
+  onClick: () => void;
+  disabled?: boolean;
+}
+
+const Button: FC<ButtonProps> = ({ text, onClick, disabled = false }) => {
+  return (
+    <button onClick={onClick} disabled={disabled}>
+      {text}
+    </button>
+  );
+};
+
+// ❌ 错误做法
+function Button({ text, onClick, disabled }) {
+  return (
+    <button onClick={onClick} disabled={disabled}>
+      {text}
+    </button>
+  );
+}
+
+// ❌ 错误做法
+const Button = ({ text, onClick, disabled }) => {
+  return (
+    <button onClick={onClick} disabled={disabled}>
+      {text}
+    </button>
+  );
+};
+```
+
+### Props 参数解构
+- **必须**使用 `const {} = props` 形式解构 props 参数
+- **必须**在组件参数中直接解构，而不是在函数体内
+- **必须**为解构的属性提供默认值（如果适用）
+
+```typescript
+// ✅ 正确做法
+interface TextBoxProps {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  placeholder?: string;
+  maxLength?: number;
+}
+
+const TextBox: FC<TextBoxProps> = ({ 
+  x, 
+  y, 
+  width, 
+  height, 
+  placeholder = 'Enter text...', 
+  maxLength = 100 
+}) => {
+  // 组件实现
+  return (
+    <input
+      style={{ left: x, top: y, width, height }}
+      placeholder={placeholder}
+      maxLength={maxLength}
+    />
+  );
+};
+
+// ❌ 错误做法
+const TextBox: FC<TextBoxProps> = (props) => {
+  const { x, y, width, height, placeholder, maxLength } = props;
+  // 在函数体内解构
+};
+
+// ❌ 错误做法
+const TextBox: FC<TextBoxProps> = (props) => {
+  // 未解构，直接使用 props.x, props.y 等
+  return <input style={{ left: props.x, top: props.y }} />;
+};
+```
+
+### Props 类型定义
+- **必须**为所有 props 定义明确的类型
+- **必须**使用 `interface` 定义组件 Props 类型
+- **必须**将可选属性标记为 `?` 并提供默认值
+
+```typescript
+// ✅ 正确做法
+interface ModalProps {
+  isOpen: boolean;
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+  size?: 'small' | 'medium' | 'large';
+  showCloseButton?: boolean;
+}
+
+const Modal: FC<ModalProps> = ({
+  isOpen,
+  title,
+  onClose,
+  children,
+  size = 'medium',
+  showCloseButton = true
+}) => {
+  // 组件实现
+};
+
+// ❌ 错误做法
+const Modal = ({ isOpen, title, onClose, children, size, showCloseButton }) => {
+  // 缺少类型定义
+};
+```
+
+### 组件导出规范
+- **必须**使用具名导出组件
+- **必须**同时导出 Props 类型供外部使用
+- **必须**避免使用 `export default`
+
+```typescript
+// ✅ 正确做法
+interface AlertProps {
+  message: string;
+  type: 'info' | 'warning' | 'error';
+  onDismiss?: () => void;
+}
+
+export const Alert: FC<AlertProps> = ({ message, type, onDismiss }) => {
+  return (
+    <div className={`alert alert-${type}`}>
+      {message}
+      {onDismiss && <button onClick={onDismiss}>×</button>}
+    </div>
+  );
+};
+
+export type { AlertProps };
+
+// ❌ 错误做法
+const Alert: FC<AlertProps> = ({ message, type, onDismiss }) => {
+  // ...
+};
+
+export default Alert;
+```
+
+### 泛型组件规范
+- **必须**使用泛型提高组件复用性
+- **必须**为泛型参数提供约束
+- **必须**在组件名称后明确声明泛型参数
+
+```typescript
+// ✅ 正确做法
+interface ListProps<T extends { id: string; name: string }> {
+  items: T[];
+  renderItem: (item: T) => React.ReactNode;
+  onItemSelect?: (item: T) => void;
+}
+
+export const List: <T extends { id: string; name: string }>(
+  props: ListProps<T>
+) => React.ReactElement = ({ items, renderItem, onItemSelect }) => {
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item.id} onClick={() => onItemSelect?.(item)}>
+          {renderItem(item)}
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+// ❌ 错误做法
+const List = ({ items, renderItem }) => {
+  // 缺少泛型约束和类型定义
+};
 ```

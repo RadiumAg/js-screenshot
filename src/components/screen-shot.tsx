@@ -2,9 +2,9 @@ import type { ScreenShotOptions } from '@screenshots/utils';
 import { useMount } from '@screenshots/hooks/useMount';
 import { __isDev__ } from '@screenshots/utils';
 import { useEffect, useState } from 'preact/hooks';
-import { ScreenshotProvider, useScreenshotContext } from './context/ScreenshotContext';
-import { CutoutBox } from './CutoutBox';
-import { useCanvas } from './hooks/useCanvas';
+import { ScreenshotProvider, useScreenshotContext } from './context/screenshot-context';
+import { CutoutBox } from './cutout-box';
+import { useCanvas } from './hooks/use-canvas';
 
 export interface ScreenShotProps {
   options: ScreenShotOptions

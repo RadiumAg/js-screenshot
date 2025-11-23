@@ -1,6 +1,6 @@
 import type { ScreenShotOptions } from './utils';
-import { ScreenShot as ScreenShotComponent } from './components/ScreenShot';
-import { createAndRenderComponent, destroyComponentContainer } from './components/utils/renderUtils';
+import { ScreenShot as ScreenShotComponent } from './components/screen-shot';
+import { createAndRenderComponent, destroyComponentContainer } from './components/utils/render-utils';
 
 class ScreenShot {
   private container: HTMLElement | null = null;

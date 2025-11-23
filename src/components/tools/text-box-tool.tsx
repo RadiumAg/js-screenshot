@@ -3,7 +3,7 @@ import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
 import { useMount } from '@screenshots/hooks/useMount';
 import Style from '@screenshots/theme/text-box.module.scss';
 import { useEffect, useRef } from 'preact/hooks';
-import { useScreenshotContext } from '../context/ScreenshotContext';
+import { useScreenshotContext } from '../context/screenshot-context';
 
 export interface TextBoxToolProps {
   cutoutBoxX: number

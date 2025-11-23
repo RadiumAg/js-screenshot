@@ -3,7 +3,7 @@ import useMemoizedFn from '@screenshots/hooks/useMemoizedFn';
 import { useMount } from '@screenshots/hooks/useMount';
 import Style from '@screenshots/theme/mosaic.module.scss';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { useScreenshotContext } from '../context/ScreenshotContext';
+import { useScreenshotContext } from '../context/screenshot-context';
 import { ACTIVE_TYPE } from '../utils/share';
 
 export interface MosaicToolProps {
