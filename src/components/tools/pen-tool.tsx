@@ -4,6 +4,7 @@ import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/pen.module.scss';
 import { useEffect, useRef } from 'preact/hooks';
+import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 import { ACTIVE_TYPE } from '../utils/share';
 
@@ -30,7 +31,14 @@ export const PenTool: FC<PenToolProps> = ({
     operateHistory,
     drawCanvasElement,
     dotControllerSize,
-  } = useScreenshotStore();
+  } = useScreenshotStore(useShallow(state => ({
+    activeTarget: state.activeTarget,
+    setActiveTarget: state.setActiveTarget,
+    setIsLock: state.setIsLock,
+    operateHistory: state.operateHistory,
+    drawCanvasElement: state.drawCanvasElement,
+    dotControllerSize: state.dotControllerSize,
+  })));
 
   const isMouseDownRef = useRef(false);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);

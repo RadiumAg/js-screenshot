@@ -1,14 +1,15 @@
+import type { FC } from 'preact/compat';
 import save from '@screenshots/assets/images/save.svg';
 import Style from '@screenshots/theme/save.module.scss';
 import { __isDev__, useDownLoad } from '@screenshots/utils';
-import type { FC } from 'preact/compat';
+import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 
 export interface SaveButtonProps {
-  cutoutBoxX: number;
-  cutoutBoxY: number;
-  cutoutBoxWidth: number;
-  cutoutBoxHeight: number;
+  cutoutBoxX: number
+  cutoutBoxY: number
+  cutoutBoxWidth: number
+  cutoutBoxHeight: number
 }
 
 /**
@@ -20,7 +21,9 @@ export const SaveButton: FC<SaveButtonProps> = ({
   cutoutBoxWidth,
   cutoutBoxHeight,
 }) => {
-  const { drawCanvasElement } = useScreenshotStore();
+  const { drawCanvasElement } = useScreenshotStore(useShallow(state => ({
+    drawCanvasElement: state.drawCanvasElement,
+  })));
   const download = useDownLoad();
 
   const handleClick = () => {
@@ -74,4 +77,4 @@ export const SaveButton: FC<SaveButtonProps> = ({
       <img src={save} alt="save" />
     </div>
   );
-}
+};

@@ -1,9 +1,10 @@
+import type { FC } from 'preact/compat';
 import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/cutout-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
-import type { FC } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
 import DotController from './dot-controller';
 import { ToolBox } from './tool-box';
@@ -11,7 +12,7 @@ import { SizeIndicator } from './tools/size-indicator';
 import { ACTIVE_TYPE } from './utils/share';
 
 export interface CutoutBoxProps {
-  onComplete?: (result: any) => void;
+  onComplete?: (result: any) => void
 }
 
 /**
@@ -29,7 +30,18 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     setIsLock,
     setIsFirstInit,
     setActiveTarget,
-  } = useScreenshotStore();
+  } = useScreenshotStore(useShallow(state => ({
+    container: state.container,
+    drawCanvasElement: state.drawCanvasElement,
+    sourceCanvasElement: state.sourceCanvasElement,
+    operateHistory: state.operateHistory,
+    activeTarget: state.activeTarget,
+    isLock: state.isLock,
+    dotControllerSize: state.dotControllerSize,
+    setIsLock: state.setIsLock,
+    setIsFirstInit: state.setIsFirstInit,
+    setActiveTarget: state.setActiveTarget,
+  })));
   const shifting = dotControllerSize / 2;
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -237,13 +249,13 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
   // 设置事件监听
   useMount(() => {
     drawCanvasElement?.addEventListener('mouseup', handleMouseUp);
-    container.addEventListener('mousemove', handleMouseMove);
-    container.addEventListener('keydown', handleKeyDown);
+    container?.addEventListener('mousemove', handleMouseMove);
+    container?.addEventListener('keydown', handleKeyDown);
 
     return () => {
       drawCanvasElement?.removeEventListener('mouseup', handleMouseUp);
-      container.removeEventListener('mousemove', handleMouseMove);
-      container.removeEventListener('keydown', handleKeyDown);
+      container?.removeEventListener('mousemove', handleMouseMove);
+      container?.removeEventListener('keydown', handleKeyDown);
       document.body.style.cursor = '';
     };
   });
@@ -274,7 +286,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
 
   // 计算控制点位置
   const dotControllerPositions = [
-    { x: position.x - shifting, y: position.y - shifting, cursor: 'nwse-resize', onUpdateAxis(xDistance: number, yDistance: number) {
+    { x: position.x - shifting, y: position.y - shifting, cursor: 'nwse-resize', onUpdateAxis(_xDistance: number, yDistance: number) {
       if (!sourceContextRef.current || !contextRef.current)
         return;
       setPosition((oldValue) => {
@@ -430,4 +442,4 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       />
     </>
   );
-}
+};

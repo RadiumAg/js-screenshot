@@ -12,10 +12,10 @@ export function useEventListeners() {
     target: EventTarget,
     type: string,
     listener: EventListener,
-    options?: boolean | AddEventListenerOptions
+    options?: boolean | AddEventListenerOptions,
   ) => {
     target.addEventListener(type, listener, options);
-    
+
     // 记录事件监听器以便清理
     if (!eventListenersRef.current.has(target)) {
       eventListenersRef.current.set(target, new Map());
@@ -27,10 +27,10 @@ export function useEventListeners() {
     target: EventTarget,
     type: string,
     listener: EventListener,
-    options?: boolean | EventListenerOptions
+    options?: boolean | EventListenerOptions,
   ) => {
     target.removeEventListener(type, listener, options);
-    
+
     // 从记录中移除
     const targetListeners = eventListenersRef.current.get(target);
     if (targetListeners) {

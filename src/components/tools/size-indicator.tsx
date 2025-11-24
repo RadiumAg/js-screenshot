@@ -1,12 +1,12 @@
-import Style from '@screenshots/theme/size-indicator.module.scss';
 import type { FC } from 'preact/compat';
+import Style from '@screenshots/theme/size-indicator.module.scss';
 import { useEffect, useRef, useState } from 'preact/hooks';
 
 export interface SizeIndicatorProps {
-  width: number;
-  height: number;
-  dotControllerX: number;
-  dotControllerY: number;
+  width: number
+  height: number
+  dotControllerX: number
+  dotControllerY: number
 }
 
 /**
@@ -44,4 +44,4 @@ export const SizeIndicator: FC<SizeIndicatorProps> = ({
       {height}
     </div>
   );
-}
+};

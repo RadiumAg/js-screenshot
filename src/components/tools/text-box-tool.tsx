@@ -4,6 +4,7 @@ import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/text-box.module.scss';
 import { useEffect, useRef } from 'preact/hooks';
+import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 
 export interface TextBoxToolProps {
@@ -30,7 +31,15 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     operateHistory,
     drawCanvasElement,
     dotControllerSize,
-  } = useScreenshotStore();
+  } = useScreenshotStore(useShallow(state => ({
+    activeTarget: state.activeTarget,
+    setActiveTarget: state.setActiveTarget,
+    setIsLock: state.setIsLock,
+    isLock: state.isLock,
+    operateHistory: state.operateHistory,
+    drawCanvasElement: state.drawCanvasElement,
+    dotControllerSize: state.dotControllerSize,
+  })));
 
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const preTextareaRef = useRef<HTMLDivElement | null>(null);

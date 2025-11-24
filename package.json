@@ -16,7 +16,6 @@
     "build": "esno ./script/build.ts",
     "build:watch": "esno ./script/build.ts --watch",
     "playground-build": "pnpm run build && pnpm run -C playground build",
-    "lint": "eslint",
     "lint:fix": "eslint --fix"
   },
   "dependencies": {

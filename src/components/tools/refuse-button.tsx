@@ -1,17 +1,21 @@
+import type { FC } from 'preact/compat';
 import refuse from '@screenshots/assets/images/refuse.svg';
 import Style from '@screenshots/theme/refuse.module.scss';
-import type { FC } from 'preact/compat';
+import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 
 export interface RefuseButtonProps {
-  onCancel: () => void;
+  onCancel: () => void
 }
 
 /**
  * 取消按钮组件
  */
 export const RefuseButton: FC<RefuseButtonProps> = ({ onCancel }) => {
-  const { operateHistory, drawCanvasElement } = useScreenshotStore();
+  const { operateHistory, drawCanvasElement } = useScreenshotStore(useShallow(state => ({
+    operateHistory: state.operateHistory,
+    drawCanvasElement: state.drawCanvasElement,
+  })));
 
   const handleClick = () => {
     // 清空操作历史
@@ -29,4 +33,4 @@ export const RefuseButton: FC<RefuseButtonProps> = ({ onCancel }) => {
       <img src={refuse} alt="refuse" />
     </div>
   );
-}
+};

@@ -57,38 +57,38 @@ export type ActiveTarget = string | null;
  */
 export interface ScreenshotStore {
   // 容器元素
-  container: HTMLDivElement | null;
-  
+  container: HTMLDivElement | null
+
   // Canvas 元素
-  drawCanvasElement: HTMLCanvasElement | null;
-  sourceCanvasElement: HTMLCanvasElement | null;
-  videoElement: HTMLVideoElement | null;
+  drawCanvasElement: HTMLCanvasElement | null
+  sourceCanvasElement: HTMLCanvasElement | null
+  videoElement: HTMLVideoElement | null
 
   // 设置元素的方法
-  setContainer: (container: HTMLDivElement) => void;
-  setDrawCanvasElement: (canvas: HTMLCanvasElement | null) => void;
-  setSourceCanvasElement: (canvas: HTMLCanvasElement | null) => void;
-  setVideoElement: (video: HTMLVideoElement | null) => void;
+  setContainer: (container: HTMLDivElement) => void
+  setDrawCanvasElement: (canvas: HTMLCanvasElement | null) => void
+  setSourceCanvasElement: (canvas: HTMLCanvasElement | null) => void
+  setVideoElement: (video: HTMLVideoElement | null) => void
 
   // 操作历史
-  operateHistory: OperateHistory;
+  operateHistory: OperateHistory
 
   // 激活的目标
-  activeTarget: ActiveTarget;
-  setActiveTarget: (target: ActiveTarget) => void;
+  activeTarget: ActiveTarget
+  setActiveTarget: (target: ActiveTarget) => void
 
   // 状态标志
-  isLock: boolean;
-  setIsLock: (value: boolean) => void;
+  isLock: boolean
+  setIsLock: (value: boolean) => void
 
-  isFirstInit: boolean;
-  setIsFirstInit: (value: boolean) => void;
+  isFirstInit: boolean
+  setIsFirstInit: (value: boolean) => void
 
   // 常量
-  dotControllerSize: number;
+  dotControllerSize: number
 
   // 重置状态
-  resetState: () => void;
+  resetState: () => void
 }
 
 /**
@@ -110,7 +110,7 @@ export const useScreenshotStore = create<ScreenshotStore>()(
 
       // 设置容器
       setContainer: container => set({ container }),
-      
+
       // 设置 Canvas 元素
       setDrawCanvasElement: drawCanvasElement => set({ drawCanvasElement }),
       setSourceCanvasElement: sourceCanvasElement => set({ sourceCanvasElement }),
@@ -139,6 +139,6 @@ export const useScreenshotStore = create<ScreenshotStore>()(
     }),
     {
       name: 'screenshot-store',
-    }
-  )
+    },
+  ),
 );

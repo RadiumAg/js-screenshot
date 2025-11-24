@@ -1,17 +1,18 @@
+import type { FC } from 'preact/compat';
 import mosaic from '@screenshots/assets/images/mosaic.svg';
 import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/mosaic.module.scss';
-import type { FC } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 import { ACTIVE_TYPE } from '../utils/share';
 
 export interface MosaicToolProps {
-  cutoutBoxX: number;
-  cutoutBoxY: number;
-  cutoutBoxWidth: number;
-  cutoutBoxHeight: number;
+  cutoutBoxX: number
+  cutoutBoxY: number
+  cutoutBoxWidth: number
+  cutoutBoxHeight: number
 }
 
 /**
@@ -29,7 +30,13 @@ export const MosaicTool: FC<MosaicToolProps> = ({
     drawCanvasElement,
     setActiveTarget,
     setIsLock,
-  } = useScreenshotStore();
+  } = useScreenshotStore(useShallow(state => ({
+    activeTarget: state.activeTarget,
+    operateHistory: state.operateHistory,
+    drawCanvasElement: state.drawCanvasElement,
+    setActiveTarget: state.setActiveTarget,
+    setIsLock: state.setIsLock,
+  })));
 
   const [isDrawing, setIsDrawing] = useState(false);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -213,4 +220,4 @@ export const MosaicTool: FC<MosaicToolProps> = ({
       <img src={mosaic} alt="mosaic" />
     </div>
   );
-}
+};
