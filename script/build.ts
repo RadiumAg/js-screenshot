@@ -9,7 +9,9 @@ import { dirname, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import alias from '@rollup/plugin-alias';
+import commonjs from '@rollup/plugin-commonjs';
 import image from '@rollup/plugin-image';
+import resolveModule from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import typescript from '@rollup/plugin-typescript';
 import {
@@ -62,22 +64,17 @@ async function build(format: ModuleFormat) {
 function getBuildConfig(format: ModuleFormat) {
   const output = {
     esm: {
-      format: 'esm',
-      dir: resolve(outputDist, './esm'),
+      file: resolve(outputDist, './esm/screen-shot.js'),
       globals: { html2canvas: 'html2canvas' },
-      preserveModules: true,
-      preserveModulesRoot: 'src',
     },
     cjs: {
       format: 'cjs',
-      dir: resolve(outputDist, './cjs'),
+      file: resolve(outputDist, './cjs/screen-shot.js'),
       globals: { html2canvas: 'html2canvas' },
-      preserveModules: true,
-      preserveModulesRoot: 'src',
     },
     iife: {
       format: 'iife',
-      file: resolve(outputDist, './iife/index.js'),
+      file: resolve(outputDist, './iife/screen-shot.js'),
       globals: { html2canvas: 'html2canvas' },
     },
   } as Record<string, OutputOptions>;
@@ -85,9 +82,13 @@ function getBuildConfig(format: ModuleFormat) {
   const buildConfig: RollupWatchOptions = {
     input: resolve(__dirname, '../src/screen-shot.tsx'),
     plugins: [
+      resolveModule(), // 解析node_modules中的模块
+      commonjs(), // 将CommonJS模块转换为ES6模块
       alias({
         entries: [
           { find: '@screenshots', replacement: resolve(__dirname, '../src') },
+          { find: 'react', replacement: 'preact/compat' },
+          { find: 'react', replacement: 'preact/compat' },
         ],
       }),
       image({ dom: false }),
@@ -133,7 +134,7 @@ function getBuildConfig(format: ModuleFormat) {
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       }),
     ],
-    external: ['html2canvas', 'preact/jsx-runtime', 'preact', 'preact/hooks'],
+    external: ['html2canvas'],
     output: output[format],
   };
 
