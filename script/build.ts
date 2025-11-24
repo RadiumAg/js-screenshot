@@ -88,7 +88,6 @@ function getBuildConfig(format: ModuleFormat) {
         entries: [
           { find: '@screenshots', replacement: resolve(__dirname, '../src') },
           { find: 'react', replacement: 'preact/compat' },
-          { find: 'react', replacement: 'preact/compat' },
         ],
       }),
       image({ dom: false }),
