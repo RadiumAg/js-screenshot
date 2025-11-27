@@ -54,30 +54,30 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
 
   const updateWrapper = useMemoizedFn((fn: AnyFun) => {
     const miniDotControllerSize = dotControllerSize * 3;
-    if (!sourceContextRef.current || !contextRef.current) {
-      return;
-    }
-    if (size.width <= miniDotControllerSize) {
-      setSize((oldValue) => {
-        return {
-          ...oldValue,
-          width: miniDotControllerSize,
-        };
-      });
-      return;
-    }
-    if (size.height <= miniDotControllerSize) {
-      setSize((oldValue) => {
-        return {
-          ...oldValue,
-          height: miniDotControllerSize,
-        };
-      });
-
-      return;
-    }
 
     return (...args: any[]) => {
+      if (!sourceContextRef.current || !contextRef.current) {
+        return;
+      }
+      if (size.width < miniDotControllerSize) {
+        setSize((oldValue) => {
+          return {
+            ...oldValue,
+            width: miniDotControllerSize,
+          };
+        });
+        return;
+      }
+      if (size.height < miniDotControllerSize) {
+        setSize((oldValue) => {
+          return {
+            ...oldValue,
+            height: miniDotControllerSize,
+          };
+        });
+
+        return;
+      }
       fn(...args);
     };
   });
@@ -363,7 +363,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       });
       throttledUpdatePosition();
     }) }, // 上右
-    { x: position.x + size.width - shifting, y: position.y + size.height / 2, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
+    { x: position.x + size.width - shifting, y: position.y + size.height / 2 - shifting, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
       setSize((oldValue) => {
         const newValue = { ...oldValue };
         newValue.width = oldValue.width + xDistance;
@@ -380,7 +380,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       });
       throttledUpdatePosition();
     }) }, // 右下
-    { x: position.x + size.width / 2, y: position.y + size.height - shifting, cursor: 'ns-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
+    { x: position.x + size.width / 2 - shifting, y: position.y + size.height - shifting, cursor: 'ns-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
       setSize((oldValue) => {
         const newValue = { ...oldValue };
         newValue.height = oldValue.height + yDistance;
