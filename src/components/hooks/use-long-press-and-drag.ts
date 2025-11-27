@@ -3,7 +3,7 @@ import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useEffect, useRef } from 'preact/hooks';
 
 interface Option {
-  container: HTMLDivElement
+  container: HTMLDivElement | null
   target: RefObject<HTMLElement>
   onDrag: (distance: { xDistance: number, yDistance: number }) => void
   onMouseUp?: () => void
@@ -53,7 +53,7 @@ const useLongPressAndDrag = (option: Option) => {
     const targetElement = target.current;
     targetElement?.addEventListener('mousedown', handleMouseDown);
     container?.addEventListener('mouseup', handleMouseUp);
-    container.addEventListener('mousemove', handleMouseMove);
+    container?.addEventListener('mousemove', handleMouseMove);
 
     return () => {
       targetElement?.removeEventListener('mousedown', handleMouseDown);

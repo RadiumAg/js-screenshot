@@ -1,3 +1,4 @@
+import type { AnyFun } from '@screenshots/utils';
 import type { FC } from 'preact/compat';
 import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useMount } from '@screenshots/hooks/use-mount';
@@ -51,6 +52,36 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const sourceContextRef = useRef<CanvasRenderingContext2D | null>(null);
 
+  const updateWrapper = useMemoizedFn((fn: AnyFun) => {
+    const miniDotControllerSize = dotControllerSize * 3;
+    if (!sourceContextRef.current || !contextRef.current) {
+      return;
+    }
+    if (size.width <= miniDotControllerSize) {
+      setSize((oldValue) => {
+        return {
+          ...oldValue,
+          width: miniDotControllerSize,
+        };
+      });
+      return;
+    }
+    if (size.height <= miniDotControllerSize) {
+      setSize((oldValue) => {
+        return {
+          ...oldValue,
+          height: miniDotControllerSize,
+        };
+      });
+
+      return;
+    }
+
+    return (...args: any[]) => {
+      fn(...args);
+    };
+  });
+
   /**
    * 设置半透明遮罩
    */
@@ -71,7 +102,13 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
    * 更新背景
    */
   const updateBackground = useMemoizedFn(() => {
-    if (!sourceContextRef.current || !contextRef.current || !drawCanvasElement)
+    if (!sourceContextRef.current)
+      return;
+
+    if (!contextRef.current)
+      return;
+
+    if (!drawCanvasElement)
       return;
 
     // 清除所有内容
@@ -100,6 +137,13 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
   const updatePosition = useMemoizedFn(() => {
     if (!sourceContextRef.current || !contextRef.current)
       return;
+
+    if (size.width === 0)
+      return;
+
+    if (size.height === 0)
+      return;
+
     updateBackground();
     const imgData = sourceContextRef.current.getImageData(
       position.x,
@@ -277,9 +321,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
 
   // 计算控制点位置
   const dotControllerPositions = [
-    { x: position.x - shifting, y: position.y - shifting, cursor: 'nwse-resize', onUpdateAxis(xDistance: number, yDistance: number) {
-      if (!sourceContextRef.current || !contextRef.current)
-        return;
+    { x: position.x - shifting, y: position.y - shifting, cursor: 'nwse-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
       setPosition((oldValue) => {
         const newValue = { ...oldValue };
         newValue.x = oldValue.x + xDistance;
@@ -293,10 +335,8 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
         return newValue;
       });
       throttledUpdatePosition();
-    } }, // 左上
-    { x: position.x + size.width / 2 - shifting, y: position.y - shifting, cursor: 'ns-resize', onUpdateAxis(xDistance: number, yDistance: number) {
-      if (!sourceContextRef.current || !contextRef.current)
-        return;
+    }) }, // 左上
+    { x: position.x + size.width / 2 - shifting, y: position.y - shifting, cursor: 'ns-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
       setPosition((oldValue) => {
         const newValue = { ...oldValue };
         newValue.y = oldValue.y + yDistance;
@@ -308,10 +348,8 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
         return newValue;
       });
       throttledUpdatePosition();
-    } }, // 上中
-    { x: position.x + size.width - shifting, y: position.y - shifting, cursor: 'nesw-resize', onUpdateAxis(xDistance: number, yDistance: number) {
-      if (!sourceContextRef.current || !contextRef.current)
-        return;
+    }) }, // 上中
+    { x: position.x + size.width - shifting, y: position.y - shifting, cursor: 'nesw-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
       setSize((oldValue) => {
         const newValue = { ...oldValue };
         newValue.width = oldValue.width + xDistance;
@@ -324,20 +362,16 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
         return newValue;
       });
       throttledUpdatePosition();
-    } }, // 上右
-    { x: position.x + size.width - shifting, y: position.y + size.height / 2, cursor: 'ew-resize', onUpdateAxis(xDistance: number, yDistance: number) {
-      if (!sourceContextRef.current || !contextRef.current)
-        return;
+    }) }, // 上右
+    { x: position.x + size.width - shifting, y: position.y + size.height / 2, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
       setSize((oldValue) => {
         const newValue = { ...oldValue };
         newValue.width = oldValue.width + xDistance;
         return newValue;
       });
       throttledUpdatePosition();
-    } }, // 右中
-    { x: position.x + size.width - shifting, y: position.y + size.height - shifting, cursor: 'nwse-resize', onUpdateAxis(xDistance: number, yDistance: number) {
-      if (!sourceContextRef.current || !contextRef.current)
-        return;
+    }) }, // 右中
+    { x: position.x + size.width - shifting, y: position.y + size.height - shifting, cursor: 'nwse-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
       setSize((oldValue) => {
         const newValue = { ...oldValue };
         newValue.width = oldValue.width + xDistance;
@@ -345,20 +379,16 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
         return newValue;
       });
       throttledUpdatePosition();
-    } }, // 右下
-    { x: position.x + size.width / 2, y: position.y + size.height - shifting, cursor: 'ns-resize', onUpdateAxis(xDistance: number, yDistance: number) {
-      if (!sourceContextRef.current || !contextRef.current)
-        return;
+    }) }, // 右下
+    { x: position.x + size.width / 2, y: position.y + size.height - shifting, cursor: 'ns-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
       setSize((oldValue) => {
         const newValue = { ...oldValue };
         newValue.height = oldValue.height + yDistance;
         return newValue;
       });
       throttledUpdatePosition();
-    } }, // 下中
-    { x: position.x - shifting, y: position.y + size.height - shifting, cursor: 'nesw-resize', onUpdateAxis(xDistance: number, yDistance: number) {
-      if (!sourceContextRef.current || !contextRef.current)
-        return;
+    }) }, // 下中
+    { x: position.x - shifting, y: position.y + size.height - shifting, cursor: 'nesw-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
       setPosition((oldValue) => {
         const newValue = { ...oldValue };
         newValue.x = oldValue.x + xDistance;
@@ -372,10 +402,8 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       });
 
       throttledUpdatePosition();
-    } }, // 下左
-    { x: position.x - shifting, y: position.y + size.height / 2 - shifting, cursor: 'ew-resize', onUpdateAxis(xDistance: number, yDistance: number) {
-      if (!sourceContextRef.current || !contextRef.current)
-        return;
+    }) }, // 下左
+    { x: position.x - shifting, y: position.y + size.height / 2 - shifting, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
       setPosition((oldValue) => {
         const newValue = { ...oldValue };
         newValue.x = oldValue.x + xDistance;
@@ -387,7 +415,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
         return newValue;
       });
       throttledUpdatePosition();
-    } }, // 左中
+    }) }, // 左中
   ];
 
   return (
