@@ -118,15 +118,6 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
   ).current;
 
   /**
-   * 检查是否在当前区域内
-   */
-  const isCurrentArea = useMemoizedFn(
-    (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
-      return x >= minX && x <= maxX && y >= minY && y <= maxY;
-    },
-  );
-
-  /**
    * 处理鼠标按下事件
    */
   const handleMouseDown = useMemoizedFn(
@@ -286,7 +277,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
 
   // 计算控制点位置
   const dotControllerPositions = [
-    { x: position.x - shifting, y: position.y - shifting, cursor: 'nwse-resize', onUpdateAxis(_xDistance: number, yDistance: number) {
+    { x: position.x - shifting, y: position.y - shifting, cursor: 'nwse-resize', onUpdateAxis(xDistance: number, yDistance: number) {
       if (!sourceContextRef.current || !contextRef.current)
         return;
       setPosition((oldValue) => {
