@@ -56,7 +56,10 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     const miniDotControllerSize = dotControllerSize * 3;
 
     return (...args: any[]) => {
-      if (!sourceContextRef.current || !contextRef.current) {
+      if (!sourceContextRef.current) {
+        return;
+      }
+      if (!contextRef.current) {
         return;
       }
       if (size.width < miniDotControllerSize) {
@@ -86,7 +89,10 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
    * 设置半透明遮罩
    */
   const setMask = useMemoizedFn(() => {
-    if (!contextRef.current || !drawCanvasElement)
+    if (!contextRef.current)
+      return;
+
+    if (!drawCanvasElement)
       return;
 
     contextRef.current.fillStyle = 'rgba(0,0,0,0.5)';
@@ -135,15 +141,18 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
    * 更新裁剪框位置和渲染
    */
   const updatePosition = useMemoizedFn(() => {
-    if (!sourceContextRef.current || !contextRef.current)
+    if (!sourceContextRef.current)
       return;
+
+    if (!contextRef.current) {
+      return;
+    }
 
     if (size.width === 0)
       return;
 
     if (size.height === 0)
       return;
-
     updateBackground();
     const imgData = sourceContextRef.current.getImageData(
       position.x,
