@@ -16,14 +16,17 @@
     "build": "esno ./script/build.ts",
     "build:watch": "esno ./script/build.ts --watch",
     "playground-build": "pnpm run build && pnpm run -C playground build",
-    "lint": "eslint",
     "lint:fix": "eslint --fix"
   },
   "dependencies": {
-    "html2canvas": "^1.4.1"
+    "@preact/compat": "^18.3.1",
+    "html2canvas": "^1.4.1",
+    "preact": "^10.27.2",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",
+    "@eslint-react/eslint-plugin": "^2.3.7",
     "@rollup/plugin-alias": "^5.0.1",
     "@rollup/plugin-image": "^3.0.3",
     "@rollup/plugin-replace": "^6.0.2",
@@ -33,6 +36,8 @@
     "concurrently": "^9.2.1",
     "cross-env": "^7.0.3",
     "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
     "esno": "^0.17.0",
     "postcss-modules": "^6.0.0",
     "rollup": "^3.28.0",

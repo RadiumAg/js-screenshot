@@ -1,0 +1,9 @@
+@use './common.scss' as common;
+
+.cutout-box {
+    cursor: move;
+    position: fixed;
+    z-index: 999;
+
+    @include common.common;
+}
