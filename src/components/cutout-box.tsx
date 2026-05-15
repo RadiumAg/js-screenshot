@@ -4,7 +4,7 @@ import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
 import { useMount } from '@screenshots/hooks/use-mount';
 import Style from '@screenshots/theme/cutout-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
-import { useEffect, useRef, useState } from 'preact/hooks'; 
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
 import DotController from './dot-controller';
@@ -243,7 +243,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
         const preImageData = operateHistory.prev();
 
         if (preImageData && contextRef.current) {
-          contextRef.current.putImageData(preImageData, position.x, position.y);
+          contextRef.current.putImageData(preImageData.imageData, position.x, position.y);
         }
         else if (sourceContextRef.current && contextRef.current) {
           contextRef.current.putImageData(
@@ -304,7 +304,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     };
   });
 
-  // 清理函数
+  // 清理函数 - 只在组件卸载时执行
   useEffect(() => {
     return () => {
       drawCanvasElement?.remove();
@@ -312,6 +312,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       setIsFirstInit(true);
       setActiveTarget(null);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 只在组件卸载时执行清理
   }, []);
 
   // 初始化 context
@@ -345,7 +346,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       });
       throttledUpdatePosition();
     }) }, // 左上
-    { x: position.x + size.width / 2 - shifting, y: position.y - shifting, cursor: 'ns-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
+    { x: position.x + size.width / 2 - shifting, y: position.y - shifting, cursor: 'ns-resize', onUpdateAxis: updateWrapper((_xDistance: number, yDistance: number) => {
       setPosition((oldValue) => {
         const newValue = { ...oldValue };
         newValue.y = oldValue.y + yDistance;
@@ -372,7 +373,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       });
       throttledUpdatePosition();
     }) }, // 上右
-    { x: position.x + size.width - shifting, y: position.y + size.height / 2 - shifting, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
+    { x: position.x + size.width - shifting, y: position.y + size.height / 2 - shifting, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, _yDistance: number) => {
       setSize((oldValue) => {
         const newValue = { ...oldValue };
         newValue.width = oldValue.width + xDistance;
@@ -389,7 +390,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       });
       throttledUpdatePosition();
     }) }, // 右下
-    { x: position.x + size.width / 2 - shifting, y: position.y + size.height - shifting, cursor: 'ns-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
+    { x: position.x + size.width / 2 - shifting, y: position.y + size.height - shifting, cursor: 'ns-resize', onUpdateAxis: updateWrapper((_xDistance: number, yDistance: number) => {
       setSize((oldValue) => {
         const newValue = { ...oldValue };
         newValue.height = oldValue.height + yDistance;
@@ -412,7 +413,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
 
       throttledUpdatePosition();
     }) }, // 下左
-    { x: position.x - shifting, y: position.y + size.height / 2 - shifting, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
+    { x: position.x - shifting, y: position.y + size.height / 2 - shifting, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, _yDistance: number) => {
       setPosition((oldValue) => {
         const newValue = { ...oldValue };
         newValue.x = oldValue.x + xDistance;
@@ -432,7 +433,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       {/* 渲染 8 个控制点 */}
       {dotControllerPositions.map((dotPos, index) => (
         <DotController
-          key={index}
+          key={index} // eslint-disable-line react/no-array-index-key -- 静态列表，索引作为key是安全的
           left={dotPos.x}
           top={dotPos.y}
           cursor={dotPos.cursor}

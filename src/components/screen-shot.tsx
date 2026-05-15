@@ -23,19 +23,24 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
     setDrawCanvasElement,
     setSourceCanvasElement,
     setVideoElement,
+    setToolsConfig,
   } = useScreenshotStore(useShallow(state => ({
     setDrawCanvasElement: state.setDrawCanvasElement,
     setSourceCanvasElement: state.setSourceCanvasElement,
     setVideoElement: state.setVideoElement,
+    setToolsConfig: state.setToolsConfig,
   })));
 
   const { createCanvas } = useCanvas();
 
   useEffect(() => {
     if (__isDev__) {
-      console.log('[DEBUG] ScreenShot options', options);
+      console.warn('[DEBUG] ScreenShot options', options);
     }
-  }, [options]);
+    if (options.tools) {
+      setToolsConfig(options.tools);
+    }
+  }, [options, setToolsConfig]);
 
   /**
    * 创建video element
@@ -53,18 +58,11 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
    * 初始化显示媒体模式
    */
   const initDisplayMediaMode = async (): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
-      let captureStream: MediaStream;
-      try {
-        captureStream = await navigator.mediaDevices.getDisplayMedia({
-          preferCurrentTab: true,
-        });
-      }
-      catch (error) {
-        reject(error);
-        return;
-      }
+    const captureStream = await navigator.mediaDevices.getDisplayMedia({
+      preferCurrentTab: true,
+    });
 
+    return new Promise((resolve, reject) => {
       const sourceCanvasElement = createCanvas();
       const drawCanvasElement = createCanvas();
       const videoElement = createVideoElement();

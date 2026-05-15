@@ -1,3 +1,4 @@
+import type { ToolsConfig } from '@screenshots/utils';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
@@ -105,6 +106,10 @@ export interface ScreenshotStore {
   // 常量
   dotControllerSize: number
 
+  // 工具配置
+  toolsConfig: ToolsConfig
+  setToolsConfig: (config: ToolsConfig) => void
+
   // 重置状态
   resetState: () => void
 }
@@ -125,6 +130,7 @@ export const useScreenshotStore = create<ScreenshotStore>()(
       isLock: false,
       isFirstInit: true,
       dotControllerSize: 10,
+      toolsConfig: {},
 
       // 设置容器
       setContainer: container => set({ container }),
@@ -141,9 +147,12 @@ export const useScreenshotStore = create<ScreenshotStore>()(
       setIsLock: isLock => set({ isLock }),
       setIsFirstInit: isFirstInit => set({ isFirstInit }),
 
+      // 设置工具配置
+      setToolsConfig: toolsConfig => set({ toolsConfig }),
+
       // 重置状态
       resetState: () => {
-        const { operateHistory, videoElement, container } = get();
+        const { operateHistory, videoElement } = get();
 
         // 停止 MediaStream tracks
         if (videoElement?.srcObject) {

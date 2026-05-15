@@ -31,6 +31,7 @@ export const PenTool: FC<PenToolProps> = ({
     operateHistory,
     drawCanvasElement,
     dotControllerSize,
+    toolsConfig,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
     setActiveTarget: state.setActiveTarget,
@@ -38,13 +39,16 @@ export const PenTool: FC<PenToolProps> = ({
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
     dotControllerSize: state.dotControllerSize,
+    toolsConfig: state.toolsConfig,
   })));
 
   const isMouseDownRef = useRef(false);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     if (drawCanvasElement) {
+      canvasRef.current = drawCanvasElement;
       contextRef.current = drawCanvasElement.getContext('2d', {
         willReadFrequently: true,
       });
@@ -79,8 +83,9 @@ export const PenTool: FC<PenToolProps> = ({
         )
         && isMouseDownRef.current
       ) {
-        contextRef.current.lineWidth = 15;
+        contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 15;
         contextRef.current.lineCap = 'round';
+        contextRef.current.strokeStyle = toolsConfig.pen?.color ?? '#000000';
         contextRef.current.lineTo(event.clientX, event.clientY);
         contextRef.current.stroke();
       }
@@ -110,8 +115,8 @@ export const PenTool: FC<PenToolProps> = ({
         contextRef.current.moveTo(event.clientX, event.clientY);
       }
       else {
-        if (drawCanvasElement) {
-          drawCanvasElement.style.cursor = '';
+        if (canvasRef.current) {
+          canvasRef.current.style.cursor = '';
         }
       }
     },
@@ -125,7 +130,10 @@ export const PenTool: FC<PenToolProps> = ({
         cutoutBoxWidth,
         cutoutBoxHeight,
       );
-      operateHistory.push(imageData);
+      operateHistory.push({
+        imageData,
+        position: { x: cutoutBoxX, y: cutoutBoxY },
+      });
     }
     isMouseDownRef.current = false;
   });

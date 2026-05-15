@@ -31,6 +31,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     operateHistory,
     drawCanvasElement,
     dotControllerSize,
+    toolsConfig,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
     setActiveTarget: state.setActiveTarget,
@@ -39,12 +40,13 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
     dotControllerSize: state.dotControllerSize,
+    toolsConfig: state.toolsConfig,
   })));
 
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const preTextareaRef = useRef<HTMLDivElement | null>(null);
 
-  const fontSize = 20;
+  const fontSize = toolsConfig.textBox?.fontSize ?? 20;
   const shifting = {
     x: 15,
     y: 15,
@@ -110,6 +112,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
       if (contextRef.current.measureText(stringValue).width > maxWidth) {
         startIndex = --endIndex;
         render();
+        // eslint-disable-next-line react-hooks/immutability -- Recursive function call is valid here
         return measureLineToCanvas(
           textBoxValue,
           maxWidth,
@@ -285,7 +288,10 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
             cutoutBoxWidth,
             cutoutBoxHeight,
           );
-          operateHistory.push(imageData);
+          operateHistory.push({
+            imageData,
+            position: { x: cutoutBoxX, y: cutoutBoxY },
+          });
         }
       });
 

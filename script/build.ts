@@ -41,16 +41,16 @@ async function build(format: ModuleFormat) {
 
     watcher.on('event', (event) => {
       if (event.code === 'START') {
-        console.log('📦 build start...');
+        console.warn('📦 build start...');
       }
       else if (event.code === 'BUNDLE_END') {
-        console.log('📦 build end');
+        console.warn('📦 build end');
       }
       else if (event.code === 'ERROR') {
         console.error('📦 build error:', event.error);
       }
       else if (event.code === 'END') {
-        console.log('📦 build end');
+        console.warn('📦 build end');
       }
     });
   }
@@ -149,7 +149,7 @@ async function cleanDist() {
   const distPath = outputDist;
   try {
     await fs.rm(distPath, { recursive: true, force: true });
-    console.log('🗑️  Cleaned dist directory');
+    console.warn('🗑️  Cleaned dist directory');
   }
   catch {
     // ignore error

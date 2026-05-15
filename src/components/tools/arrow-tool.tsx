@@ -30,12 +30,14 @@ export const ArrowTool: FC<ArrowToolProps> = ({
     setIsLock,
     operateHistory,
     drawCanvasElement,
+    toolsConfig,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
     setActiveTarget: state.setActiveTarget,
     setIsLock: state.setIsLock,
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
+    toolsConfig: state.toolsConfig,
   })));
 
   const [isDrawing, setIsDrawing] = useState(false);
@@ -43,9 +45,9 @@ export const ArrowTool: FC<ArrowToolProps> = ({
   const firstScreenShotImageDataRef = useRef<ImageData | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  const arrowColor = 'red';
-  const arrowWidth = 2;
-  const arrowHeadLength = 10;
+  const arrowColor = toolsConfig.arrow?.color ?? 'red';
+  const arrowWidth = toolsConfig.arrow?.lineWidth ?? 2;
+  const arrowHeadLength = toolsConfig.arrow?.arrowSize ?? 10;
 
   useEffect(() => {
     if (drawCanvasElement) {
@@ -154,7 +156,10 @@ export const ArrowTool: FC<ArrowToolProps> = ({
       cutoutBoxWidth,
       cutoutBoxHeight,
     );
-    operateHistory.push(imageData);
+    operateHistory.push({
+      imageData,
+      position: { x: cutoutBoxX, y: cutoutBoxY },
+    });
   });
 
   useMount(() => {

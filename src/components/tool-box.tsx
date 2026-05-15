@@ -1,7 +1,7 @@
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/tool-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useMemo, useRef } from 'preact/hooks';
 import { ArrowTool } from './tools/arrow-tool';
 import { MosaicTool } from './tools/mosaic-tool';
 import { PenTool } from './tools/pen-tool';
@@ -40,11 +40,12 @@ export const ToolBox: FC<ToolBoxProps> = ({
     elRef.current.style.transform = `translateX(-100%)`;
   };
 
-  const throttledUpdatePosition = useRef(
-    animateThrottleFn((x: number, y: number) => {
+  const throttledUpdatePosition = useMemo(
+    () => animateThrottleFn((x: number, y: number) => {
       updatePosition(x, y);
     }),
-  ).current;
+    [],
+  );
 
   // 初始化位置
   useEffect(() => {

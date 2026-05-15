@@ -47,7 +47,7 @@ export const SaveButton: FC<SaveButtonProps> = ({
     screenCanvas.getContext('2d')?.putImageData(screenShotData, 0, 0);
 
     if (__isDev__) {
-      console.info(
+      console.warn(
         '[DEBUG]',
         'screen width',
         cutoutBoxWidth,

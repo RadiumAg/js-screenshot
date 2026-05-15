@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'preact/hooks';
+import { useCallback, useLayoutEffect, useRef } from 'preact/hooks';
 
 /**
  * useMemoizedFn - 持久化函数的 Hook
@@ -30,8 +30,10 @@ import { useCallback, useRef } from 'preact/hooks';
 export function useMemoizedFn<T extends (...args: any[]) => any>(fn: T): T {
   const fnRef = useRef<T>(fn);
 
-  // 每次渲染时更新 ref 中的函数，确保闭包中的值是最新的
-  fnRef.current = fn;
+  // 使用 useLayoutEffect 在渲染后更新 ref 中的函数，确保闭包中的值是最新的
+  useLayoutEffect(() => {
+    fnRef.current = fn;
+  });
 
   // 使用 useCallback 创建一个稳定的函数引用
   const memoizedFn = useCallback(

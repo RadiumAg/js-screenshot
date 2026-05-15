@@ -30,17 +30,19 @@ export const MosaicTool: FC<MosaicToolProps> = ({
     drawCanvasElement,
     setActiveTarget,
     setIsLock,
+    toolsConfig,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
     setActiveTarget: state.setActiveTarget,
     setIsLock: state.setIsLock,
+    toolsConfig: state.toolsConfig,
   })));
 
   const [isDrawing, setIsDrawing] = useState(false);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
-  const mosaicSize = 10;
+  const mosaicSize = toolsConfig.mosaic?.blockSize ?? 10;
 
   useEffect(() => {
     if (drawCanvasElement) {
@@ -197,7 +199,10 @@ export const MosaicTool: FC<MosaicToolProps> = ({
       cutoutBoxWidth,
       cutoutBoxHeight,
     );
-    operateHistory.push(imageData);
+    operateHistory.push({
+      imageData,
+      position: { x: cutoutBoxX, y: cutoutBoxY },
+    });
   });
 
   useMount(() => {
