@@ -92,7 +92,6 @@ export const ToolBox: FC<ToolBoxProps> = ({
         cutoutBoxWidth={cutoutBoxWidth}
         cutoutBoxHeight={cutoutBoxHeight}
       />
-      <ColorPicker />
       <RefuseButton onCancel={onCancel} />
       <SaveButton
         cutoutBoxX={cutoutBoxX}
@@ -100,6 +99,7 @@ export const ToolBox: FC<ToolBoxProps> = ({
         cutoutBoxWidth={cutoutBoxWidth}
         cutoutBoxHeight={cutoutBoxHeight}
       />
+      <ColorPicker />
     </div>
   );
 };

@@ -156,7 +156,7 @@ export const PenTool: FC<PenToolProps> = ({
   });
 
   return (
-    <div class={`${Style.pen}${activeTarget === ACTIVE_TYPE.pen ? ` ${Style.active}` : ''}`} onClick={handleClick}>
+    <div data-tool-btn={ACTIVE_TYPE.pen} class={`${Style.pen}${activeTarget === ACTIVE_TYPE.pen ? ` ${Style.active}` : ''}`} onClick={handleClick}>
       <img src={pen} alt="pen" />
     </div>
   );

@@ -346,7 +346,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
   });
 
   return (
-    <div class={`${Style['text-box']}${activeTarget === ACTIVE_TYPE.textBox ? ` ${Style.active}` : ''}`} onClick={handleClick}>
+    <div data-tool-btn={ACTIVE_TYPE.textBox} class={`${Style['text-box']}${activeTarget === ACTIVE_TYPE.textBox ? ` ${Style.active}` : ''}`} onClick={handleClick}>
       <img src={textBox} alt="text" />
     </div>
   );
