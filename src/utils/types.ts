@@ -12,6 +12,7 @@ interface PenToolConfig extends ToolConfig {
 interface ArrowToolConfig extends ToolConfig {
   lineWidth?: number
   arrowSize?: number
+  lineType?: 'arrow' | 'line'
 }
 
 interface TextBoxToolConfig extends ToolConfig {

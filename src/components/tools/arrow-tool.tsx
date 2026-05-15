@@ -48,6 +48,7 @@ export const ArrowTool: FC<ArrowToolProps> = ({
   const arrowColor = toolsConfig.arrow?.color ?? 'red';
   const arrowWidth = toolsConfig.arrow?.lineWidth ?? 2;
   const arrowHeadLength = toolsConfig.arrow?.arrowSize ?? 10;
+  const lineType = toolsConfig.arrow?.lineType ?? 'arrow';
 
   useEffect(() => {
     if (drawCanvasElement) {
@@ -75,18 +76,20 @@ export const ArrowTool: FC<ArrowToolProps> = ({
       contextRef.current.lineTo(toX, toY);
       contextRef.current.stroke();
 
-      contextRef.current.beginPath();
-      contextRef.current.moveTo(toX, toY);
-      contextRef.current.lineTo(
-        toX - arrowHeadLength * Math.cos(angle - Math.PI / 6),
-        toY - arrowHeadLength * Math.sin(angle - Math.PI / 6),
-      );
-      contextRef.current.moveTo(toX, toY);
-      contextRef.current.lineTo(
-        toX - arrowHeadLength * Math.cos(angle + Math.PI / 6),
-        toY - arrowHeadLength * Math.sin(angle + Math.PI / 6),
-      );
-      contextRef.current.stroke();
+      if (lineType === 'arrow') {
+        contextRef.current.beginPath();
+        contextRef.current.moveTo(toX, toY);
+        contextRef.current.lineTo(
+          toX - arrowHeadLength * Math.cos(angle - Math.PI / 6),
+          toY - arrowHeadLength * Math.sin(angle - Math.PI / 6),
+        );
+        contextRef.current.moveTo(toX, toY);
+        contextRef.current.lineTo(
+          toX - arrowHeadLength * Math.cos(angle + Math.PI / 6),
+          toY - arrowHeadLength * Math.sin(angle + Math.PI / 6),
+        );
+        contextRef.current.stroke();
+      }
     },
   );
 

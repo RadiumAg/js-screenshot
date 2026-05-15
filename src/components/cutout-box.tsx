@@ -11,6 +11,7 @@ import DotController from './dot-controller';
 import { ToolBox } from './tool-box';
 import { SizeIndicator } from './tools/size-indicator';
 import { ColorPicker } from './color-picker';
+import { ArrowOptions } from './tools/arrow-options';
 import { ACTIVE_TYPE } from './utils/share';
 
 export interface CutoutBoxProps {
@@ -467,6 +468,9 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
 
       {/* 颜色选择器 */}
       <ColorPicker />
+
+      {/* 箭头选项 */}
+      <ArrowOptions />
 
       {/* 尺寸指示器 */}
       <SizeIndicator
