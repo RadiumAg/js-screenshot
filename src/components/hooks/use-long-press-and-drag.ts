@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'preact/hooks';
 interface Option {
   container: HTMLDivElement | null
   target: RefObject<HTMLElement>
-  onDrag: (distance: { xDistance: number, yDistance: number }, consume: () => void) => void
+  onDrag: (distance: { xDistance: number, yDistance: number }, consume: (axis?: 'x' | 'y' | 'xy') => void) => void
   onMouseUp?: () => void
   onMouseDown?: () => void
   onMouseOver?: () => void
@@ -40,11 +40,14 @@ const useLongPressAndDrag = (option: Option) => {
       const xDistance = event.clientX - pointPositionRef.current.x;
       const yDistance = event.clientY - pointPositionRef.current.y;
 
-      const consume = () => {
-        pointPositionRef.current = {
-          x: event.clientX,
-          y: event.clientY,
-        };
+      const consume = (axis?: 'x' | 'y' | 'xy') => {
+        if (!axis || axis === 'xy') {
+          pointPositionRef.current = { x: event.clientX, y: event.clientY };
+        } else if (axis === 'x') {
+          pointPositionRef.current = { ...pointPositionRef.current, x: event.clientX };
+        } else if (axis === 'y') {
+          pointPositionRef.current = { ...pointPositionRef.current, y: event.clientY };
+        }
       };
 
       onDrag({ xDistance, yDistance }, consume);

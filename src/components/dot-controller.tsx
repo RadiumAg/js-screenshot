@@ -11,7 +11,7 @@ export interface DotControllerProps {
   cursor: string
   left: number
   top: number
-  onUpdateAxis: (xDistance: number, yDistance: number, consume: () => void) => void
+  onUpdateAxis: (xDistance: number, yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => void
 }
 
 /**
