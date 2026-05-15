@@ -2,7 +2,7 @@ import type { ScreenShotOptions } from '@screenshots/utils';
 import type { FC } from 'preact/compat';
 import { useMount } from '@screenshots/hooks/use-mount';
 import { __isDev__ } from '@screenshots/utils';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
 import { CutoutBox } from './cutout-box';
@@ -11,12 +11,13 @@ import { useCanvas } from './hooks/use-canvas';
 export interface ScreenShotProps {
   options: ScreenShotOptions
   onComplete?: (result: any) => void
+  onError?: (error: Error) => void
 }
 
 /**
  * ScreenShot 内部组件
  */
-const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete }) => {
+const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) => {
   const [isInitialized, setIsInitialized] = useState(false);
   const {
     setDrawCanvasElement,
@@ -44,18 +45,30 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete }) => {
     return videoElement;
   };
 
+  const rafIdRef = useRef<number>(0);
+  const playHandlerRef = useRef<(() => void) | null>(null);
+  const videoElementRef = useRef<HTMLVideoElement | null>(null);
+
   /**
    * 初始化显示媒体模式
    */
   const initDisplayMediaMode = async (): Promise<void> => {
-    return new Promise(async (resolve) => {
-      const captureStream = await navigator.mediaDevices.getDisplayMedia({
-        preferCurrentTab: true,
-      });
+    return new Promise(async (resolve, reject) => {
+      let captureStream: MediaStream;
+      try {
+        captureStream = await navigator.mediaDevices.getDisplayMedia({
+          preferCurrentTab: true,
+        });
+      }
+      catch (error) {
+        reject(error);
+        return;
+      }
 
       const sourceCanvasElement = createCanvas();
       const drawCanvasElement = createCanvas();
       const videoElement = createVideoElement();
+      videoElementRef.current = videoElement;
       const sourceContext = sourceCanvasElement.getContext('2d');
 
       setSourceCanvasElement(sourceCanvasElement);
@@ -63,17 +76,16 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete }) => {
       setVideoElement(videoElement);
 
       videoElement.srcObject = captureStream;
-      videoElement.play();
 
       const updateCanvas = () => {
         if (sourceContext && videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
           sourceContext.drawImage(videoElement, 0, 0);
           return;
         }
-        requestAnimationFrame(updateCanvas);
+        rafIdRef.current = requestAnimationFrame(updateCanvas);
       };
 
-      videoElement.addEventListener('play', () => {
+      const onPlay = () => {
         const width = window.innerWidth;
         const height = window.innerHeight;
         sourceCanvasElement.width = width;
@@ -84,6 +96,13 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete }) => {
         updateCanvas();
         setIsInitialized(true);
         resolve();
+      };
+
+      playHandlerRef.current = onPlay;
+      videoElement.addEventListener('play', onPlay);
+
+      videoElement.play().catch((err) => {
+        reject(err);
       });
     });
   };
@@ -92,12 +111,29 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete }) => {
    * 开始截图
    */
   const startShot = async () => {
-    await initDisplayMediaMode();
+    try {
+      await initDisplayMediaMode();
+    }
+    catch (error) {
+      onError?.(error instanceof Error ? error : new Error(String(error)));
+    }
   };
 
   // 组件挂载时自动开始截图流程
   useMount(() => {
     startShot();
+
+    return () => {
+      // 清理 rAF
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+      // 清理 play 事件监听器
+      const videoElement = videoElementRef.current;
+      if (videoElement && playHandlerRef.current) {
+        videoElement.removeEventListener('play', playHandlerRef.current);
+      }
+    };
   });
 
   if (!isInitialized) {
@@ -112,7 +148,7 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete }) => {
 /**
  * ScreenShot 函数式组件
  */
-export const ScreenShot: FC<ScreenShotProps & { container: HTMLDivElement }> = ({ options, container, onComplete }) => {
+export const ScreenShot: FC<ScreenShotProps & { container: HTMLDivElement }> = ({ options, container, onComplete, onError }) => {
   // 初始化store中的container
   const { setContainer } = useScreenshotStore(useShallow(state => ({
     setContainer: state.setContainer,
@@ -123,5 +159,5 @@ export const ScreenShot: FC<ScreenShotProps & { container: HTMLDivElement }> = (
     setContainer(container);
   }, [container, setContainer]);
 
-  return <ScreenShotInner options={options} onComplete={onComplete} />;
+  return <ScreenShotInner options={options} onComplete={onComplete} onError={onError} />;
 };

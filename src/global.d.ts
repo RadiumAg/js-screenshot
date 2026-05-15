@@ -1,5 +1,5 @@
 interface Window {
-  operateHistory: ImageData[]
+  operateHistory: import('./store/screenshot-store').HistoryEntry[]
 }
 
 interface DisplayMediaStreamOptions {

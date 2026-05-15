@@ -1,28 +1,34 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
+export interface HistoryEntry {
+  imageData: ImageData
+  position: { x: number, y: number }
+}
+
 /**
  * 操作历史记录类
  */
-class OperateHistory extends Array<ImageData> {
+class OperateHistory extends Array<HistoryEntry> {
   private currentHistoryIndex = -1;
 
-  push(...items: ImageData[]) {
+  push(...items: HistoryEntry[]) {
+    const result = super.push(...items);
     this.currentHistoryIndex = this.length - 1;
-    return super.push(...items);
+    return result;
   }
 
-  prev() {
-    if (this.currentHistoryIndex === 0) {
-      return this[this.currentHistoryIndex];
+  prev(): HistoryEntry | undefined {
+    if (this.currentHistoryIndex <= 0) {
+      return undefined;
     }
     this.currentHistoryIndex--;
     return this[this.currentHistoryIndex];
   }
 
-  next() {
-    if (this.currentHistoryIndex === this.length) {
-      return this[this.currentHistoryIndex];
+  next(): HistoryEntry | undefined {
+    if (this.currentHistoryIndex >= this.length - 1) {
+      return undefined;
     }
     this.currentHistoryIndex++;
     return this[this.currentHistoryIndex];
@@ -33,14 +39,26 @@ class OperateHistory extends Array<ImageData> {
     this.currentHistoryIndex = -1;
   }
 
+  getCurrentIndex() {
+    return this.currentHistoryIndex;
+  }
+
   async getScreenShotUrl(index: number) {
+    const entry = this[index];
+    if (!entry)
+      throw new Error('Invalid history index');
+
     const canvasElement = document.createElement('canvas') as HTMLCanvasElement;
+    canvasElement.width = entry.imageData.width;
+    canvasElement.height = entry.imageData.height;
     const context = canvasElement.getContext('2d');
-    context?.putImageData(this[index], 0, 0);
-    const blob = await new Promise<Blob>((resolve) => {
+    context?.putImageData(entry.imageData, 0, 0);
+    const blob = await new Promise<Blob>((resolve, reject) => {
       canvasElement.toBlob((data) => {
         if (data)
           resolve(data);
+        else
+          reject(new Error('Failed to create blob'));
       });
     });
     return URL.createObjectURL(blob);
@@ -125,9 +143,18 @@ export const useScreenshotStore = create<ScreenshotStore>()(
 
       // 重置状态
       resetState: () => {
-        const { operateHistory } = get();
+        const { operateHistory, videoElement, container } = get();
+
+        // 停止 MediaStream tracks
+        if (videoElement?.srcObject) {
+          const stream = videoElement.srcObject as MediaStream;
+          stream.getTracks().forEach(track => track.stop());
+          videoElement.srcObject = null;
+        }
+
         operateHistory.clear();
         set({
+          container: null,
           drawCanvasElement: null,
           sourceCanvasElement: null,
           videoElement: null,

@@ -1,6 +1,7 @@
 import type { ScreenShotOptions } from './utils';
 import { ScreenShot as ScreenShotComponent } from './components/screen-shot';
 import { createAndRenderComponent, destroyComponentContainer } from './components/utils/render-utils';
+import { useScreenshotStore } from './store/screenshot-store';
 
 class ScreenShot {
   private container: HTMLElement | null = null;
@@ -18,6 +19,9 @@ class ScreenShot {
             onComplete={(result) => {
               resolve(result);
             }}
+            onError={(error) => {
+              reject(error);
+            }}
           />,
         );
       }
@@ -31,6 +35,9 @@ class ScreenShot {
    * 销毁截图实例
    */
   destroy() {
+    // 先清理 store 状态（包括停止 MediaStream tracks）
+    useScreenshotStore.getState().resetState();
+
     if (this.container) {
       destroyComponentContainer(this.container);
       this.container = null;
