@@ -148,7 +148,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
       if (!contextRef.current)
         return;
 
-      contextRef.current.fillStyle = 'red';
+      contextRef.current.fillStyle = toolsConfig.textBox?.color ?? '#000000';
       contextRef.current.font = `${fontSize}px system-ui`;
       measureLineToCanvas(textBoxValue, maxWidth, clientX, clientY, 0);
     },

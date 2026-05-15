@@ -110,7 +110,9 @@ export const PenTool: FC<PenToolProps> = ({
         setActiveTarget(ACTIVE_TYPE.pen);
         isMouseDownRef.current = true;
 
-        contextRef.current.strokeStyle = 'blue';
+        contextRef.current.strokeStyle = toolsConfig.pen?.color ?? '#000000';
+        contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 15;
+        contextRef.current.lineCap = 'round';
         contextRef.current.beginPath();
         contextRef.current.moveTo(event.clientX, event.clientY);
       }

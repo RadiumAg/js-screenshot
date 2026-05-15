@@ -19,8 +19,8 @@ import { useEffect } from 'preact/hooks';
  * }
  * ```
  */
-export function useMount(fn: () => void): void {
+export function useMount(fn: () => void | (() => void)): void {
   useEffect(() => {
-    fn();
+    return fn();
   }, []);
 }
