@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'preact/hooks';
 interface Option {
   container: HTMLDivElement | null
   target: RefObject<HTMLElement>
-  onDrag: (distance: { xDistance: number, yDistance: number }) => void
+  onDrag: (distance: { xDistance: number, yDistance: number }, consume: () => void) => void
   onMouseUp?: () => void
   onMouseDown?: () => void
   onMouseOver?: () => void
@@ -37,15 +37,17 @@ const useLongPressAndDrag = (option: Option) => {
   });
   const handleMouseMove = useMemoizedFn((event: MouseEvent) => {
     if (mouseDownRef.current) {
-      onDrag({
-        xDistance: event.clientX - pointPositionRef.current.x,
-        yDistance: event.clientY - pointPositionRef.current.y,
-      });
+      const xDistance = event.clientX - pointPositionRef.current.x;
+      const yDistance = event.clientY - pointPositionRef.current.y;
 
-      pointPositionRef.current = {
-        x: event.clientX,
-        y: event.clientY,
+      const consume = () => {
+        pointPositionRef.current = {
+          x: event.clientX,
+          y: event.clientY,
+        };
       };
+
+      onDrag({ xDistance, yDistance }, consume);
     }
   });
 

@@ -11,7 +11,7 @@ export interface DotControllerProps {
   cursor: string
   left: number
   top: number
-  onUpdateAxis: (xDistance: number, yDistance: number) => void
+  onUpdateAxis: (xDistance: number, yDistance: number, consume: () => void) => void
 }
 
 /**
@@ -41,11 +41,11 @@ const DotController: FC<DotControllerProps> = ({
   const elRef = useRef<HTMLDivElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  useLongPressAndDrag({ target: elRef, container, onDrag(distance) {
+  useLongPressAndDrag({ target: elRef, container, onDrag(distance, consume) {
     if (activeTarget !== activeType)
       return;
 
-    onUpdateAxis(distance.xDistance, distance.yDistance);
+    onUpdateAxis(distance.xDistance, distance.yDistance, consume);
   }, onMouseUp() {
     setActiveTarget(null);
   }, onMouseDown() {
