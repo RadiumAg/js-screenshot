@@ -8,6 +8,7 @@ import { PenTool } from './tools/pen-tool';
 import { RefuseButton } from './tools/refuse-button';
 import { SaveButton } from './tools/save-button';
 import { TextBoxTool } from './tools/text-box-tool';
+import { ColorPicker } from './color-picker';
 
 export interface ToolBoxProps {
   cutoutBoxX: number
@@ -91,6 +92,7 @@ export const ToolBox: FC<ToolBoxProps> = ({
         cutoutBoxWidth={cutoutBoxWidth}
         cutoutBoxHeight={cutoutBoxHeight}
       />
+      <ColorPicker />
       <RefuseButton onCancel={onCancel} />
       <SaveButton
         cutoutBoxX={cutoutBoxX}

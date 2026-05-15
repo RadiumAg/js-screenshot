@@ -110,6 +110,10 @@ export interface ScreenshotStore {
   toolsConfig: ToolsConfig
   setToolsConfig: (config: ToolsConfig) => void
 
+  // 当前颜色
+  currentColor: string
+  setCurrentColor: (color: string) => void
+
   // 重置状态
   resetState: () => void
 }
@@ -131,6 +135,7 @@ export const useScreenshotStore = create<ScreenshotStore>()(
       isFirstInit: true,
       dotControllerSize: 10,
       toolsConfig: {},
+      currentColor: '#000000',
 
       // 设置容器
       setContainer: container => set({ container }),
@@ -149,6 +154,20 @@ export const useScreenshotStore = create<ScreenshotStore>()(
 
       // 设置工具配置
       setToolsConfig: toolsConfig => set({ toolsConfig }),
+
+      // 设置当前颜色
+      setCurrentColor: (color) => {
+        const { toolsConfig } = get();
+        set({
+          currentColor: color,
+          toolsConfig: {
+            ...toolsConfig,
+            pen: { ...toolsConfig.pen, color },
+            arrow: { ...toolsConfig.arrow, color },
+            textBox: { ...toolsConfig.textBox, color },
+          },
+        });
+      },
 
       // 重置状态
       resetState: () => {
@@ -170,6 +189,7 @@ export const useScreenshotStore = create<ScreenshotStore>()(
           activeTarget: null,
           isLock: false,
           isFirstInit: true,
+          currentColor: '#000000',
         });
       },
     }),

@@ -248,18 +248,6 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
         if (preImageData && contextRef.current) {
           contextRef.current.putImageData(preImageData.imageData, preImageData.position.x, preImageData.position.y);
         }
-        else if (sourceContextRef.current && contextRef.current) {
-          contextRef.current.putImageData(
-            sourceContextRef.current.getImageData(
-              position.x,
-              position.y,
-              size.width,
-              size.height,
-            ),
-            position.x,
-            position.y,
-          );
-        }
       }
       // 重做: Ctrl/Cmd+Shift+Z 或 Ctrl/Cmd+Y
       else if (
