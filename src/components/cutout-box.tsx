@@ -235,12 +235,14 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
   );
 
   /**
-   * 处理键盘事件（Ctrl+Z 撤销，Ctrl+Shift+Z / Ctrl+Y 重做）
+   * 处理键盘事件（Ctrl/Cmd+Z 撤销，Ctrl/Cmd+Shift+Z 或 Ctrl/Cmd+Y 重做）
    */
   const handleKeyDown = useMemoizedFn(
     (event: KeyboardEvent) => {
-      // 撤销: Ctrl+Z (不按 Shift)
-      if (event.ctrlKey && event.key === 'z' && !event.shiftKey) {
+      const isModifier = event.ctrlKey || event.metaKey;
+
+      // 撤销: Ctrl/Cmd+Z (不按 Shift)
+      if (isModifier && event.key === 'z' && !event.shiftKey) {
         const preImageData = operateHistory.prev();
 
         if (preImageData && contextRef.current) {
@@ -259,10 +261,10 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
           );
         }
       }
-      // 重做: Ctrl+Shift+Z 或 Ctrl+Y
+      // 重做: Ctrl/Cmd+Shift+Z 或 Ctrl/Cmd+Y
       else if (
-        (event.ctrlKey && event.shiftKey && event.key === 'Z')
-        || (event.ctrlKey && event.key === 'y')
+        (isModifier && event.shiftKey && event.key === 'Z')
+        || (isModifier && event.key === 'y')
       ) {
         const nextImageData = operateHistory.next();
         if (nextImageData && contextRef.current) {
