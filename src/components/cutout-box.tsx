@@ -457,7 +457,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
         className={Style['cutout-box']}
         style={{
           left: position.x,
-          pointerEvents: 'auto',
+          pointerEvents: isLock ? 'none' : 'auto',
           top: position.y,
           width: size.width - shifting,
           height: size.height - shifting,
