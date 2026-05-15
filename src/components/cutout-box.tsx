@@ -305,12 +305,12 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
   useMount(() => {
     drawCanvasElement?.addEventListener('mouseup', handleMouseUp);
     container?.addEventListener('mousemove', handleMouseMove);
-    container?.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       drawCanvasElement?.removeEventListener('mouseup', handleMouseUp);
       container?.removeEventListener('mousemove', handleMouseMove);
-      container?.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', handleKeyDown);
       document.body.style.cursor = '';
     };
   });
