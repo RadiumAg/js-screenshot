@@ -8,3 +8,7 @@
 .pen:hover {
   @include common.hover;
 }
+
+.pen.active {
+  @include common.active;
+}

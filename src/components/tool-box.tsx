@@ -64,6 +64,7 @@ export const ToolBox: FC<ToolBoxProps> = ({
       style={{
         position: 'fixed',
         zIndex: '4',
+        pointerEvents: 'auto',
       }}
     >
       <TextBoxTool

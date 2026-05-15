@@ -8,6 +8,10 @@
   @include common.hover;
 }
 
+.text-box.active {
+  @include common.active;
+}
+
 .text-box-input {
   color: red;
   z-index: 77;

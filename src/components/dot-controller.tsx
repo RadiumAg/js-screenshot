@@ -69,6 +69,7 @@ const DotController: FC<DotControllerProps> = ({
         top,
         cursor,
         position: 'fixed',
+        pointerEvents: 'auto',
       }}
       class={Style['dot-controller-container']}
     >

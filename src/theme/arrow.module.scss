@@ -8,3 +8,7 @@
 .arrow:hover {
   @include common.hover;
 }
+
+.arrow.active {
+  @include common.active;
+}

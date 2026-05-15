@@ -6,6 +6,7 @@ import Style from '@screenshots/theme/text-box.module.scss';
 import { useEffect, useRef } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
+import { ACTIVE_TYPE } from '../utils/share';
 
 export interface TextBoxToolProps {
   cutoutBoxX: number
@@ -238,7 +239,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
 
   const handleClick = useMemoizedFn(() => {
     setIsLock(true);
-    setActiveTarget('textBox');
+    setActiveTarget(ACTIVE_TYPE.textBox);
   });
 
   const handleMouseDown = useMemoizedFn(
@@ -247,7 +248,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
 
       if (!isLock)
         return;
-      if (activeTarget !== 'textBox')
+      if (activeTarget !== ACTIVE_TYPE.textBox)
         return;
       if (!contextRef.current)
         return;
@@ -345,7 +346,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
   });
 
   return (
-    <div class={Style['text-box']} onClick={handleClick}>
+    <div class={`${Style['text-box']}${activeTarget === ACTIVE_TYPE.textBox ? ` ${Style.active}` : ''}`} onClick={handleClick}>
       <img src={textBox} alt="text" />
     </div>
   );

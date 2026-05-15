@@ -19,7 +19,7 @@ export function createAndRenderComponent(component: VNode): HTMLElement {
   container.style.width = '100%';
   container.style.height = '100%';
   container.style.left = '0';
-  // container.style.pointerEvents = 'none';
+  container.style.pointerEvents = 'none';
   container.style.zIndex = '9999';
 
   document.body.appendChild(container);

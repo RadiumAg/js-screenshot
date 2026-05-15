@@ -12,3 +12,8 @@
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.1);
 }
+
+@mixin active {
+  cursor: pointer;
+  background-color: rgba(0, 120, 255, 0.3);
+}

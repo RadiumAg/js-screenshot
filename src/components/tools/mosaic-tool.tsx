@@ -221,7 +221,7 @@ export const MosaicTool: FC<MosaicToolProps> = ({
   });
 
   return (
-    <div class={Style.mosaic} onClick={handleClick} tabIndex={0}>
+    <div class={`${Style.mosaic}${activeTarget === ACTIVE_TYPE.mosaic ? ` ${Style.active}` : ''}`} onClick={handleClick} tabIndex={0}>
       <img src={mosaic} alt="mosaic" />
     </div>
   );

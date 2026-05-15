@@ -178,7 +178,7 @@ export const ArrowTool: FC<ArrowToolProps> = ({
   });
 
   return (
-    <div class={Style.arrow} onClick={handleClick} tabIndex={0}>
+    <div class={`${Style.arrow}${activeTarget === ACTIVE_TYPE.arrow ? ` ${Style.active}` : ''}`} onClick={handleClick} tabIndex={0}>
       <img src={arrow} alt="arrow" />
     </div>
   );

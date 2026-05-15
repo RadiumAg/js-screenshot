@@ -8,3 +8,7 @@
 .mosaic:hover {
   @include common.hover;
 }
+
+.mosaic.active {
+  @include common.active;
+}

@@ -3,6 +3,7 @@ enum ACTIVE_TYPE {
   mosaic = 'mosaic',
   arrow = 'arrow',
   pen = 'pen',
+  textBox = 'textBox',
   dotController = 'dotController',
 };
 
