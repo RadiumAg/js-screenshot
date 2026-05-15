@@ -6,10 +6,15 @@ import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 import { ACTIVE_TYPE } from '../utils/share';
 
-const LINE_WIDTHS = [
-  { label: '细', value: 2 },
-  { label: '中', value: 4 },
-  { label: '粗', value: 6 },
+const COLORS = [
+  '#000000',
+  '#ff0000',
+  '#0000ff',
+  '#00b050',
+  '#ffc000',
+  '#ff6600',
+  '#9933ff',
+  '#ffffff',
 ];
 
 export const ArrowOptions: FC = () => {
@@ -25,6 +30,7 @@ export const ArrowOptions: FC = () => {
   const arrowConfig = toolsConfig.arrow ?? {};
   const lineType = arrowConfig.lineType ?? 'arrow';
   const lineWidth = arrowConfig.lineWidth ?? 2;
+  const arrowColor = arrowConfig.color ?? '#000000';
 
   const handleSetLineType = useCallback((type: 'arrow' | 'line') => {
     setToolsConfig({
@@ -37,6 +43,13 @@ export const ArrowOptions: FC = () => {
     setToolsConfig({
       ...toolsConfig,
       arrow: { ...arrowConfig, lineWidth: width },
+    });
+  }, [toolsConfig, arrowConfig, setToolsConfig]);
+
+  const handleSetColor = useCallback((color: string) => {
+    setToolsConfig({
+      ...toolsConfig,
+      arrow: { ...arrowConfig, color },
     });
   }, [toolsConfig, arrowConfig, setToolsConfig]);
 
@@ -92,6 +105,7 @@ export const ArrowOptions: FC = () => {
         transform: 'translateX(-50%)',
       }}
     >
+      {/* 形状切换 */}
       <div class={Style.section}>
         <div
           class={`${Style.optionBtn} ${lineType === 'arrow' ? Style.active : ''}`}
@@ -114,16 +128,29 @@ export const ArrowOptions: FC = () => {
 
       <div class={Style.divider} />
 
+      {/* 粗细滑块 */}
+      <div class={Style.sliderSection}>
+        <input
+          type="range"
+          class={Style.slider}
+          min="1"
+          max="10"
+          value={lineWidth}
+          onInput={e => handleSetLineWidth(Number((e.target as HTMLInputElement).value))}
+        />
+      </div>
+
+      <div class={Style.divider} />
+
+      {/* 颜色选择 */}
       <div class={Style.section}>
-        {LINE_WIDTHS.map(w => (
+        {COLORS.map(color => (
           <div
-            key={w.value}
-            class={`${Style.optionBtn} ${lineWidth === w.value ? Style.active : ''}`}
-            onClick={() => handleSetLineWidth(w.value)}
-            title={w.label}
-          >
-            <span class={Style.lineWidthBtn}>{w.label}</span>
-          </div>
+            key={color}
+            class={`${Style.colorDot} ${arrowColor === color ? Style.active : ''} ${color === '#ffffff' ? Style.whiteDot : ''}`}
+            style={{ backgroundColor: color }}
+            onClick={() => handleSetColor(color)}
+          />
         ))}
       </div>
     </div>,
