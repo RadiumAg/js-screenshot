@@ -1,6 +1,7 @@
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/color-picker.module.scss';
-import { useCallback, useEffect, useRef } from 'preact/hooks';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { createPortal } from 'preact/compat';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
 import { ACTIVE_TYPE } from './utils/share';
@@ -20,6 +21,7 @@ const DRAWING_TOOLS = [ACTIVE_TYPE.pen, ACTIVE_TYPE.arrow, ACTIVE_TYPE.textBox];
 
 export const ColorPicker: FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ x: number, y: number } | null>(null);
   const { currentColor, activeTarget, setCurrentColor } = useScreenshotStore(useShallow(state => ({
     currentColor: state.currentColor,
     activeTarget: state.activeTarget,
@@ -32,6 +34,28 @@ export const ColorPicker: FC = () => {
     setCurrentColor(color);
   }, [setCurrentColor]);
 
+  // 计算面板位置
+  useEffect(() => {
+    if (!isVisible) {
+      setPos(null);
+      return;
+    }
+
+    const updatePos = () => {
+      const btn = document.querySelector(`[data-tool-btn="${activeTarget}"]`);
+      if (btn) {
+        const rect = btn.getBoundingClientRect();
+        setPos({ x: rect.left + rect.width / 2, y: rect.bottom + 6 });
+      }
+    };
+
+    updatePos();
+    // 延迟再更新一次，确保 DOM 已渲染
+    const timer = setTimeout(updatePos, 0);
+    return () => clearTimeout(timer);
+  }, [isVisible, activeTarget]);
+
+  // 点击外部关闭
   useEffect(() => {
     if (!isVisible)
       return;
@@ -49,21 +73,19 @@ export const ColorPicker: FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isVisible]);
 
-  if (!isVisible)
+  if (!isVisible || !pos)
     return null;
 
-  const activeBtn = document.querySelector(`[data-tool-btn="${activeTarget}"]`);
-
-  return (
+  return createPortal(
     <div
       ref={panelRef}
       class={Style.colorPanel}
-      style={activeBtn ? {
+      style={{
         position: 'fixed',
-        left: `${activeBtn.getBoundingClientRect().left + activeBtn.getBoundingClientRect().width / 2}px`,
-        top: `${activeBtn.getBoundingClientRect().bottom + 6}px`,
+        left: `${pos.x}px`,
+        top: `${pos.y}px`,
         transform: 'translateX(-50%)',
-      } : { display: 'none' }}
+      }}
     >
       {COLORS.map(color => (
         <div
@@ -73,6 +95,7 @@ export const ColorPicker: FC = () => {
           onClick={() => handleSelect(color)}
         />
       ))}
-    </div>
+    </div>,
+    document.body,
   );
 };

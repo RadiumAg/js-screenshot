@@ -17,9 +17,11 @@ class ScreenShot {
             container={null as any}
             options={this.screenShotOptions}
             onComplete={(result) => {
+              this.destroy();
               resolve(result);
             }}
             onError={(error) => {
+              this.destroy();
               reject(error);
             }}
           />,
