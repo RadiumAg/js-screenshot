@@ -45,7 +45,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     setIsFirstInit: state.setIsFirstInit,
     setActiveTarget: state.setActiveTarget,
   })));
-  const shifting = dotControllerSize / 2;
+  const miniDotControllerSize = dotControllerSize * 3;
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -55,32 +55,11 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
   const sourceContextRef = useRef<CanvasRenderingContext2D | null>(null);
 
   const updateWrapper = useMemoizedFn((fn: AnyFun) => {
-    const miniDotControllerSize = dotControllerSize * 3;
-
     return (...args: any[]) => {
       if (!sourceContextRef.current) {
         return;
       }
       if (!contextRef.current) {
-        return;
-      }
-      if (size.width < miniDotControllerSize) {
-        setSize((oldValue) => {
-          return {
-            ...oldValue,
-            width: miniDotControllerSize,
-          };
-        });
-        return;
-      }
-      if (size.height < miniDotControllerSize) {
-        setSize((oldValue) => {
-          return {
-            ...oldValue,
-            height: miniDotControllerSize,
-          };
-        });
-
         return;
       }
       fn(...args);
@@ -333,100 +312,85 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
   });
 
   // 计算控制点位置
+  const canvasWidth = drawCanvasElement?.width ?? 0;
+  const canvasHeight = drawCanvasElement?.height ?? 0;
+
   const dotControllerPositions = [
-    { x: position.x - shifting, y: position.y - shifting, cursor: 'nwse-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
-      setPosition((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.x = oldValue.x + xDistance;
-        newValue.y = oldValue.y + yDistance;
-        return newValue;
+    { x: position.x, y: position.y, cursor: 'nwse-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
+      setPosition((oldPos) => {
+        const newX = Math.max(0, Math.min(oldPos.x + xDistance, canvasWidth - miniDotControllerSize));
+        const newY = Math.max(0, Math.min(oldPos.y + yDistance, canvasHeight - miniDotControllerSize));
+        return { x: newX, y: newY };
       });
-      setSize((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.width = oldValue.width - xDistance;
-        newValue.height = oldValue.height - yDistance;
-        return newValue;
-      });
+      setSize((oldSize) => ({
+        width: Math.max(miniDotControllerSize, Math.min(oldSize.width - xDistance, canvasWidth)),
+        height: Math.max(miniDotControllerSize, Math.min(oldSize.height - yDistance, canvasHeight)),
+      }));
       throttledUpdatePosition();
     }) }, // 左上
-    { x: position.x + size.width / 2 - shifting, y: position.y - shifting, cursor: 'ns-resize', onUpdateAxis: updateWrapper((_xDistance: number, yDistance: number) => {
-      setPosition((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.y = oldValue.y + yDistance;
-        return newValue;
-      });
-      setSize((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.height = oldValue.height - yDistance;
-        return newValue;
-      });
+    { x: position.x + size.width / 2, y: position.y, cursor: 'ns-resize', onUpdateAxis: updateWrapper((_xDistance: number, yDistance: number) => {
+      setPosition((oldPos) => ({
+        ...oldPos,
+        y: Math.max(0, Math.min(oldPos.y + yDistance, canvasHeight - miniDotControllerSize)),
+      }));
+      setSize((oldSize) => ({
+        ...oldSize,
+        height: Math.max(miniDotControllerSize, Math.min(oldSize.height - yDistance, canvasHeight)),
+      }));
       throttledUpdatePosition();
     }) }, // 上中
-    { x: position.x + size.width - shifting, y: position.y - shifting, cursor: 'nesw-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
-      setSize((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.width = oldValue.width + xDistance;
-        newValue.height = oldValue.height - yDistance;
-        return newValue;
-      });
-      setPosition((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.y = oldValue.y + yDistance;
-        return newValue;
-      });
+    { x: position.x + size.width, y: position.y, cursor: 'nesw-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
+      setPosition((oldPos) => ({
+        ...oldPos,
+        y: Math.max(0, Math.min(oldPos.y + yDistance, canvasHeight - miniDotControllerSize)),
+      }));
+      setSize((oldSize) => ({
+        width: Math.max(miniDotControllerSize, Math.min(oldSize.width + xDistance, canvasWidth)),
+        height: Math.max(miniDotControllerSize, Math.min(oldSize.height - yDistance, canvasHeight)),
+      }));
       throttledUpdatePosition();
     }) }, // 上右
-    { x: position.x + size.width - shifting, y: position.y + size.height / 2 - shifting, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, _yDistance: number) => {
-      setSize((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.width = oldValue.width + xDistance;
-        return newValue;
-      });
+    { x: position.x + size.width, y: position.y + size.height / 2, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, _yDistance: number) => {
+      setSize((oldSize) => ({
+        ...oldSize,
+        width: Math.max(miniDotControllerSize, Math.min(oldSize.width + xDistance, canvasWidth)),
+      }));
       throttledUpdatePosition();
     }) }, // 右中
-    { x: position.x + size.width - shifting, y: position.y + size.height - shifting, cursor: 'nwse-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
-      setSize((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.width = oldValue.width + xDistance;
-        newValue.height = oldValue.height + yDistance;
-        return newValue;
-      });
+    { x: position.x + size.width, y: position.y + size.height, cursor: 'nwse-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
+      setSize((oldSize) => ({
+        width: Math.max(miniDotControllerSize, Math.min(oldSize.width + xDistance, canvasWidth)),
+        height: Math.max(miniDotControllerSize, Math.min(oldSize.height + yDistance, canvasHeight)),
+      }));
       throttledUpdatePosition();
     }) }, // 右下
-    { x: position.x + size.width / 2 - shifting, y: position.y + size.height - shifting, cursor: 'ns-resize', onUpdateAxis: updateWrapper((_xDistance: number, yDistance: number) => {
-      setSize((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.height = oldValue.height + yDistance;
-        return newValue;
-      });
+    { x: position.x + size.width / 2, y: position.y + size.height, cursor: 'ns-resize', onUpdateAxis: updateWrapper((_xDistance: number, yDistance: number) => {
+      setSize((oldSize) => ({
+        ...oldSize,
+        height: Math.max(miniDotControllerSize, Math.min(oldSize.height + yDistance, canvasHeight)),
+      }));
       throttledUpdatePosition();
     }) }, // 下中
-    { x: position.x - shifting, y: position.y + size.height - shifting, cursor: 'nesw-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
-      setPosition((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.x = oldValue.x + xDistance;
-        return newValue;
-      });
-      setSize((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.width = oldValue.width - xDistance;
-        newValue.height = oldValue.height + yDistance;
-        return newValue;
-      });
-
+    { x: position.x, y: position.y + size.height, cursor: 'nesw-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number) => {
+      setPosition((oldPos) => ({
+        x: Math.max(0, Math.min(oldPos.x + xDistance, canvasWidth - miniDotControllerSize)),
+        ...oldPos,
+      }));
+      setSize((oldSize) => ({
+        width: Math.max(miniDotControllerSize, Math.min(oldSize.width - xDistance, canvasWidth)),
+        height: Math.max(miniDotControllerSize, Math.min(oldSize.height + yDistance, canvasHeight)),
+      }));
       throttledUpdatePosition();
     }) }, // 下左
-    { x: position.x - shifting, y: position.y + size.height / 2 - shifting, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, _yDistance: number) => {
-      setPosition((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.x = oldValue.x + xDistance;
-        return newValue;
-      });
-      setSize((oldValue) => {
-        const newValue = { ...oldValue };
-        newValue.width = oldValue.width - xDistance;
-        return newValue;
-      });
+    { x: position.x, y: position.y + size.height / 2, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, _yDistance: number) => {
+      setPosition((oldPos) => ({
+        x: Math.max(0, Math.min(oldPos.x + xDistance, canvasWidth - miniDotControllerSize)),
+        ...oldPos,
+      }));
+      setSize((oldSize) => ({
+        width: Math.max(miniDotControllerSize, Math.min(oldSize.width - xDistance, canvasWidth)),
+        ...oldSize,
+      }));
       throttledUpdatePosition();
     }) }, // 左中
   ];
@@ -451,8 +415,8 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
           left: position.x,
           pointerEvents: isLock ? 'none' : 'auto',
           top: position.y,
-          width: size.width - shifting,
-          height: size.height - shifting,
+          width: size.width,
+          height: size.height,
         }}
       >
       </div>

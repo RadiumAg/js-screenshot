@@ -52,13 +52,13 @@ const useLongPressAndDrag = (option: Option) => {
   useEffect(() => {
     const targetElement = target.current;
     targetElement?.addEventListener('mousedown', handleMouseDown);
-    container?.addEventListener('mouseup', handleMouseUp);
-    container?.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mousemove', handleMouseMove);
 
     return () => {
       targetElement?.removeEventListener('mousedown', handleMouseDown);
-      container?.removeEventListener('mouseup', handleMouseUp);
-      container?.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
 };
