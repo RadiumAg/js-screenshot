@@ -336,7 +336,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       setPosition({ ...position, y: newY });
       setSize({ ...size, height: newH });
       const yOk = newY === position.y + yDistance && newH === size.height - yDistance;
-      consume(yOk ? 'xy' : undefined);
+      consume(yOk ? 'xy' : 'x');
       throttledUpdatePosition();
     }) }, // 上中
     { x: position.x + size.width, y: position.y, cursor: 'nesw-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
@@ -354,7 +354,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       const newW = clamp(size.width + xDistance, miniDotControllerSize, canvasWidth);
       setSize({ ...size, width: newW });
       const xOk = newW === size.width + xDistance;
-      consume(xOk ? 'xy' : undefined);
+      consume(xOk ? 'xy' : 'y');
       throttledUpdatePosition();
     }) }, // 右中
     { x: position.x + size.width, y: position.y + size.height, cursor: 'nwse-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
@@ -370,7 +370,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       const newH = clamp(size.height + yDistance, miniDotControllerSize, canvasHeight);
       setSize({ ...size, height: newH });
       const yOk = newH === size.height + yDistance;
-      consume(yOk ? 'xy' : undefined);
+      consume(yOk ? 'xy' : 'x');
       throttledUpdatePosition();
     }) }, // 下中
     { x: position.x, y: position.y + size.height, cursor: 'nesw-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
@@ -390,7 +390,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       setPosition({ ...position, x: newX });
       setSize({ ...size, width: newW });
       const xOk = newX === position.x + xDistance && newW === size.width - xDistance;
-      consume(xOk ? 'xy' : undefined);
+      consume(xOk ? 'xy' : 'y');
       throttledUpdatePosition();
     }) }, // 左中
   ];
