@@ -327,7 +327,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       setSize({ width: newW, height: newH });
       const xOk = newX === position.x + xDistance && newW === size.width - xDistance;
       const yOk = newY === position.y + yDistance && newH === size.height - yDistance;
-      consume(xOk && yOk ? 'xy' : xOk ? 'x' : yOk ? 'y' : undefined);
+      consume(xOk && yOk ? 'xy' : xOk ? 'x' : yOk ? 'y' : 'xy');
       throttledUpdatePosition();
     }) }, // 左上
     { x: position.x + size.width / 2, y: position.y, cursor: 'ns-resize', onUpdateAxis: updateWrapper((_xDistance: number, yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
@@ -347,7 +347,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       setSize({ width: newW, height: newH });
       const xOk = newW === size.width + xDistance;
       const yOk = newY === position.y + yDistance && newH === size.height - yDistance;
-      consume(xOk && yOk ? 'xy' : xOk ? 'x' : yOk ? 'y' : undefined);
+      consume(xOk && yOk ? 'xy' : xOk ? 'x' : yOk ? 'y' : 'xy');
       throttledUpdatePosition();
     }) }, // 上右
     { x: position.x + size.width, y: position.y + size.height / 2, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, _yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
@@ -363,7 +363,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       setSize({ width: newW, height: newH });
       const xOk = newW === size.width + xDistance;
       const yOk = newH === size.height + yDistance;
-      consume(xOk && yOk ? 'xy' : xOk ? 'x' : yOk ? 'y' : undefined);
+      consume(xOk && yOk ? 'xy' : xOk ? 'x' : yOk ? 'y' : 'xy');
       throttledUpdatePosition();
     }) }, // 右下
     { x: position.x + size.width / 2, y: position.y + size.height, cursor: 'ns-resize', onUpdateAxis: updateWrapper((_xDistance: number, yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
@@ -381,7 +381,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       setSize({ width: newW, height: newH });
       const xOk = newX === position.x + xDistance && newW === size.width - xDistance;
       const yOk = newH === size.height + yDistance;
-      consume(xOk && yOk ? 'xy' : xOk ? 'x' : yOk ? 'y' : undefined);
+      consume(xOk && yOk ? 'xy' : xOk ? 'x' : yOk ? 'y' : 'xy');
       throttledUpdatePosition();
     }) }, // 下左
     { x: position.x, y: position.y + size.height / 2, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, _yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
