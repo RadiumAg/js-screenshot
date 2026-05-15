@@ -17,7 +17,7 @@ const COLORS = [
   '#ffffff',
 ];
 
-const DRAWING_TOOLS = [ACTIVE_TYPE.pen, ACTIVE_TYPE.arrow, ACTIVE_TYPE.textBox];
+const DRAWING_TOOLS = [ACTIVE_TYPE.pen, ACTIVE_TYPE.textBox];
 
 export const ColorPicker: FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
