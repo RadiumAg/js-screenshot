@@ -1,7 +1,6 @@
 import type { FC } from 'preact/compat';
 import line from '@screenshots/assets/images/line.svg';
-import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
-import { useMount } from '@screenshots/hooks/use-mount';
+import { useMount, useMemoizedFn } from 'ahooks';
 import Style from '@screenshots/theme/line.module.scss';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';

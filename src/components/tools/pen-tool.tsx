@@ -1,7 +1,6 @@
 import type { FC } from 'preact/compat';
 import pen from '@screenshots/assets/images/pen.svg';
-import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
-import { useMount } from '@screenshots/hooks/use-mount';
+import { useMount, useMemoizedFn } from 'ahooks';
 import Style from '@screenshots/theme/pen.module.scss';
 import { useEffect, useRef } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
@@ -47,14 +46,7 @@ export const PenTool: FC<PenToolProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pointsRef = useRef<Array<{ x: number, y: number }>>([]);
 
-  useEffect(() => {
-    if (drawCanvasElement) {
-      canvasRef.current = drawCanvasElement;
-      contextRef.current = drawCanvasElement.getContext('2d', {
-        willReadFrequently: true,
-      });
-    }
-  }, [drawCanvasElement]);
+
 
   const isCurrentArea = useMemoizedFn(
     (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
@@ -179,6 +171,15 @@ export const PenTool: FC<PenToolProps> = ({
       drawCanvasElement.removeEventListener('mouseup', handleMouseUp as EventListener);
     };
   });
+  
+  useEffect(() => {
+    if (drawCanvasElement) {
+      canvasRef.current = drawCanvasElement;
+      contextRef.current = drawCanvasElement.getContext('2d', {
+        willReadFrequently: true,
+      });
+    }
+  }, [drawCanvasElement]);
 
   return (
     <div data-tool-btn={ACTIVE_TYPE.pen} class={`${Style.pen}${activeTarget === ACTIVE_TYPE.pen ? ` ${Style.active}` : ''}`} onClick={handleClick}>

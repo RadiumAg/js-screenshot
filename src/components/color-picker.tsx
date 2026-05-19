@@ -1,7 +1,8 @@
 import type { FC } from 'preact/compat';
+import { useMemoizedFn } from 'ahooks';
 import Style from '@screenshots/theme/color-picker.module.scss';
 import { createPortal } from 'preact/compat';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
 import { ACTIVE_TYPE } from './utils/share';
@@ -17,7 +18,7 @@ const COLORS = [
   '#ffffff',
 ];
 
-const DRAWING_TOOLS = [ACTIVE_TYPE.pen, ACTIVE_TYPE.textBox, ACTIVE_TYPE.rect, ACTIVE_TYPE.ellipse, ACTIVE_TYPE.line];
+const DRAWING_TOOLS = [ACTIVE_TYPE.textBox, ACTIVE_TYPE.rect];
 
 export const ColorPicker: FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -30,9 +31,9 @@ export const ColorPicker: FC = () => {
 
   const isVisible = activeTarget !== null && DRAWING_TOOLS.includes(activeTarget as ACTIVE_TYPE);
 
-  const handleSelect = useCallback((color: string) => {
+  const handleSelect = useMemoizedFn((color: string) => {
     setCurrentColor(color);
-  }, [setCurrentColor]);
+  });
 
   // 计算面板位置
   useEffect(() => {

@@ -1,6 +1,6 @@
 import type { ScreenShotOptions } from '@screenshots/utils';
 import type { FC } from 'preact/compat';
-import { useMount } from '@screenshots/hooks/use-mount';
+import { useMount } from 'ahooks';
 import { __isDev__ } from '@screenshots/utils';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';

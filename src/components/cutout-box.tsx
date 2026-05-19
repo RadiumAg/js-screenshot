@@ -1,7 +1,6 @@
 import type { AnyFun } from '@screenshots/utils';
 import type { FC } from 'preact/compat';
-import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
-import { useMount } from '@screenshots/hooks/use-mount';
+import { useMount, useMemoizedFn } from 'ahooks';
 import Style from '@screenshots/theme/cutout-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
 import { useEffect, useRef, useState } from 'preact/hooks';
@@ -273,7 +272,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       }
 
       // Enter: 保存截图
-      if (event.key === 'Enter' && selectionCreated) {
+      if (event.key === 'Enter' && selectionCreated && activeTarget !== ACTIVE_TYPE.textBox) {
         handleSave();
         return;
       }

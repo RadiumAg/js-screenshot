@@ -6,5 +6,8 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true
   },
-  "include": ["./playground/vite.config.ts"]
+  "include": [
+    "./playground/vite.config.ts",
+    "./script/*.ts"
+  ]
 }

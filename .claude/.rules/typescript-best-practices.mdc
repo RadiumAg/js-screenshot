@@ -1,0 +1,643 @@
+---
+description: 
+alwaysApply: true
+enabled: true
+updatedAt: 2025-11-20T16:00:19.491Z
+provider: 
+---
+
+# TypeScript 最佳实践
+
+## 类型定义规范
+
+### 接口和类型
+- **必须**使用 `interface` 定义对象类型
+- **必须**使用 `type` 定义联合类型、交叉类型和复杂类型
+- **必须**为所有公共 API 提供类型定义
+
+```typescript
+// ✅ 正确做法
+interface TextBoxConfig {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+type ToolType = 'pen' | 'text' | 'arrow' | 'mosaic';
+
+// ❌ 错误做法
+// 缺少类型定义
+function createTextBox(x, y, width, height) {
+  // ...
+}
+```
+
+### 泛型使用
+- **必须**使用泛型提高代码复用性
+- **必须**为泛型参数提供约束
+- **必须**使用有意义的泛型参数名
+
+```typescript
+// ✅ 正确做法
+interface Repository<T extends { id: string }> {
+  findById(id: string): Promise<T | null>;
+  save(entity: T): Promise<T>;
+}
+
+// ❌ 错误做法
+interface Repository {
+  findById(id: string): Promise<any>; // 使用 any
+  save(entity: any): Promise<any>;
+}
+```
+
+## 空值处理规范
+
+### 可选链和空值合并
+- **必须**使用可选链操作符 `?.` 访问可能为空的属性
+- **必须**使用空值合并操作符 `??` 提供默认值
+- **必须**使用明确的类型检查
+
+```typescript
+// ✅ 正确做法
+const element = document.querySelector('.selector');
+const text = element?.textContent ?? 'default text';
+
+// ❌ 错误做法
+const element = document.querySelector('.selector');
+const text = element.textContent; // 可能为 null
+```
+
+### 类型守卫
+- **必须**使用类型守卫函数进行运行时类型检查
+- **必须**使用 `in` 操作符检查属性存在性
+- **必须**使用 `instanceof` 检查对象类型
+
+```typescript
+// ✅ 正确做法
+function isHTMLElement(element: unknown): element is HTMLElement {
+  return element instanceof HTMLElement;
+}
+
+if (isHTMLElement(element)) {
+  // 安全使用 element
+}
+
+// ❌ 错误做法
+const htmlElement = element as HTMLElement; // 强制转换不安全
+```
+
+## 函数定义规范
+
+### 参数类型
+- **必须**为所有函数参数提供类型
+- **必须**为函数返回值提供类型
+- **必须**使用明确的参数类型
+
+```typescript
+// ✅ 正确做法
+function calculateArea(width: number, height: number): number {
+  return width * height;
+}
+
+// ❌ 错误做法
+function calculateArea(width, height) {
+  return width * height;
+}
+```
+
+### 可选参数
+- **必须**使用 `?` 标记可选参数
+- **必须**为可选参数提供默认值
+- **必须**将可选参数放在参数列表末尾
+
+```typescript
+// ✅ 正确做法
+function createTextBox(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  text?: string
+): TextBox {
+  return new TextBox(x, y, width, height, text ?? '');
+}
+
+// ❌ 错误做法
+function createTextBox(x, y, width, height, text = '') {
+  // 缺少类型定义
+}
+```
+
+## 类定义规范
+
+### 访问修饰符
+- **必须**使用明确的访问修饰符
+- **必须**将公共接口设为 `public`
+- **必须**将内部实现设为 `private` 或 `protected`
+
+```typescript
+// ✅ 正确做法
+class TextBox {
+  public x: number;
+  private context: CanvasRenderingContext2D | null;
+  protected elements: HTMLElement[] = [];
+  
+  constructor(x: number) {
+    this.x = x;
+  }
+}
+
+// ❌ 错误做法
+class TextBox {
+  x: number; // 缺少访问修饰符
+  context; // 缺少类型和修饰符
+}
+```
+
+### 属性初始化
+- **必须**在构造函数中初始化所有属性
+- **必须**使用参数属性简化构造函数
+- **必须**为属性提供初始值
+
+```typescript
+// ✅ 正确做法
+class TextBox {
+  private elements: HTMLElement[] = [];
+  
+  constructor(
+    private x: number,
+    private y: number,
+    private width: number,
+    private height: number
+  ) {}
+}
+
+// ❌ 错误做法
+class TextBox {
+  private x: number;
+  private y: number;
+  
+  constructor() {
+    // 属性未初始化
+  }
+}
+```
+
+## 异步操作规范
+
+### Promise 使用
+- **必须**使用 `async/await` 替代 `.then()` 链
+- **必须**使用 `try/catch` 处理异步错误
+- **必须**为异步函数提供返回类型
+
+```typescript
+// ✅ 正确做法
+async function loadImage(src: string): Promise<HTMLImageElement> {
+  try {
+    const img = new Image();
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = src;
+    });
+    return img;
+  } catch (error) {
+    throw new Error(`Failed to load image: ${src}`);
+  }
+}
+
+// ❌ 错误做法
+function loadImage(src: string) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.src = src;
+  });
+}
+```
+
+## 模块化规范
+
+### 文件命名规范
+- **必须**使用短横线连接的小写字母形式命名文件（如 `cutout-box.tsx`）
+- **禁止**使用驼峰命名法命名文件（如 `cutoutBox.tsx`）
+- **必须**保持文件名与其导出的主要组件/功能名称的一致性
+- **必须**使用语义化的文件名，清晰表达文件用途
+
+```typescript
+// ✅ 正确做法 - 文件名: cutout-box.tsx
+export const CutoutBox: FC<CutoutBoxProps> = ({ ... }) => {
+  // 组件实现
+};
+
+// ✅ 正确做法 - 文件名: text-box.tsx
+export const TextBox: FC<TextBoxProps> = ({ ... }) => {
+  // 组件实现
+};
+
+// ✅ 正确做法 - 文件名: canvas-manager.ts
+export class CanvasManager {
+  // 类实现
+};
+
+// ❌ 错误做法 - 文件名: cutoutBox.tsx
+// 应该重命名为: cutout-box.tsx
+
+// ❌ 错误做法 - 文件名: textBoxComponent.tsx
+// 应该重命名为: text-box.tsx
+
+// ❌ 错误做法 - 文件名: CanvasManager.ts
+// 应该重命名为: canvas-manager.ts
+```
+
+### 目录命名规范
+- **必须**使用短横线连接的小写字母形式命名目录
+- **禁止**使用驼峰命名法或下划线命名法命名目录
+- **必须**使用有意义的目录名，反映其包含内容的功能
+
+```typescript
+// ✅ 正确做法的目录结构
+src/
+├── components/
+│   ├── cutout-box/
+│   │   ├── cutout-box.tsx
+│   │   ├── cutout-box.module.scss
+│   │   └── index.ts
+│   ├── text-box/
+│   │   ├── text-box.tsx
+│   │   ├── text-box.module.scss
+│   │   └── index.ts
+│   └── dot-controller/
+│       ├── dot-controller.tsx
+│       └── dot-controller.module.scss
+├── hooks/
+│   ├── use-long-press.ts
+│   ├── use-memoized-fn.ts
+│   └── use-mount.ts
+└── utils/
+    ├── canvas-utils.ts
+    ├── file-utils.ts
+    └── event-utils.ts
+
+// ❌ 错误做法的目录结构
+src/
+├── components/
+│   ├── cutoutBox/  // 驼峰命名
+│   ├── textBoxComponent/  // 驼峰命名
+│   └── dotController/  // 驼峰命名
+├── hooks/
+│   ├── useLongPress.ts  // 驼峰命名
+│   └── useMemoizedFn.ts  // 驼峰命名
+└── utils/
+    ├── canvasUtils.ts  // 驼峰命名
+    └── fileUtils.ts  // 驼峰命名
+```
+
+### 导入导出
+- **必须**使用具名导入导出
+- **必须**避免使用 `export default`
+- **必须**按功能模块组织导入
+
+```typescript
+// ✅ 正确做法
+import { TextBox, Pen, Arrow } from './tools';
+import { CanvasManager } from './canvas';
+import type { ToolConfig } from './types';
+
+export { TextBox, Pen, Arrow };
+
+// ❌ 错误做法
+import TextBox from './tools';
+import CanvasManager from './canvas';
+import * as Types from './types';
+```
+
+### 类型导入
+- **必须**使用 `import type` 导入仅用于类型的导入
+- **必须**将类型导入和值导入分开
+- **必须**避免在运行时使用类型导入
+
+```typescript
+// ✅ 正确做法
+import type { CutoutBox } from './cutout-box';
+import { CutoutBox as CutoutBoxClass } from './cutout-box';
+
+// ❌ 错误做法
+import { CutoutBox } from './cutout-box'; // 如果只用于类型
+```
+
+## 枚举和常量规范
+
+### 枚举使用
+- **必须**使用枚举定义固定值集合
+- **必须**为枚举提供字符串值
+- **必须**使用命名空间组织枚举
+
+```typescript
+// ✅ 正确做法
+enum ToolType {
+  PEN = 'pen',
+  TEXT = 'text',
+  ARROW = 'arrow',
+  MOSAIC = 'mosaic'
+}
+
+// ❌ 错误做法
+const TOOL_TYPES = {
+  PEN: 'pen',
+  TEXT: 'text',
+  ARROW: 'arrow',
+  MOSAIC: 'mosaic'
+};
+```
+
+### 常量定义
+- **必须**使用 `const` 定义常量
+- **必须**使用 `readonly` 修饰符保护对象常量
+- **必须**使用大写字母和下划线命名常量
+
+```typescript
+// ✅ 正确做法
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 600;
+
+const DEFAULT_CONFIG = {
+  fontSize: 16,
+  color: '#000000',
+  lineWidth: 2
+} as const;
+
+// ❌ 错误做法
+let canvasWidth = 800;
+const defaultConfig = {
+  fontSize: 16,
+  color: '#000000',
+  lineWidth: 2
+}; // 对象属性可变
+```
+
+## 错误处理规范
+
+### 自定义错误类
+- **必须**创建自定义错误类
+- **必须**继承自 `Error` 类
+- **必须**提供有意义的错误信息
+
+```typescript
+// ✅ 正确做法
+class CanvasError extends Error {
+  constructor(message: string, public readonly code: string) {
+    super(message);
+    this.name = 'CanvasError';
+  }
+}
+
+// ❌ 错误做法
+throw new Error('Something went wrong'); // 缺少具体信息
+```
+
+### 错误处理模式
+- **必须**使用 Result 模式处理可恢复错误
+- **必须**使用 Either 模式处理二值结果
+- **必须**避免使用异常处理控制流程
+
+```typescript
+// ✅ 正确做法
+type Result<T, E = Error> = {
+  success: true;
+  data: T;
+} | {
+  success: false;
+  error: E;
+};
+
+function safeOperation(): Result<string> {
+  try {
+    return { success: true, data: 'result' };
+  } catch (error) {
+    return { success: false, error: error as Error };
+  }
+}
+
+// ❌ 错误做法
+function operation() {
+  if (Math.random() > 0.5) {
+    throw new Error('Random error'); // 使用异常控制流程
+  }
+  return 'result';
+}
+```
+
+## 性能优化规范
+
+### 类型推断优化
+- **必须**让 TypeScript 推断简单类型
+- **必须**显式声明复杂类型
+- **必须**避免不必要的类型断言
+
+```typescript
+// ✅ 正确做法
+const message = 'Hello'; // 推断为 string
+const numbers = [1, 2, 3]; // 推断为 number[]
+
+interface ComplexData {
+  id: string;
+  items: Array<{ name: string; value: number }>;
+}
+const data: ComplexData = { /* ... */ };
+
+// ❌ 错误做法
+const message: string = 'Hello'; // 不必要的类型注解
+const data = {} as ComplexData; // 类型断言不安全
+```
+
+## React 组件声明规范
+
+### 函数式组件声明
+- **必须**使用 `const ComponentName: FC<PropsType> = () => {}` 形式声明组件
+- **必须**从 'react' 或 'preact' 导入 `FC` 类型
+- **必须**为组件 Props 定义明确的接口或类型
+
+```typescript
+// ✅ 正确做法
+import type { FC } from 'preact';
+
+interface ButtonProps {
+  text: string;
+  onClick: () => void;
+  disabled?: boolean;
+}
+
+const Button: FC<ButtonProps> = ({ text, onClick, disabled = false }) => {
+  return (
+    <button onClick={onClick} disabled={disabled}>
+      {text}
+    </button>
+  );
+};
+
+// ❌ 错误做法
+function Button({ text, onClick, disabled }) {
+  return (
+    <button onClick={onClick} disabled={disabled}>
+      {text}
+    </button>
+  );
+}
+
+// ❌ 错误做法
+const Button = ({ text, onClick, disabled }) => {
+  return (
+    <button onClick={onClick} disabled={disabled}>
+      {text}
+    </button>
+  );
+};
+```
+
+### Props 参数解构
+- **必须**使用 `const {} = props` 形式解构 props 参数
+- **必须**在组件参数中直接解构，而不是在函数体内
+- **必须**为解构的属性提供默认值（如果适用）
+
+```typescript
+// ✅ 正确做法
+interface TextBoxProps {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  placeholder?: string;
+  maxLength?: number;
+}
+
+const TextBox: FC<TextBoxProps> = ({ 
+  x, 
+  y, 
+  width, 
+  height, 
+  placeholder = 'Enter text...', 
+  maxLength = 100 
+}) => {
+  // 组件实现
+  return (
+    <input
+      style={{ left: x, top: y, width, height }}
+      placeholder={placeholder}
+      maxLength={maxLength}
+    />
+  );
+};
+
+// ❌ 错误做法
+const TextBox: FC<TextBoxProps> = (props) => {
+  const { x, y, width, height, placeholder, maxLength } = props;
+  // 在函数体内解构
+};
+
+// ❌ 错误做法
+const TextBox: FC<TextBoxProps> = (props) => {
+  // 未解构，直接使用 props.x, props.y 等
+  return <input style={{ left: props.x, top: props.y }} />;
+};
+```
+
+### Props 类型定义
+- **必须**为所有 props 定义明确的类型
+- **必须**使用 `interface` 定义组件 Props 类型
+- **必须**将可选属性标记为 `?` 并提供默认值
+
+```typescript
+// ✅ 正确做法
+interface ModalProps {
+  isOpen: boolean;
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+  size?: 'small' | 'medium' | 'large';
+  showCloseButton?: boolean;
+}
+
+const Modal: FC<ModalProps> = ({
+  isOpen,
+  title,
+  onClose,
+  children,
+  size = 'medium',
+  showCloseButton = true
+}) => {
+  // 组件实现
+};
+
+// ❌ 错误做法
+const Modal = ({ isOpen, title, onClose, children, size, showCloseButton }) => {
+  // 缺少类型定义
+};
+```
+
+### 组件导出规范
+- **必须**使用具名导出组件
+- **必须**同时导出 Props 类型供外部使用
+- **必须**避免使用 `export default`
+
+```typescript
+// ✅ 正确做法
+interface AlertProps {
+  message: string;
+  type: 'info' | 'warning' | 'error';
+  onDismiss?: () => void;
+}
+
+export const Alert: FC<AlertProps> = ({ message, type, onDismiss }) => {
+  return (
+    <div className={`alert alert-${type}`}>
+      {message}
+      {onDismiss && <button onClick={onDismiss}>×</button>}
+    </div>
+  );
+};
+
+export type { AlertProps };
+
+// ❌ 错误做法
+const Alert: FC<AlertProps> = ({ message, type, onDismiss }) => {
+  // ...
+};
+
+export default Alert;
+```
+
+### 泛型组件规范
+- **必须**使用泛型提高组件复用性
+- **必须**为泛型参数提供约束
+- **必须**在组件名称后明确声明泛型参数
+
+```typescript
+// ✅ 正确做法
+interface ListProps<T extends { id: string; name: string }> {
+  items: T[];
+  renderItem: (item: T) => React.ReactNode;
+  onItemSelect?: (item: T) => void;
+}
+
+export const List: <T extends { id: string; name: string }>(
+  props: ListProps<T>
+) => React.ReactElement = ({ items, renderItem, onItemSelect }) => {
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item.id} onClick={() => onItemSelect?.(item)}>
+          {renderItem(item)}
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+// ❌ 错误做法
+const List = ({ items, renderItem }) => {
+  // 缺少泛型约束和类型定义
+};
+```

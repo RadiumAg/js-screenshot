@@ -1,7 +1,6 @@
 import type { FC } from 'preact/compat';
 import rect from '@screenshots/assets/images/rect.svg';
-import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
-import { useMount } from '@screenshots/hooks/use-mount';
+import { useMount, useMemoizedFn } from 'ahooks';
 import Style from '@screenshots/theme/rect.module.scss';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';

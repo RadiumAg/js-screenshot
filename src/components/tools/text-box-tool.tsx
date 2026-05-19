@@ -1,7 +1,6 @@
 import type { FC } from 'preact/compat';
 import textBox from '@screenshots/assets/images/text-box.svg';
-import useMemoizedFn from '@screenshots/hooks/use-memoized-fn';
-import { useMount } from '@screenshots/hooks/use-mount';
+import { useMount, useMemoizedFn } from 'ahooks';
 import Style from '@screenshots/theme/text-box.module.scss';
 import { useEffect, useRef } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
@@ -51,7 +50,6 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
   const shifting = {
     x: 15,
     y: 15,
-    minWidth: 100,
     paddingTopBottom: 6,
     paddingLeftRight: 10,
   };
@@ -71,87 +69,43 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
   );
 
   const isOutLeft = useMemoizedFn((minX: number, x: number) => x < minX);
-  const isOutRight = useMemoizedFn((maxX: number, x: number) => x > maxX);
   const isOutTop = useMemoizedFn((minY: number, y: number) => y < minY);
   const isOutBottom = useMemoizedFn((maxY: number, y: number) => y > maxY);
 
   const measureLineToCanvas = useMemoizedFn(
     (
       textBoxValue: string | null,
-      maxWidth: number,
       clientX: number,
       clientY: number,
-      renderIndex: number,
-      startIndex = 0,
-      endIndex = 1,
-    ): number => {
+    ) => {
       if (!textBoxValue || !contextRef.current)
-        return renderIndex;
+        return;
 
-      const stringValue = textBoxValue.slice(startIndex, endIndex);
+      contextRef.current.fillStyle = toolsConfig.textBox?.color ?? '#000000';
+      contextRef.current.font = `${fontSize}px system-ui`;
 
-      const render = () => {
-        if (stringValue == null || !contextRef.current)
-          return;
-
-        contextRef.current.fillText(
-          stringValue,
+      const lines = textBoxValue.split('\n');
+      lines.forEach((line, index) => {
+        contextRef.current!.fillText(
+          line,
           clientX - shifting.x + shifting.paddingLeftRight * 2,
           clientY
           - shifting.y
-          + renderIndex * 20
+          + index * 20
           + shifting.paddingTopBottom
           + fontSize,
         );
-      };
-
-      if (endIndex === textBoxValue.length) {
-        render();
-        return renderIndex;
-      }
-
-      if (contextRef.current.measureText(stringValue).width > maxWidth) {
-        startIndex = --endIndex;
-        render();
-        // eslint-disable-next-line react-hooks/immutability -- Recursive function call is valid here
-        return measureLineToCanvas(
-          textBoxValue,
-          maxWidth,
-          clientX,
-          clientY,
-          renderIndex + 1,
-          startIndex,
-          endIndex,
-        );
-      }
-      else {
-        endIndex++;
-        return measureLineToCanvas(
-          textBoxValue,
-          maxWidth,
-          clientX,
-          clientY,
-          renderIndex,
-          startIndex,
-          endIndex,
-        );
-      }
+      });
     },
   );
 
   const renderToCanvas = useMemoizedFn(
     (
       textBoxValue: string | null,
-      maxWidth: number,
       clientX: number,
       clientY: number,
     ) => {
-      if (!contextRef.current)
-        return;
-
-      contextRef.current.fillStyle = toolsConfig.textBox?.color ?? '#000000';
-      contextRef.current.font = `${fontSize}px system-ui`;
-      measureLineToCanvas(textBoxValue, maxWidth, clientX, clientY, 0);
+      measureLineToCanvas(textBoxValue, clientX, clientY);
     },
   );
 
@@ -170,11 +124,6 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
       const isInLeft = !isOutLeft(
         cutoutBoxX + dotControllerSize / 2,
         actualClientX,
-      );
-
-      const isInRight = !isOutRight(
-        cutoutBoxX + cutoutBoxWidth - dotControllerSize / 2,
-        actualClientX + shifting.minWidth + shifting.paddingTopBottom * 2,
       );
 
       const isInTop = !isOutTop(
@@ -205,16 +154,6 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
         lastXy.y = actualClientY;
       }
 
-      if (!isInRight) {
-        const lastLeft
-          = cutoutBoxX
-            + cutoutBoxWidth
-            - shifting.minWidth
-            - shifting.paddingLeftRight * 2;
-        textBoxTextarea.style.left = `${lastLeft}px`;
-        lastXy.x = lastLeft;
-      }
-
       if (!isInBottom) {
         const lastY = cutoutBoxY + cutoutBoxHeight - 46;
         textBoxTextarea.style.top = `${lastY}px`;
@@ -227,13 +166,11 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
 
   const setStyle = useMemoizedFn((textBoxTextarea: HTMLDivElement) => {
     textBoxTextarea.setAttribute('wrap', 'hard');
-    textBoxTextarea.style.whiteSpace = 'nowrap';
     textBoxTextarea.setAttribute('autofocus', '');
     textBoxTextarea.setAttribute('contenteditable', '');
     textBoxTextarea.classList.add(Style['text-box-input']);
     textBoxTextarea.style.height = `${fontSize + shifting.paddingTopBottom * 2}px`;
-    textBoxTextarea.style.width = `${shifting.minWidth}px`;
-    textBoxTextarea.style.minWidth = `${shifting.minWidth}px`;
+    textBoxTextarea.style.width = `${cutoutBoxWidth - shifting.paddingLeftRight * 2}px`;
     textBoxTextarea.style.padding = `${shifting.paddingTopBottom}px ${shifting.paddingLeftRight}px`;
   });
 
@@ -266,9 +203,6 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
         return;
       }
 
-      let maxHeight = 0;
-      let maxWidth = shifting.minWidth;
-
       const textBoxTextarea = document.createElement('div');
       setStyle(textBoxTextarea);
       preTextareaRef.current = textBoxTextarea;
@@ -277,7 +211,6 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
       textBoxTextarea.addEventListener('blur', () => {
         renderToCanvas(
           textBoxTextarea.textContent,
-          maxWidth,
           lastXy.x,
           lastXy.y,
         );
@@ -294,38 +227,6 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
             position: { x: cutoutBoxX, y: cutoutBoxY },
           });
         }
-      });
-
-      textBoxTextarea.addEventListener('input', (event) => {
-        const currentTarget = event.currentTarget as HTMLDivElement;
-        const textboxTextReact = currentTarget.getBoundingClientRect();
-
-        if (
-          maxWidth === shifting.minWidth
-          && textboxTextReact.right >= cutoutBoxX + cutoutBoxWidth
-        ) {
-          maxWidth
-            = currentTarget.scrollWidth - shifting.paddingLeftRight * 2 - 20;
-          currentTarget.style.whiteSpace = 'unset';
-        }
-
-        if (
-          !maxHeight
-          && shifting.minWidth
-          && textboxTextReact.bottom >= cutoutBoxY + cutoutBoxHeight
-        ) {
-          maxHeight
-            = currentTarget.scrollHeight - shifting.paddingTopBottom * 2 - 60;
-        }
-
-        currentTarget.style.height = maxHeight
-          ? `${maxHeight}px`
-          : `${currentTarget.scrollHeight - shifting.paddingTopBottom * 2}px`;
-
-        currentTarget.style.width
-          = maxWidth !== shifting.minWidth
-            ? `${maxWidth}px`
-            : `${currentTarget.scrollWidth - shifting.paddingLeftRight * 2}px`;
       });
 
       document.body.append(textBoxTextarea);
