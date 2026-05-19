@@ -1,7 +1,7 @@
 import type { ScreenShotOptions } from '@screenshots/utils';
 import type { FC } from 'preact/compat';
-import { useMount } from 'ahooks';
 import { __isDev__ } from '@screenshots/utils';
+import { useMount } from 'ahooks';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
@@ -110,7 +110,10 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
         drawCanvasElement.height = height;
         drawCanvasElement.width = width;
         document.body.append(drawCanvasElement);
-        updateCanvas();
+        const timeFlag = setTimeout(() => {
+          clearTimeout(timeFlag);
+          updateCanvas();
+        }, 500);
       };
 
       playHandlerRef.current = onPlay;
