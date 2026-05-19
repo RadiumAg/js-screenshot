@@ -1,7 +1,7 @@
 import type { FC } from 'preact/compat';
 import pen from '@screenshots/assets/images/pen.svg';
-import { useMount, useMemoizedFn } from 'ahooks';
 import Style from '@screenshots/theme/pen.module.scss';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { useEffect, useRef } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
@@ -46,8 +46,6 @@ export const PenTool: FC<PenToolProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pointsRef = useRef<Array<{ x: number, y: number }>>([]);
 
-
-
   const isCurrentArea = useMemoizedFn(
     (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
       return x >= minX && x <= maxX && y >= minY && y <= maxY;
@@ -79,11 +77,7 @@ export const PenTool: FC<PenToolProps> = ({
         const points = pointsRef.current;
         points.push({ x: event.clientX, y: event.clientY });
 
-        contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 15;
-        contextRef.current.lineCap = 'round';
-        contextRef.current.lineJoin = 'round';
-        contextRef.current.strokeStyle = toolsConfig.pen?.color ?? '#000000';
-
+contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 2;
         // 使用二次贝塞尔曲线平滑连线
         if (points.length >= 3) {
           const lastTwo = points[points.length - 2];
@@ -127,7 +121,7 @@ export const PenTool: FC<PenToolProps> = ({
         pointsRef.current = [{ x: event.clientX, y: event.clientY }];
 
         contextRef.current.strokeStyle = toolsConfig.pen?.color ?? '#000000';
-        contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 15;
+        contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 2;
         contextRef.current.lineCap = 'round';
         contextRef.current.lineJoin = 'round';
         contextRef.current.beginPath();
@@ -171,7 +165,7 @@ export const PenTool: FC<PenToolProps> = ({
       drawCanvasElement.removeEventListener('mouseup', handleMouseUp as EventListener);
     };
   });
-  
+
   useEffect(() => {
     if (drawCanvasElement) {
       canvasRef.current = drawCanvasElement;

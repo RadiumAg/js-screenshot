@@ -28,7 +28,7 @@ export const PenOptions: FC = () => {
 
   const isVisible = activeTarget === ACTIVE_TYPE.pen;
   const penConfig = toolsConfig.pen ?? {};
-  const lineWidth = penConfig.lineWidth ?? 15;
+  const lineWidth = penConfig.lineWidth ?? 2;
   const penColor = penConfig.color ?? '#000000';
 
   const handleSetLineWidth = useCallback((width: number) => {
