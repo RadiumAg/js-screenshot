@@ -47,7 +47,7 @@ export const ArrowTool: FC<ArrowToolProps> = ({
 
   const arrowColor = toolsConfig.arrow?.color ?? 'red';
   const arrowWidth = toolsConfig.arrow?.lineWidth ?? 2;
-  const arrowHeadLength = toolsConfig.arrow?.arrowSize ?? 10;
+  const arrowHeadLength = (toolsConfig.arrow?.arrowSize ?? 10) * arrowWidth / 2;
   const lineType = toolsConfig.arrow?.lineType ?? 'arrow';
 
   useEffect(() => {
@@ -70,25 +70,25 @@ export const ArrowTool: FC<ArrowToolProps> = ({
         return;
 
       const angle = Math.atan2(toY - fromY, toX - fromX);
+      const bodyEndX = toX - arrowHeadLength * 0.6 * Math.cos(angle);
+      const bodyEndY = toY - arrowHeadLength * 0.6 * Math.sin(angle);
 
       contextRef.current.beginPath();
       contextRef.current.moveTo(fromX, fromY);
-      contextRef.current.lineTo(toX, toY);
+      contextRef.current.lineTo(bodyEndX, bodyEndY);
       contextRef.current.stroke();
 
       if (lineType === 'arrow') {
+        const headX1 = toX - arrowHeadLength * Math.cos(angle - Math.PI / 6);
+        const headY1 = toY - arrowHeadLength * Math.sin(angle - Math.PI / 6);
+        const headX2 = toX - arrowHeadLength * Math.cos(angle + Math.PI / 6);
+        const headY2 = toY - arrowHeadLength * Math.sin(angle + Math.PI / 6);
         contextRef.current.beginPath();
         contextRef.current.moveTo(toX, toY);
-        contextRef.current.lineTo(
-          toX - arrowHeadLength * Math.cos(angle - Math.PI / 6),
-          toY - arrowHeadLength * Math.sin(angle - Math.PI / 6),
-        );
-        contextRef.current.moveTo(toX, toY);
-        contextRef.current.lineTo(
-          toX - arrowHeadLength * Math.cos(angle + Math.PI / 6),
-          toY - arrowHeadLength * Math.sin(angle + Math.PI / 6),
-        );
-        contextRef.current.stroke();
+        contextRef.current.lineTo(headX1, headY1);
+        contextRef.current.lineTo(headX2, headY2);
+        contextRef.current.closePath();
+        contextRef.current.fill();
       }
     },
   );
@@ -126,6 +126,7 @@ export const ArrowTool: FC<ArrowToolProps> = ({
 
       contextRef.current.beginPath();
       contextRef.current.strokeStyle = arrowColor;
+      contextRef.current.fillStyle = arrowColor;
       contextRef.current.lineWidth = arrowWidth;
     },
   );

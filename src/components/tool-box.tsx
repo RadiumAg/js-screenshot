@@ -5,7 +5,6 @@ import { useEffect, useMemo, useRef } from 'preact/hooks';
 import { ArrowTool } from './tools/arrow-tool';
 import { CopyButton } from './tools/copy-button';
 import { EllipseTool } from './tools/ellipse-tool';
-import { LineTool } from './tools/line-tool';
 import { MosaicTool } from './tools/mosaic-tool';
 import { PenTool } from './tools/pen-tool';
 import { RectTool } from './tools/rect-tool';
@@ -96,12 +95,6 @@ export const ToolBox: FC<ToolBoxProps> = ({
         cutoutBoxHeight={cutoutBoxHeight}
       />
       <EllipseTool
-        cutoutBoxX={cutoutBoxX}
-        cutoutBoxY={cutoutBoxY}
-        cutoutBoxWidth={cutoutBoxWidth}
-        cutoutBoxHeight={cutoutBoxHeight}
-      />
-      <LineTool
         cutoutBoxX={cutoutBoxX}
         cutoutBoxY={cutoutBoxY}
         cutoutBoxWidth={cutoutBoxWidth}

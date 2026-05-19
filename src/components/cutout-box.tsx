@@ -11,6 +11,7 @@ import { ColorPicker } from './color-picker';
 import DotController from './dot-controller';
 import { ToolBox } from './tool-box';
 import { ArrowOptions } from './tools/arrow-options';
+import { PenOptions } from './tools/pen-options';
 import { SizeIndicator } from './tools/size-indicator';
 import { ACTIVE_TYPE } from './utils/share';
 
@@ -384,11 +385,21 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     }
   }, [drawCanvasElement, selectionCreated]);
 
+  // 在 canvas 外松开鼠标时也清理 activeTarget
+  const handleDocumentMouseUp = useMemoizedFn(() => {
+    if (activeTarget === ACTIVE_TYPE.cutoutBox) {
+      setIsMouseDown(false);
+      setActiveTarget(null);
+      setIsFirstInit(false);
+    }
+  });
+
   // 设置事件监听
   useMount(() => {
     drawCanvasElement?.addEventListener('mouseup', handleMouseUp);
     container?.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mouseup', handleDocumentMouseUp);
     drawCanvasElement?.addEventListener('mousedown', handleCanvasDrawDown);
     drawCanvasElement?.addEventListener('mousemove', handleCanvasDrawMove);
     drawCanvasElement?.addEventListener('mouseup', handleCanvasDrawUp);
@@ -397,6 +408,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       drawCanvasElement?.removeEventListener('mouseup', handleMouseUp);
       container?.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mouseup', handleDocumentMouseUp);
       drawCanvasElement?.removeEventListener('mousedown', handleCanvasDrawDown);
       drawCanvasElement?.removeEventListener('mousemove', handleCanvasDrawMove);
       drawCanvasElement?.removeEventListener('mouseup', handleCanvasDrawUp);
@@ -571,6 +583,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
 
           {/* 箭头选项 */}
           <ArrowOptions />
+          <PenOptions />
         </>
       )}
     </>

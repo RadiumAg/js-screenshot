@@ -28,12 +28,14 @@ const useLongPressAndDrag = (option: Option) => {
     onMouseDown?.();
   });
   const handleMouseUp = useMemoizedFn(() => {
+    if (mouseDownRef.current) {
+      onMouseUp?.();
+    }
     mouseDownRef.current = false;
     pointPositionRef.current = {
       x: 0,
       y: 0,
     };
-    onMouseUp?.();
   });
   const handleMouseMove = useMemoizedFn((event: MouseEvent) => {
     if (mouseDownRef.current) {
