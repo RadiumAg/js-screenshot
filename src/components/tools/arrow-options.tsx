@@ -30,7 +30,7 @@ export const ArrowOptions: FC = () => {
   const arrowConfig = toolsConfig.arrow ?? {};
   const lineType = arrowConfig.lineType ?? 'arrow';
   const lineWidth = arrowConfig.lineWidth ?? 2;
-  const arrowColor = arrowConfig.color ?? '#000000';
+  const arrowColor = arrowConfig.color ?? 'red';
 
   const handleSetLineType = useCallback((type: 'arrow' | 'line') => {
     setToolsConfig({

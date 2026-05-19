@@ -120,7 +120,7 @@ contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 2;
         isMouseDownRef.current = true;
         pointsRef.current = [{ x: event.clientX, y: event.clientY }];
 
-        contextRef.current.strokeStyle = toolsConfig.pen?.color ?? '#000000';
+        contextRef.current.strokeStyle = toolsConfig.pen?.color ?? 'red';
         contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 2;
         contextRef.current.lineCap = 'round';
         contextRef.current.lineJoin = 'round';
