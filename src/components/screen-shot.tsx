@@ -80,14 +80,21 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
 
       const updateCanvas = () => {
         if (sourceContext && videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
-          sourceContext.drawImage(videoElement, 0, 0);
           /*
-           * 帧绘制完成后才初始化 CutoutBox。
-           * 原来 setIsInitialized + resolve 放在 onPlay 里，
-           * 但 updateCanvas 是 rAF 异步轮询的，onPlay 里调完
-           * updateCanvas() 就立即 resolve 了，此时帧可能还没画好，
-           * CutoutBox 拿到的 sourceCanvasElement 是空的或不完整的。
+           * 必须指定目标宽高，将 video 缩放到 canvas 尺寸。
+           * getDisplayMedia 捕获的 video 分辨率是物理像素
+           * （Retina 屏下 = window.innerWidth * devicePixelRatio），
+           * 而 canvas 尺寸是 CSS 像素（window.innerWidth），
+           * 不指定目标宽高会按 video 原始分辨率 1:1 绘制，
+           * 导致画面被"放大"（只画了左上角一部分）。
            */
+          sourceContext.drawImage(
+            videoElement,
+            0,
+            0,
+            sourceCanvasElement.width,
+            sourceCanvasElement.height,
+          );
           setIsInitialized(true);
           resolve();
           return;
