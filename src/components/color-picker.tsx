@@ -28,7 +28,7 @@ export const ColorPicker: FC = () => {
     setCurrentColor: state.setCurrentColor,
   })));
 
-  const isVisible = DRAWING_TOOLS.includes(activeTarget as any);
+  const isVisible = activeTarget !== null && DRAWING_TOOLS.includes(activeTarget as ACTIVE_TYPE);
 
   const handleSelect = useCallback((color: string) => {
     setCurrentColor(color);

@@ -209,14 +209,14 @@ export const MosaicTool: FC<MosaicToolProps> = ({
     if (!drawCanvasElement)
       return;
 
-    drawCanvasElement.addEventListener('mousedown', handleMouseDown as any);
-    drawCanvasElement.addEventListener('mousemove', handleMouseMove as any);
-    drawCanvasElement.addEventListener('mouseup', handleMouseUp as any);
+    drawCanvasElement.addEventListener('mousedown', handleMouseDown as EventListener);
+    drawCanvasElement.addEventListener('mousemove', handleMouseMove as EventListener);
+    drawCanvasElement.addEventListener('mouseup', handleMouseUp as EventListener);
 
     return () => {
-      drawCanvasElement.removeEventListener('mousedown', handleMouseDown as any);
-      drawCanvasElement.removeEventListener('mousemove', handleMouseMove as any);
-      drawCanvasElement.removeEventListener('mouseup', handleMouseUp as any);
+      drawCanvasElement.removeEventListener('mousedown', handleMouseDown as EventListener);
+      drawCanvasElement.removeEventListener('mousemove', handleMouseMove as EventListener);
+      drawCanvasElement.removeEventListener('mouseup', handleMouseUp as EventListener);
     };
   });
 

@@ -116,7 +116,11 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
       await initDisplayMediaMode();
     }
     catch (error) {
-      onError?.(error instanceof Error ? error : new Error(String(error)));
+      const isPermissionDenied = error instanceof DOMException && error.name === 'NotAllowedError';
+      const message = isPermissionDenied
+        ? '用户拒绝了屏幕捕获权限，请在浏览器设置中允许屏幕共享后重试'
+        : String(error);
+      onError?.(error instanceof Error ? error : new Error(message));
     }
   };
 
@@ -149,7 +153,7 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
 /**
  * ScreenShot 函数式组件
  */
-export const ScreenShot: FC<ScreenShotProps & { container: HTMLDivElement }> = ({ options, container, onComplete, onError }) => {
+export const ScreenShot: FC<ScreenShotProps & { container: HTMLDivElement | null }> = ({ options, container, onComplete, onError }) => {
   // 初始化store中的container
   const { setContainer } = useScreenshotStore(useShallow(state => ({
     setContainer: state.setContainer,
@@ -157,7 +161,9 @@ export const ScreenShot: FC<ScreenShotProps & { container: HTMLDivElement }> = (
 
   // 设置容器
   useEffect(() => {
-    setContainer(container);
+    if (container) {
+      setContainer(container);
+    }
   }, [container, setContainer]);
 
   return <ScreenShotInner options={options} onComplete={onComplete} onError={onError} />;

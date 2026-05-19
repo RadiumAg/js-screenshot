@@ -14,7 +14,7 @@ class ScreenShot {
         // 创建并渲染 ScreenShot 组件
         this.container = createAndRenderComponent(
           <ScreenShotComponent
-            container={null as any}
+            container={null}
             options={this.screenShotOptions}
             onComplete={(result) => {
               this.destroy();

@@ -337,10 +337,10 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     if (!drawCanvasElement)
       return;
 
-    drawCanvasElement.addEventListener('mousedown', handleMouseDown as any);
+    drawCanvasElement.addEventListener('mousedown', handleMouseDown as EventListener);
 
     return () => {
-      drawCanvasElement.removeEventListener('mousedown', handleMouseDown as any);
+      drawCanvasElement.removeEventListener('mousedown', handleMouseDown as EventListener);
       preTextareaRef.current?.remove();
     };
   });
