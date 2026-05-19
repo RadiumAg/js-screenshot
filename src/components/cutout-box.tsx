@@ -281,7 +281,8 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       }
 
       // Enter: 保存截图
-      if (event.key === 'Enter' && selectionCreated && activeTarget !== ACTIVE_TYPE.textBox) {
+      if (event.key === 'Enter' && selectionCreated && activeTarget !== ACTIVE_TYPE.textBox
+        && !(document.activeElement instanceof HTMLElement && document.activeElement.isContentEditable)) {
         handleSave();
         return;
       }

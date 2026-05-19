@@ -217,7 +217,17 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
 
   const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
-      preTextareaRef.current?.remove();
+      /*
+       * 先让旧文本框同步完成 blur → renderToCanvas → getImageData，
+       * 再移除它。直接 remove() 会导致 blur 异步触发，和新文本框的
+       * focus() / cutoutBox 的 updatePosition 竞态，从而拿到错误的
+       * canvas 状态（背景图被放大）。
+       */
+      if (preTextareaRef.current) {
+        preTextareaRef.current.blur();
+        preTextareaRef.current.remove();
+        preTextareaRef.current = null;
+      }
 
       if (!isLock)
         return;
@@ -259,6 +269,12 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
             imageData,
             position: { x: cutoutBoxX, y: cutoutBoxY },
           });
+        }
+      });
+
+      textBoxTextarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.stopPropagation();
         }
       });
 
