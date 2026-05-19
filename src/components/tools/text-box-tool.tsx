@@ -60,20 +60,9 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     paddingLeftRight: 10,
   };
 
-  /**
-   * 自适应尺寸的边界配置
-   * - minWidth/minHeight：保证空内容时文本框仍有可视、可点击的最小区域
-   * - maxWidth/maxHeight：限制文本框无限增长，超出时由 CSS 自动换行或显示滚动
-   *
-   * 注意：最大宽高同时受截图框（cutoutBox）尺寸约束，运行时会取两者较小值，
-   * 防止文本框超出截图区域。
-   */
-  const adaptiveSize = {
-    minWidth: 40,
-    minHeight: lineHeight + shifting.paddingTopBottom * 2,
-    maxWidth: 600,
-    maxHeight: 400,
-  };
+  /* 最小尺寸：保证空内容时文本框仍可见、可点击 */
+  const minWidth = 40;
+  const minHeight = lineHeight + shifting.paddingTopBottom * 2;
 
   useEffect(() => {
     if (drawCanvasElement) {
@@ -143,43 +132,10 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
   });
 
   /**
-   * 用 canvas measureText 模拟 CSS word-break 自动换行。
-   * 传入一行文本和可用宽度，返回换行后的多行数组。
-   * 保证和预览 DOM（pre-wrap + break-word）的折行位置一致。
-   */
-  const wrapLineByMeasure = useMemoizedFn((ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] => {
-    if (!text)
-      return [''];
-
-    const wrappedLines: string[] = [];
-    let currentLine = '';
-
-    for (let i = 0; i < text.length; i++) {
-      const testLine = currentLine + text[i];
-      const measured = ctx.measureText(testLine).width;
-      if (measured > maxWidth && currentLine.length > 0) {
-        wrappedLines.push(currentLine);
-        currentLine = text[i];
-      }
-      else {
-        currentLine = testLine;
-      }
-    }
-    wrappedLines.push(currentLine);
-    return wrappedLines;
-  });
-
-  /**
-   * 渲染文本到 canvas，确保与预览 DOM 完全一致：
-   * - 同样的颜色（textColor）
-   * - 同样的字体（fontString）
-   * - 同样的行高（lineHeight）
-   * - 同样的自动换行逻辑（按文本框实际渲染宽度 word-break）
-   * - 同样的位置（文本框 left + padding = canvas fillText 的 x）
-   *
-   * @param element  - contenteditable div，用于提取行和获取实际渲染宽度
-   * @param boxLeft  - 文本框的 CSS left 值（= lastXy.x）
-   * @param boxTop   - 文本框的 CSS top 值（= lastXy.y）
+   * 渲染文本到 canvas，与预览 DOM 完全一致：
+   * - 同样的颜色、字体、行高
+   * - 同样的位置（文本框 left + padding）
+   * - 不做自动换行限制，只按用户手动回车换行
    */
   const renderToCanvas = useMemoizedFn(
     (
@@ -191,30 +147,20 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
       if (!ctx)
         return;
 
-      const rawLines = extractLinesFromElement(element);
-      if (rawLines.length === 0 || (rawLines.length === 1 && !rawLines[0]))
+      const lines = extractLinesFromElement(element);
+      if (lines.length === 0 || (lines.length === 1 && !lines[0]))
         return;
 
       ctx.fillStyle = textColor;
       ctx.font = fontString;
       ctx.textBaseline = 'top';
 
-      /* 文本绘制起点 = 文本框位置 + 内边距，和预览 DOM padding 一致 */
       const drawX = boxLeft + shifting.paddingLeftRight;
       const drawStartY = boxTop + shifting.paddingTopBottom;
 
-      /* 可用文本宽度 = 文本框实际渲染宽度 - 左右内边距 */
-      const contentWidth = element.offsetWidth - shifting.paddingLeftRight * 2;
-
-      let lineIndex = 0;
-      for (const rawLine of rawLines) {
-        /* 对每一行做自动换行，模拟 CSS word-break */
-        const subLines = wrapLineByMeasure(ctx, rawLine, contentWidth);
-        for (const subLine of subLines) {
-          ctx.fillText(subLine, drawX, drawStartY + lineIndex * lineHeight);
-          lineIndex++;
-        }
-      }
+      lines.forEach((line, index) => {
+        ctx.fillText(line, drawX, drawStartY + index * lineHeight);
+      });
     },
   );
 
@@ -292,7 +238,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     };
   });
 
-  const setStyle = useMemoizedFn((textBoxTextarea: HTMLDivElement, leftPx: number, topPx: number) => {
+  const setStyle = useMemoizedFn((textBoxTextarea: HTMLDivElement) => {
     textBoxTextarea.setAttribute('autofocus', '');
     textBoxTextarea.setAttribute('contenteditable', 'true');
     textBoxTextarea.classList.add(Style['text-box-input']);
@@ -303,16 +249,11 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     textBoxTextarea.style.fontFamily = 'system-ui';
     textBoxTextarea.style.lineHeight = `${lineHeight}px`;
     textBoxTextarea.style.padding = `${shifting.paddingTopBottom}px ${shifting.paddingLeftRight}px`;
-    /* border 颜色也跟随文字颜色，和预览视觉一致 */
     textBoxTextarea.style.border = `1px solid ${textColor}`;
 
-    /* 自适应尺寸：min/max 边界配合 inline-block，让宽高随内容增长 */
-    const { maxWidth, maxHeight } = getMaxSize(leftPx, topPx);
-    textBoxTextarea.style.minWidth = `${adaptiveSize.minWidth}px`;
-    textBoxTextarea.style.minHeight = `${adaptiveSize.minHeight}px`;
-    textBoxTextarea.style.maxWidth = `${maxWidth}px`;
-    textBoxTextarea.style.maxHeight = `${maxHeight}px`;
-    textBoxTextarea.style.overflowY = 'auto';
+    /* 不限制最大宽高，文本框随内容自由增长，可超出截图框 */
+    textBoxTextarea.style.minWidth = `${minWidth}px`;
+    textBoxTextarea.style.minHeight = `${minHeight}px`;
   });
 
   /**

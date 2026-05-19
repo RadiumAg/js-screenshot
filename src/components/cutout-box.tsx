@@ -234,6 +234,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     if (!drawCanvasElement || !contextRef.current || !selectionCreated)
       return;
 
+    const { exportFormat, exportQuality, exportFilename } = useScreenshotStore.getState();
     const screenShotData = contextRef.current.getImageData(
       position.x,
       position.y,
@@ -250,12 +251,20 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      const now = new Date();
-      const ts = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
-      a.download = `screenshot_${ts}`;
+      if (exportFilename) {
+        a.download = exportFilename;
+      }
+      else {
+        const now = new Date();
+        const ts = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+        a.download = `screenshot_${ts}`;
+      }
       a.click();
       URL.revokeObjectURL(url);
-    }, 'image/png', 1);
+      if (onComplete) {
+        onComplete(null);
+      }
+    }, exportFormat, exportQuality);
   });
 
   /**
