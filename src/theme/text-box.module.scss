@@ -13,15 +13,25 @@
 }
 
 .text-box-input {
-  color: red;
+  /* 颜色、字号、行高、border 颜色全部由 JS 注入，与 canvas 渲染保持一致 */
   z-index: 77;
   resize: none;
   outline: none;
-  font-size: 20px;
   position: fixed;
-  overflow: hidden;
   font-family: system-ui;
-  border: 1px solid red;
-  white-space: pre-wrap;
   background-color: transparent;
+
+  /* 自适应尺寸：inline-block + pre-wrap 让宽高随内容撑开 */
+  display: inline-block;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+
+  /* 空内容时保留最小宽度，确保光标可见 */
+  &:empty::before {
+    content: '';
+    display: inline-block;
+  }
 }
