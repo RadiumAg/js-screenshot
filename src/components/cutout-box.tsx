@@ -387,6 +387,22 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     });
   });
 
+  // 首次锁定截图框时，保存初始快照到历史（用于撤销第一条操作）
+  useEffect(() => {
+    if (isLock && operateHistory.length === 0 && contextRef.current) {
+      const imageData = contextRef.current.getImageData(
+        position.x,
+        position.y,
+        size.width || 1,
+        size.height || 1,
+      );
+      operateHistory.push({
+        imageData,
+        position: { x: position.x, y: position.y },
+      });
+    }
+  }, [isLock]);
+
   // 设置 canvas 光标样式
   useEffect(() => {
     if (drawCanvasElement) {
