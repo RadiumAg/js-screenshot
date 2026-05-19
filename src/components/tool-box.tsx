@@ -3,8 +3,12 @@ import Style from '@screenshots/theme/tool-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
 import { useEffect, useMemo, useRef } from 'preact/hooks';
 import { ArrowTool } from './tools/arrow-tool';
+import { CopyButton } from './tools/copy-button';
+import { EllipseTool } from './tools/ellipse-tool';
+import { LineTool } from './tools/line-tool';
 import { MosaicTool } from './tools/mosaic-tool';
 import { PenTool } from './tools/pen-tool';
+import { RectTool } from './tools/rect-tool';
 import { RefuseButton } from './tools/refuse-button';
 import { SaveButton } from './tools/save-button';
 import { TextBoxTool } from './tools/text-box-tool';
@@ -85,6 +89,24 @@ export const ToolBox: FC<ToolBoxProps> = ({
         cutoutBoxWidth={cutoutBoxWidth}
         cutoutBoxHeight={cutoutBoxHeight}
       />
+      <RectTool
+        cutoutBoxX={cutoutBoxX}
+        cutoutBoxY={cutoutBoxY}
+        cutoutBoxWidth={cutoutBoxWidth}
+        cutoutBoxHeight={cutoutBoxHeight}
+      />
+      <EllipseTool
+        cutoutBoxX={cutoutBoxX}
+        cutoutBoxY={cutoutBoxY}
+        cutoutBoxWidth={cutoutBoxWidth}
+        cutoutBoxHeight={cutoutBoxHeight}
+      />
+      <LineTool
+        cutoutBoxX={cutoutBoxX}
+        cutoutBoxY={cutoutBoxY}
+        cutoutBoxWidth={cutoutBoxWidth}
+        cutoutBoxHeight={cutoutBoxHeight}
+      />
       <MosaicTool
         cutoutBoxX={cutoutBoxX}
         cutoutBoxY={cutoutBoxY}
@@ -92,6 +114,12 @@ export const ToolBox: FC<ToolBoxProps> = ({
         cutoutBoxHeight={cutoutBoxHeight}
       />
       <RefuseButton onCancel={onCancel} />
+      <CopyButton
+        cutoutBoxX={cutoutBoxX}
+        cutoutBoxY={cutoutBoxY}
+        cutoutBoxWidth={cutoutBoxWidth}
+        cutoutBoxHeight={cutoutBoxHeight}
+      />
       <SaveButton
         cutoutBoxX={cutoutBoxX}
         cutoutBoxY={cutoutBoxY}

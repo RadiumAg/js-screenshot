@@ -1,0 +1,14 @@
+/** @format */
+@use './common.scss' as common;
+
+.ellipse {
+  @include common.common;
+}
+
+.ellipse:hover {
+  @include common.hover;
+}
+
+.ellipse.active {
+  @include common.active;
+}

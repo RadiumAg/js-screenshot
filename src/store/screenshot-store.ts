@@ -10,12 +10,19 @@ export interface HistoryEntry {
 /**
  * 操作历史记录类
  */
+const MAX_HISTORY_SIZE = 50;
+
 class OperateHistory extends Array<HistoryEntry> {
   private currentHistoryIndex = -1;
 
   push(...items: HistoryEntry[]) {
     const result = super.push(...items);
     this.currentHistoryIndex = this.length - 1;
+    // Evict oldest entries when exceeding max capacity
+    while (this.length > MAX_HISTORY_SIZE) {
+      this.shift();
+      this.currentHistoryIndex--;
+    }
     return result;
   }
 
@@ -165,6 +172,9 @@ export const useScreenshotStore = create<ScreenshotStore>()(
             pen: { ...toolsConfig.pen, color },
             arrow: { ...toolsConfig.arrow, color },
             textBox: { ...toolsConfig.textBox, color },
+            rect: { ...toolsConfig.rect, color },
+            ellipse: { ...toolsConfig.ellipse, color },
+            line: { ...toolsConfig.line, color },
           },
         });
       },

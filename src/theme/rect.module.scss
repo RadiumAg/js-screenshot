@@ -1,0 +1,14 @@
+/** @format */
+@use './common.scss' as common;
+
+.rect {
+  @include common.common;
+}
+
+.rect:hover {
+  @include common.hover;
+}
+
+.rect.active {
+  @include common.active;
+}

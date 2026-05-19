@@ -5,6 +5,9 @@ enum ACTIVE_TYPE {
   pen = 'pen',
   textBox = 'textBox',
   dotController = 'dotController',
+  rect = 'rect',
+  ellipse = 'ellipse',
+  line = 'line',
 };
 
 export { ACTIVE_TYPE };

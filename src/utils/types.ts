@@ -24,17 +24,37 @@ interface MosaicToolConfig extends ToolConfig {
   blockSize?: number
 }
 
+interface RectToolConfig extends ToolConfig {
+  lineWidth?: number
+}
+
+interface EllipseToolConfig extends ToolConfig {
+  lineWidth?: number
+}
+
+interface LineToolConfig extends ToolConfig {
+  lineWidth?: number
+}
+
+type ExportFormat = 'image/png' | 'image/jpeg' | 'image/webp';
+
 interface ToolsConfig {
   pen?: PenToolConfig
   arrow?: ArrowToolConfig
   textBox?: TextBoxToolConfig
   mosaic?: MosaicToolConfig
+  rect?: RectToolConfig
+  ellipse?: EllipseToolConfig
+  line?: LineToolConfig
 }
 
 interface ScreenShotOptions {
   mode?: 'media'
   afterFinished?: () => void
   tools?: ToolsConfig
+  exportFormat?: ExportFormat
+  quality?: number
+  filename?: string
 }
 
-export type { AnyFun, ScreenShotOptions, ToolsConfig };
+export type { AnyFun, EllipseToolConfig, ExportFormat, LineToolConfig, RectToolConfig, ScreenShotOptions, ToolsConfig };
