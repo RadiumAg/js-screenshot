@@ -78,9 +78,27 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
 
       videoElement.srcObject = captureStream;
 
+      /**
+       * 等待 video 真正有可用帧后，按 canvas 尺寸绘制（强制拉伸到窗口大小），
+       * 避免 video 原始分辨率和 canvas 不一致导致背景图被放大。
+       *
+       * 操作太快时 video.readyState 可能还不够，或者首帧分辨率不对，
+       * 所以持续轮询直到 videoWidth > 0 才绘制。
+       */
       const updateCanvas = () => {
-        if (sourceContext && videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
-          sourceContext.drawImage(videoElement, 0, 0);
+        if (
+          sourceContext
+          && videoElement.readyState >= videoElement.HAVE_CURRENT_DATA
+          && videoElement.videoWidth > 0
+          && videoElement.videoHeight > 0
+        ) {
+          sourceContext.drawImage(
+            videoElement,
+            0,
+            0,
+            sourceCanvasElement.width,
+            sourceCanvasElement.height,
+          );
           return;
         }
         rafIdRef.current = requestAnimationFrame(updateCanvas);
@@ -91,8 +109,8 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
         const height = window.innerHeight;
         sourceCanvasElement.width = width;
         sourceCanvasElement.height = height;
-        drawCanvasElement.height = height;
         drawCanvasElement.width = width;
+        drawCanvasElement.height = height;
         document.body.append(drawCanvasElement);
         updateCanvas();
         setIsInitialized(true);
