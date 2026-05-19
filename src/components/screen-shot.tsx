@@ -24,11 +24,13 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
     setSourceCanvasElement,
     setVideoElement,
     setToolsConfig,
+    setExportOptions,
   } = useScreenshotStore(useShallow(state => ({
     setDrawCanvasElement: state.setDrawCanvasElement,
     setSourceCanvasElement: state.setSourceCanvasElement,
     setVideoElement: state.setVideoElement,
     setToolsConfig: state.setToolsConfig,
+    setExportOptions: state.setExportOptions,
   })));
 
   const { createCanvas } = useCanvas();
@@ -40,7 +42,8 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
     if (options.tools) {
       setToolsConfig(options.tools);
     }
-  }, [options, setToolsConfig]);
+    setExportOptions(options.exportFormat, options.quality, options.filename);
+  }, [options, setToolsConfig, setExportOptions]);
 
   /**
    * 创建video element

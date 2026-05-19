@@ -45,6 +45,7 @@ export const PenTool: FC<PenToolProps> = ({
   const isMouseDownRef = useRef(false);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const pointsRef = useRef<Array<{ x: number, y: number }>>([]);
 
   useEffect(() => {
     if (drawCanvasElement) {
@@ -83,11 +84,33 @@ export const PenTool: FC<PenToolProps> = ({
         )
         && isMouseDownRef.current
       ) {
+        const points = pointsRef.current;
+        points.push({ x: event.clientX, y: event.clientY });
+
         contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 15;
         contextRef.current.lineCap = 'round';
+        contextRef.current.lineJoin = 'round';
         contextRef.current.strokeStyle = toolsConfig.pen?.color ?? '#000000';
-        contextRef.current.lineTo(event.clientX, event.clientY);
-        contextRef.current.stroke();
+
+        // 使用二次贝塞尔曲线平滑连线
+        if (points.length >= 3) {
+          const lastTwo = points[points.length - 2];
+          const lastOne = points[points.length - 1];
+          const midX = (lastTwo.x + lastOne.x) / 2;
+          const midY = (lastTwo.y + lastOne.y) / 2;
+
+          contextRef.current.quadraticCurveTo(
+            lastTwo.x,
+            lastTwo.y,
+            midX,
+            midY,
+          );
+          contextRef.current.stroke();
+        }
+        else {
+          contextRef.current.lineTo(event.clientX, event.clientY);
+          contextRef.current.stroke();
+        }
       }
     },
   );
@@ -109,10 +132,12 @@ export const PenTool: FC<PenToolProps> = ({
       ) {
         setActiveTarget(ACTIVE_TYPE.pen);
         isMouseDownRef.current = true;
+        pointsRef.current = [{ x: event.clientX, y: event.clientY }];
 
         contextRef.current.strokeStyle = toolsConfig.pen?.color ?? '#000000';
         contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 15;
         contextRef.current.lineCap = 'round';
+        contextRef.current.lineJoin = 'round';
         contextRef.current.beginPath();
         contextRef.current.moveTo(event.clientX, event.clientY);
       }

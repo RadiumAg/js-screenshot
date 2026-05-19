@@ -1,7 +1,7 @@
 import type { FC } from 'preact/compat';
 import save from '@screenshots/assets/images/save.svg';
 import Style from '@screenshots/theme/save.module.scss';
-import { __isDev__, useDownLoad } from '@screenshots/utils';
+import { downloadFile } from '@screenshots/utils';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 
@@ -13,7 +13,7 @@ export interface SaveButtonProps {
 }
 
 /**
- * 保存按钮组件
+ * 保存按钮组件 - 支持多格式/质量/文件名配置
  */
 export const SaveButton: FC<SaveButtonProps> = ({
   cutoutBoxX,
@@ -21,18 +21,27 @@ export const SaveButton: FC<SaveButtonProps> = ({
   cutoutBoxWidth,
   cutoutBoxHeight,
 }) => {
-  const { drawCanvasElement } = useScreenshotStore(useShallow(state => ({
+  const {
+    drawCanvasElement,
+    exportFormat,
+    exportQuality,
+    exportFilename,
+  } = useScreenshotStore(useShallow(state => ({
     drawCanvasElement: state.drawCanvasElement,
+    exportFormat: state.exportFormat,
+    exportQuality: state.exportQuality,
+    exportFilename: state.exportFilename,
   })));
-  const download = useDownLoad();
 
   const handleClick = () => {
-    if (!drawCanvasElement)
+    if (!drawCanvasElement) {
       return;
+    }
 
     const context = drawCanvasElement.getContext('2d');
-    if (!context)
+    if (!context) {
       return;
+    }
 
     const screenShotData = context.getImageData(
       cutoutBoxX,
@@ -46,29 +55,27 @@ export const SaveButton: FC<SaveButtonProps> = ({
     screenCanvas.height = cutoutBoxHeight;
     screenCanvas.getContext('2d')?.putImageData(screenShotData, 0, 0);
 
-    if (__isDev__) {
-      console.warn(
-        '[DEBUG]',
-        'screen width',
-        cutoutBoxWidth,
-        'screen height',
-        cutoutBoxHeight,
-        'screen x',
-        cutoutBoxX,
-        'screen y',
-        cutoutBoxY,
-      );
-    }
+    // 读取用户配置
+    const format = exportFormat;
+    const quality = exportQuality;
+    const customFilename = exportFilename;
+
+    // 生成文件名
+    const now = new Date();
+    const ts = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+    const ext = format.replace('image/', '');
+    const filename = customFilename || `screenshot_${ts}.${ext}`;
 
     screenCanvas.toBlob(
       (blob) => {
-        if (!blob)
+        if (!blob) {
           return;
+        }
         const url = URL.createObjectURL(blob);
-        download('截图', url);
+        downloadFile(filename, url);
       },
-      'image/png',
-      1,
+      format,
+      quality,
     );
   };
 

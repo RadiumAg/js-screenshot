@@ -116,7 +116,7 @@ export const MosaicTool: FC<MosaicToolProps> = ({
       if (!contextRef.current)
         return;
 
-      const brushSize = 20;
+      const brushSize = toolsConfig.mosaic?.brushSize ?? 20;
 
       x = Math.max(x, cutoutBoxX);
       y = Math.max(y, cutoutBoxY);

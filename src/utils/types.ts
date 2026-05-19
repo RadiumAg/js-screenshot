@@ -22,6 +22,7 @@ interface TextBoxToolConfig extends ToolConfig {
 
 interface MosaicToolConfig extends ToolConfig {
   blockSize?: number
+  brushSize?: number
 }
 
 interface RectToolConfig extends ToolConfig {

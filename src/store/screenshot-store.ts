@@ -1,4 +1,4 @@
-import type { ToolsConfig } from '@screenshots/utils';
+import type { ExportFormat, ToolsConfig } from '@screenshots/utils';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
@@ -117,6 +117,12 @@ export interface ScreenshotStore {
   toolsConfig: ToolsConfig
   setToolsConfig: (config: ToolsConfig) => void
 
+  // 导出配置
+  exportFormat: ExportFormat
+  exportQuality: number
+  exportFilename: string
+  setExportOptions: (format?: ExportFormat, quality?: number, filename?: string) => void
+
   // 当前颜色
   currentColor: string
   setCurrentColor: (color: string) => void
@@ -142,6 +148,9 @@ export const useScreenshotStore = create<ScreenshotStore>()(
       isFirstInit: true,
       dotControllerSize: 10,
       toolsConfig: {},
+      exportFormat: 'image/png',
+      exportQuality: 1,
+      exportFilename: '',
       currentColor: '#000000',
 
       // 设置容器
@@ -161,6 +170,13 @@ export const useScreenshotStore = create<ScreenshotStore>()(
 
       // 设置工具配置
       setToolsConfig: toolsConfig => set({ toolsConfig }),
+
+      // 设置导出配置
+      setExportOptions: (format, quality, filename) => set({
+        exportFormat: format ?? 'image/png',
+        exportQuality: quality ?? 1,
+        exportFilename: filename ?? '',
+      }),
 
       // 设置当前颜色
       setCurrentColor: (color) => {
