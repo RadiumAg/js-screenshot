@@ -13,7 +13,7 @@ interface Option {
 }
 
 const useLongPressAndDrag = (option: Option) => {
-  const { target, container, onDrag, onMouseDown, onMouseUp } = option;
+  const { target, onDrag, onMouseDown, onMouseUp } = option;
   const mouseDownRef = useRef(false);
   const pointPositionRef = useRef({
     x: 0,
@@ -43,9 +43,11 @@ const useLongPressAndDrag = (option: Option) => {
       const consume = (axis?: 'x' | 'y' | 'xy') => {
         if (!axis || axis === 'xy') {
           pointPositionRef.current = { x: event.clientX, y: event.clientY };
-        } else if (axis === 'x') {
+        }
+        else if (axis === 'x') {
           pointPositionRef.current = { ...pointPositionRef.current, x: event.clientX };
-        } else if (axis === 'y') {
+        }
+        else if (axis === 'y') {
           pointPositionRef.current = { ...pointPositionRef.current, y: event.clientY };
         }
       };

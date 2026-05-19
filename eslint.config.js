@@ -7,6 +7,7 @@ export default antfu({
     'style/semi': ['error', 'always'],
     'no-useless-return': 'off',
     'antfu/top-level-function': 'off',
+    'react-hooks-extra/no-direct-set-state-in-use-effect': 'off',
   },
   ignores: ['node_modules', 'package.json', 'babel.config.js', 'lib', 'es', 'dist'],
 });

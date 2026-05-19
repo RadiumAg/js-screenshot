@@ -1,7 +1,7 @@
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/arrow-options.module.scss';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { createPortal } from 'preact/compat';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 import { ACTIVE_TYPE } from '../utils/share';

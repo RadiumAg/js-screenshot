@@ -7,11 +7,11 @@ import { animateThrottleFn } from '@screenshots/utils';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
+import { ColorPicker } from './color-picker';
 import DotController from './dot-controller';
 import { ToolBox } from './tool-box';
-import { SizeIndicator } from './tools/size-indicator';
-import { ColorPicker } from './color-picker';
 import { ArrowOptions } from './tools/arrow-options';
+import { SizeIndicator } from './tools/size-indicator';
 import { ACTIVE_TYPE } from './utils/share';
 
 export interface CutoutBoxProps {

@@ -117,7 +117,7 @@ function getBuildConfig(format: ModuleFormat) {
           skipLibCheck: true,
           declaration: format !== 'iife',
           rootDir: resolve(__dirname, '../src'),
-          declarationDir: resolve(__dirname, `../dist/${format}`),
+          ...(format !== 'iife' ? { declarationDir: resolve(__dirname, `../dist/${format}`) } : {}),
           jsx: 'react-jsx',
           jsxImportSource: 'preact',
         },
@@ -156,8 +156,10 @@ async function cleanDist() {
   }
 }
 
-cleanDist().then(() => {
-  build('esm');
-  build('iife');
-  build('cjs');
+cleanDist().then(async () => {
+  await Promise.all([
+    build('esm'),
+    build('iife'),
+    build('cjs'),
+  ]);
 });
