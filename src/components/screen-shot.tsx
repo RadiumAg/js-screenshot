@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
 import { CutoutBox } from './cutout-box';
-import { useCanvas } from './hooks/use-canvas';
+import { useCanvas } from '../hooks/use-canvas';
 
 export interface ScreenShotProps {
   options: ScreenShotOptions

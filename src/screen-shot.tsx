@@ -6,7 +6,7 @@ import { useScreenshotStore } from './store/screenshot-store';
 class ScreenShot {
   private container: HTMLElement | null = null;
 
-  constructor(private screenShotOptions: ScreenShotOptions) {}
+  constructor(private screenShotOptions: ScreenShotOptions) { }
 
   async shot(): Promise<any> {
     return new Promise((resolve, reject) => {
