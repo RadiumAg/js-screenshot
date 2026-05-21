@@ -49,8 +49,11 @@ interface ToolsConfig {
   line?: LineToolConfig
 }
 
+type ScreenShotTheme = 'dark' | 'light' | 'auto';
+
 interface ScreenShotOptions {
   mode?: 'media' | 'htmlInCanvas'
+  theme?: ScreenShotTheme
   afterFinished?: () => void
   tools?: ToolsConfig
   exportFormat?: ExportFormat
@@ -58,4 +61,4 @@ interface ScreenShotOptions {
   filename?: string
 }
 
-export type { AnyFun, EllipseToolConfig, ExportFormat, LineToolConfig, RectToolConfig, ScreenShotOptions, ToolsConfig };
+export type { AnyFun, EllipseToolConfig, ExportFormat, LineToolConfig, RectToolConfig, ScreenShotOptions, ScreenShotTheme, ToolsConfig };

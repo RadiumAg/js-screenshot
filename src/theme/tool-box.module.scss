@@ -5,9 +5,34 @@
   position: fixed;
   padding: 4px;
   border-radius: 10px;
-  background-color: #1e293b;
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.2),
-    0 1px 4px rgba(0, 0, 0, 0.12);
+  background-color: var(--ss-toolbar-bg);
+  box-shadow: var(--ss-toolbar-shadow);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
+}
+
+// Dark theme (default)
+.tool-box.dark {
+  --ss-toolbar-bg: #1e293b;
+  --ss-toolbar-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+  --ss-btn-hover-bg: rgba(255, 255, 255, 0.1);
+  --ss-btn-active-bg: rgba(34, 197, 94, 0.25);
+  --ss-btn-active-glow: drop-shadow(0 0 4px rgba(34, 197, 94, 0.6));
+  --ss-icon-filter: brightness(0) invert(1);
+  --ss-icon-opacity: 0.85;
+  --ss-icon-hover-opacity: 1;
+  --ss-separator-color: rgba(255, 255, 255, 0.1);
+}
+
+// Light theme
+.tool-box.light {
+  --ss-toolbar-bg: #ffffff;
+  --ss-toolbar-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.05);
+  --ss-btn-hover-bg: rgba(0, 0, 0, 0.06);
+  --ss-btn-active-bg: rgba(37, 99, 235, 0.12);
+  --ss-btn-active-glow: drop-shadow(0 0 3px rgba(37, 99, 235, 0.4));
+  --ss-icon-filter: none;
+  --ss-icon-opacity: 0.65;
+  --ss-icon-hover-opacity: 0.9;
+  --ss-separator-color: rgba(0, 0, 0, 0.08);
 }

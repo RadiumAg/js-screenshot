@@ -78,22 +78,28 @@ export const PenTool: FC<PenToolProps> = ({
         points.push({ x: event.clientX, y: event.clientY });
 
         contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 2;
-        // 使用二次贝塞尔曲线平滑连线
-        if (points.length >= 3) {
-          const lastTwo = points[points.length - 2];
-          const lastOne = points[points.length - 1];
-          const midX = (lastTwo.x + lastOne.x) / 2;
-          const midY = (lastTwo.y + lastOne.y) / 2;
 
-          contextRef.current.quadraticCurveTo(
-            lastTwo.x,
-            lastTwo.y,
-            midX,
-            midY,
-          );
+        // 增量绘制：每次只画最新一段曲线，使用中点贝塞尔保证平滑连接
+        const len = points.length;
+        if (len >= 3) {
+          const prev = points[len - 3];
+          const ctrl = points[len - 2];
+          const curr = points[len - 1];
+
+          // 控制点 = 前一个采样点，终点 = 前一个点与当前点的中点
+          const midX = (ctrl.x + curr.x) / 2;
+          const midY = (ctrl.y + curr.y) / 2;
+
+          // 从上一段中点开始新路径，确保无缝衔接
+          const prevMidX = (prev.x + ctrl.x) / 2;
+          const prevMidY = (prev.y + ctrl.y) / 2;
+
+          contextRef.current.beginPath();
+          contextRef.current.moveTo(prevMidX, prevMidY);
+          contextRef.current.quadraticCurveTo(ctrl.x, ctrl.y, midX, midY);
           contextRef.current.stroke();
         }
-        else {
+        else if (len === 2) {
           contextRef.current.lineTo(event.clientX, event.clientY);
           contextRef.current.stroke();
         }

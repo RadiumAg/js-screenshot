@@ -117,6 +117,10 @@ export interface ScreenshotStore {
   themeColor: string
   setThemeColor: (color: string) => void
 
+  // UI 主题 (dark / light / auto)
+  uiTheme: 'dark' | 'light' | 'auto'
+  setUiTheme: (theme: 'dark' | 'light' | 'auto') => void
+
   // 工具配置
   toolsConfig: ToolsConfig
   setToolsConfig: (config: ToolsConfig) => void
@@ -163,6 +167,8 @@ export const useScreenshotStore = create<ScreenshotStore>()(
       dotControllerSize: 10,
       themeColor: '#1677ff',
       setThemeColor: color => set({ themeColor: color }),
+      uiTheme: 'auto' as const,
+      setUiTheme: (theme: 'dark' | 'light' | 'auto') => set({ uiTheme: theme }),
       toolsConfig: {},
       exportFormat: 'image/png',
       exportQuality: 1,

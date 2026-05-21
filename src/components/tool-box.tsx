@@ -1,7 +1,9 @@
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/tool-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
-import { useEffect, useMemo, useRef } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useShallow } from 'zustand/react/shallow';
+import { useScreenshotStore } from '../store/screenshot-store';
 import { ArrowTool } from './tools/arrow-tool';
 import { CopyButton } from './tools/copy-button';
 import { EllipseTool } from './tools/ellipse-tool';
@@ -33,6 +35,30 @@ export const ToolBox: FC<ToolBoxProps> = ({
   const elRef = useRef<HTMLDivElement>(null);
   const positionRef = useRef({ x: 0, y: 0 });
 
+  const { uiTheme } = useScreenshotStore(useShallow(state => ({
+    uiTheme: state.uiTheme,
+  })));
+
+  // 解析实际主题：auto 模式跟随系统 prefers-color-scheme
+  const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>(() => {
+    if (uiTheme !== 'auto') return uiTheme;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    if (uiTheme !== 'auto') {
+      setResolvedTheme(uiTheme);
+      return;
+    }
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (event: MediaQueryListEvent) => {
+      setResolvedTheme(event.matches ? 'dark' : 'light');
+    };
+    setResolvedTheme(mediaQuery.matches ? 'dark' : 'light');
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, [uiTheme]);
+
   const updatePosition = (x: number, y: number) => {
     if (!elRef.current)
       return;
@@ -60,10 +86,12 @@ export const ToolBox: FC<ToolBoxProps> = ({
     throttledUpdatePosition(cutoutBoxX + cutoutBoxWidth, cutoutBoxY + cutoutBoxHeight);
   }, [cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, throttledUpdatePosition]);
 
+  const toolBoxClass = `${Style.toolBox} ${Style[resolvedTheme]}`;
+
   return (
     <div
       ref={elRef}
-      class={Style.toolBox}
+      class={toolBoxClass}
       style={{
         position: 'fixed',
         zIndex: '4',
