@@ -80,21 +80,29 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
 
       const updateCanvas = () => {
         if (sourceContext && videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
-          /*
-           * 必须指定目标宽高，将 video 缩放到 canvas 尺寸。
-           * getDisplayMedia 捕获的 video 分辨率是物理像素
-           * （Retina 屏下 = window.innerWidth * devicePixelRatio），
-           * 而 canvas 尺寸是 CSS 像素（window.innerWidth），
-           * 不指定目标宽高会按 video 原始分辨率 1:1 绘制，
-           * 导致画面被"放大"（只画了左上角一部分）。
-           */
-          sourceContext.drawImage(
-            videoElement,
-            0,
-            0,
-            sourceCanvasElement.width,
-            sourceCanvasElement.height,
-          );
+          // 用 video 实际分辨率设置 canvas 尺寸，避免缩放拉伸
+          const videoWidth = videoElement.videoWidth;
+          const videoHeight = videoElement.videoHeight;
+
+          if (videoWidth && videoHeight) {
+            // canvas 尺寸等于视口尺寸（CSS 像素），与 dot-controller 坐标系一致
+            const canvasWidth = window.innerWidth;
+            const canvasHeight = window.innerHeight;
+            sourceCanvasElement.width = canvasWidth;
+            sourceCanvasElement.height = canvasHeight;
+            drawCanvasElement.width = canvasWidth;
+            drawCanvasElement.height = canvasHeight;
+
+            // 将 video 绘制到 canvas，缩放到视口尺寸
+            sourceContext.drawImage(
+              videoElement,
+              0,
+              0,
+              canvasWidth,
+              canvasHeight,
+            );
+          }
+
           setIsInitialized(true);
           resolve();
           return;
@@ -103,6 +111,7 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
       };
 
       const onPlay = () => {
+        // 先设置初始尺寸，实际尺寸在 updateCanvas 中根据 video 确定
         const width = window.innerWidth;
         const height = window.innerHeight;
         sourceCanvasElement.width = width;
