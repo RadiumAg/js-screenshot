@@ -20,7 +20,6 @@ export interface ShapeEditorProps {
  * 图形编辑器组件 - 处理图形选中、控制点拖拽编辑
  */
 export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
-
   const {
     shapes,
     selectedShapeId,
@@ -89,7 +88,8 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
    * 这样工具的 mouseDown 就不会再触发新绘制。
    */
   const handleMouseDown = useMemoizedFn((event: MouseEvent) => {
-    if (!selectedShape && !shapes.length) return;
+    if (!selectedShape && !shapes.length)
+      return;
 
     const mouseX = event.clientX;
     const mouseY = event.clientY;
@@ -299,7 +299,8 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
 
   // 注册事件（使用 capture 阶段，确保在工具的 mousedown 之前触发）
   useEffect(() => {
-    if (!drawCanvasElement) return;
+    if (!drawCanvasElement)
+      return;
 
     drawCanvasElement.addEventListener('mousedown', handleMouseDown, true);
     document.addEventListener('mousemove', handleMouseMove);

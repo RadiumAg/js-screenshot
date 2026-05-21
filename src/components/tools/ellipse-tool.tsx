@@ -84,7 +84,8 @@ export const EllipseTool: FC<EllipseToolProps> = (_props) => {
    * 重绘画布：恢复背景 + 已有图形 + 临时图形
    */
   const redraw = useMemoizedFn((tempShape?: EllipseShape | null) => {
-    if (!contextRef.current) return;
+    if (!contextRef.current)
+      return;
 
     // 恢复背景
     if (operateHistory.length > 0) {
@@ -121,8 +122,10 @@ export const EllipseTool: FC<EllipseToolProps> = (_props) => {
 
   const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
-      if (!contextRef.current) return;
-      if (activeTarget !== ACTIVE_TYPE.ellipse) return;
+      if (!contextRef.current)
+        return;
+      if (activeTarget !== ACTIVE_TYPE.ellipse)
+        return;
 
       setIsDrawing(true);
       setStartPoint({ x: event.clientX, y: event.clientY });
@@ -131,8 +134,10 @@ export const EllipseTool: FC<EllipseToolProps> = (_props) => {
 
   const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
-      if (!contextRef.current) return;
-      if (!isDrawing || activeTarget !== ACTIVE_TYPE.ellipse) return;
+      if (!contextRef.current)
+        return;
+      if (!isDrawing || activeTarget !== ACTIVE_TYPE.ellipse)
+        return;
 
       const centerX = (startPoint.x + event.clientX) / 2;
       const centerY = (startPoint.y + event.clientY) / 2;
@@ -162,7 +167,8 @@ export const EllipseTool: FC<EllipseToolProps> = (_props) => {
   );
 
   const handleMouseUp = useMemoizedFn(() => {
-    if (!isDrawing || activeTarget !== ACTIVE_TYPE.ellipse) return;
+    if (!isDrawing || activeTarget !== ACTIVE_TYPE.ellipse)
+      return;
 
     setIsDrawing(false);
 
@@ -196,7 +202,8 @@ export const EllipseTool: FC<EllipseToolProps> = (_props) => {
   });
 
   useMount(() => {
-    if (!drawCanvasElement) return;
+    if (!drawCanvasElement)
+      return;
 
     drawCanvasElement.addEventListener('mousedown', handleMouseDown as EventListener);
     drawCanvasElement.addEventListener('mousemove', handleMouseMove as EventListener);
