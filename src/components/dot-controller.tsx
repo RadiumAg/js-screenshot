@@ -11,6 +11,8 @@ export interface DotControllerProps {
   cursor: string
   left: number
   top: number
+  position: { x: number, y: number }
+  size: { width: number, height: number }
   onUpdateAxis: (xDistance: number, yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => void
 }
 
@@ -21,6 +23,8 @@ const DotController: FC<DotControllerProps> = ({
   cursor,
   left,
   top,
+  position,
+  size,
   onUpdateAxis,
 }) => {
   const {
@@ -53,6 +57,19 @@ const DotController: FC<DotControllerProps> = ({
   }, onMouseUp() {
     setActiveTarget(null);
     operateHistory.clear();
+    // 清空 shapes，避免调整裁剪框后旧图形被重新渲染
+    useScreenshotStore.getState().restoreShapesSnapshot([]);
+    requestAnimationFrame(() => {
+      if (contextRef.current && size.width > 0 && size.height > 0) {
+        const imageData = contextRef.current.getImageData(
+          position.x,
+          position.y,
+          size.width,
+          size.height,
+        );
+        operateHistory.push({ imageData, position: { x: position.x, y: position.y } });
+      }
+    });
   }, onMouseDown() {
     setActiveTarget(activeType);
   } });

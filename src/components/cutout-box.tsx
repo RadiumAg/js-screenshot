@@ -608,6 +608,8 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
               left={dotPos.x}
               top={dotPos.y}
               cursor={dotPos.cursor}
+              position={position}
+              size={size}
               onUpdateAxis={dotPos.onUpdateAxis}
             />
           ))}

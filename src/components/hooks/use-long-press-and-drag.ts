@@ -1,6 +1,6 @@
 import type { RefObject } from 'preact';
-import { useMemoizedFn } from 'ahooks';
-import { useEffect, useRef } from 'preact/hooks';
+import { useMemoizedFn, useMount } from 'ahooks';
+import { useRef } from 'preact/hooks';
 
 interface Option {
   container: HTMLDivElement | null
@@ -58,7 +58,7 @@ const useLongPressAndDrag = (option: Option) => {
     }
   });
 
-  useEffect(() => {
+  useMount(() => {
     const targetElement = target.current;
     targetElement?.addEventListener('mousedown', handleMouseDown);
     document.addEventListener('mouseup', handleMouseUp);
@@ -69,7 +69,7 @@ const useLongPressAndDrag = (option: Option) => {
       document.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []);
+  });
 };
 
 export { useLongPressAndDrag };
