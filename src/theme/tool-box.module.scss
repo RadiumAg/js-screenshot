@@ -1,7 +1,13 @@
 .tool-box {
   display: flex;
+  align-items: center;
+  gap: 2px;
   position: fixed;
-  overflow: hidden;
-  border-radius: 5px;
-  background-color: #fff;
+  padding: 4px;
+  border-radius: 10px;
+  background-color: #1e293b;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    0 1px 4px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8px);
 }
