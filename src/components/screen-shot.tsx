@@ -1,7 +1,8 @@
 import type { ScreenShotOptions } from '@screenshots/utils';
 import type { FC } from 'preact/compat';
 import { __isDev__ } from '@screenshots/utils';
-import { useMount } from 'ahooks';
+import { snapdom } from '@zumer/snapdom';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
@@ -36,19 +37,6 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
   })));
 
   const { createCanvas } = useCanvas();
-
-  useEffect(() => {
-    if (__isDev__) {
-      console.warn('[DEBUG] ScreenShot options', options);
-    }
-    if (options.tools) {
-      setToolsConfig(options.tools);
-    }
-    if (options.theme) {
-      setUiTheme(options.theme);
-    }
-    setExportOptions(options.exportFormat, options.quality, options.filename);
-  }, [options, setToolsConfig, setExportOptions, setUiTheme]);
 
   /**
    * 创建video element
@@ -137,6 +125,40 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
         reject(err);
       });
     });
+  };
+
+  /**
+   * 初始化 SnapDOM 模式
+   * 使用 @zumer/snapdom 将页面 DOM 渲染到 canvas，无需屏幕共享授权
+   */
+  const initSnapdomMode = async (): Promise<void> => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    // 使用 snapdom 捕获整个页面 DOM 到 canvas
+    const capturedCanvas = await snapdom.toCanvas(document.documentElement, {
+      width,
+      height,
+    });
+
+    // 创建 sourceCanvas（保存原始截图数据）
+    const sourceCanvasElement = createCanvas();
+    sourceCanvasElement.width = width;
+    sourceCanvasElement.height = height;
+    const sourceContext = sourceCanvasElement.getContext('2d');
+    if (sourceContext) {
+      sourceContext.drawImage(capturedCanvas, 0, 0, width, height);
+    }
+
+    // 创建 drawCanvas（用于用户绘图标注）
+    const drawCanvasElement = createCanvas();
+    drawCanvasElement.width = width;
+    drawCanvasElement.height = height;
+    document.body.appendChild(drawCanvasElement);
+
+    setSourceCanvasElement(sourceCanvasElement);
+    setDrawCanvasElement(drawCanvasElement);
+    setIsInitialized(true);
   };
 
   /**
@@ -257,13 +279,17 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
   /**
    * 开始截图
    */
-  const startShot = async () => {
+  const startShot = useMemoizedFn(async () => {
     try {
-      if (options.mode === 'htmlInCanvas') {
+      const { mode = 'snapdom' } = options;
+      if (mode === 'media') {
+        await initDisplayMediaMode();
+      }
+      else if (mode === 'htmlInCanvas') {
         await initHtmlInCanvasMode();
       }
       else {
-        await initDisplayMediaMode();
+        await initSnapdomMode();
       }
     }
     catch (error) {
@@ -273,7 +299,7 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
         : String(error);
       onError?.(error instanceof Error ? error : new Error(message));
     }
-  };
+  });
 
   // 组件挂载时自动开始截图流程
   useMount(() => {
@@ -291,6 +317,19 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
       }
     };
   });
+
+  useEffect(() => {
+    if (__isDev__) {
+      console.warn('[DEBUG] ScreenShot options', options);
+    }
+    if (options.tools) {
+      setToolsConfig(options.tools);
+    }
+    if (options.theme) {
+      setUiTheme(options.theme);
+    }
+    setExportOptions(options.exportFormat, options.quality, options.filename);
+  }, [options, setToolsConfig, setExportOptions, setUiTheme]);
 
   if (!isInitialized) {
     return null;

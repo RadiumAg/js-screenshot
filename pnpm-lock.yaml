@@ -11,6 +11,9 @@ importers:
       '@preact/compat':
         specifier: ^18.3.1
         version: 18.3.1(preact@10.27.2)
+      '@zumer/snapdom':
+        specifier: ^2.12.0
+        version: 2.12.0
       ahooks:
         specifier: ^3.9.7
         version: 3.9.7(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -1077,6 +1080,9 @@ packages:
 
   '@vue/shared@3.4.15':
     resolution: {integrity: sha512-KzfPTxVaWfB+eGcGdbSf4CWdaXcGDqckoeXUh7SB3fZdEtzPCK2Vq9B/lRRL3yutax/LWITz+SwvgyOxz5V75g==}
+
+  '@zumer/snapdom@2.12.0':
+    resolution: {integrity: sha512-TdLGu+1RkKI3JKfMFvn1gRPD/rl8hrAeN6aFjjd0w7S39nulbd94ChxSlfH7nSCm8kzuQkeWFxIsij4+Mk1RDg==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -3975,6 +3981,8 @@ snapshots:
       vue: 3.4.15(typescript@5.3.3)
 
   '@vue/shared@3.4.15': {}
+
+  '@zumer/snapdom@2.12.0': {}
 
   acorn-jsx@5.3.2(acorn@8.10.0):
     dependencies:

@@ -4,14 +4,14 @@ import '../../dist/esm/screen-shot.css';
 import ScreenShot from '../../dist/esm/screen-shot.js';
 
 type ExportFormat = 'image/png' | 'image/jpeg' | 'image/webp';
-type CaptureMode = 'media' | 'htmlInCanvas';
+type CaptureMode = 'snapdom' | 'media' | 'htmlInCanvas';
 type UITheme = 'dark' | 'light' | 'auto';
 
 const config = reactive({
   format: 'image/png' as ExportFormat,
   quality: 0.92,
   filename: '',
-  mode: 'media' as CaptureMode,
+  mode: 'snapdom' as CaptureMode,
   theme: 'auto' as UITheme,
 });
 
@@ -22,8 +22,9 @@ const formats: { value: ExportFormat; label: string }[] = [
 ];
 
 const modes: { value: CaptureMode; label: string; desc: string }[] = [
-  { value: 'media', label: 'WebRTC', desc: '传统模式，使用 getDisplayMedia' },
-  { value: 'htmlInCanvas', label: 'HTML-in-Canvas', desc: 'Chrome 148+ 新特性' },
+  { value: 'snapdom', label: 'SnapDOM', desc: '默认，DOM 截图无需授权' },
+  { value: 'media', label: 'WebRTC', desc: '屏幕录制，需要用户授权' },
+  { value: 'htmlInCanvas', label: 'HTML-in-Canvas', desc: 'Chrome 148+ drawElementImage' },
 ];
 
 const themes: { value: UITheme; label: string; desc: string }[] = [
@@ -76,6 +77,9 @@ const handleStartShot = () => {
             <span>{{ m.label }}</span>
           </label>
         </div>
+        <p class="hint-text" v-if="config.mode === 'media'">
+          需要用户授权屏幕共享权限
+        </p>
         <p class="hint-text" v-if="config.mode === 'htmlInCanvas'">
           需要 Chrome 148+ 并启用 chrome://flags/#canvas-draw-element
         </p>

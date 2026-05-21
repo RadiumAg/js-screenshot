@@ -52,7 +52,8 @@ interface ToolsConfig {
 type ScreenShotTheme = 'dark' | 'light' | 'auto';
 
 interface ScreenShotOptions {
-  mode?: 'media' | 'htmlInCanvas'
+  /** 截图模式：snapdom（默认，DOM 截图）| media（屏幕录制）| htmlInCanvas（Chrome 148+） */
+  mode?: 'snapdom' | 'media' | 'htmlInCanvas'
   theme?: ScreenShotTheme
   afterFinished?: () => void
   tools?: ToolsConfig
