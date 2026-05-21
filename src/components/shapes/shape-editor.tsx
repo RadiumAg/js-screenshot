@@ -351,7 +351,7 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
     editDiv.textContent = textShape.lines.join('\n');
 
     editDiv.addEventListener('blur', () => {
-      const newText = editDiv.textContent;
+      const newText = editDiv.textContent ?? '';
       const newLines = newText.split('\n');
       const hasContent = newLines.length > 0 && !(newLines.length === 1 && !newLines[0]);
 

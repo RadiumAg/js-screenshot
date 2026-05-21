@@ -4,11 +4,13 @@ import '../../dist/esm/screen-shot.css';
 import ScreenShot from '../../dist/esm/screen-shot.js';
 
 type ExportFormat = 'image/png' | 'image/jpeg' | 'image/webp';
+type CaptureMode = 'media' | 'htmlInCanvas';
 
 const config = reactive({
   format: 'image/png' as ExportFormat,
   quality: 0.92,
   filename: '',
+  mode: 'media' as CaptureMode,
 });
 
 const formats: { value: ExportFormat; label: string }[] = [
@@ -17,8 +19,14 @@ const formats: { value: ExportFormat; label: string }[] = [
   { value: 'image/webp', label: 'WebP' },
 ];
 
+const modes: { value: CaptureMode; label: string; desc: string }[] = [
+  { value: 'media', label: 'WebRTC', desc: '传统模式，使用 getDisplayMedia' },
+  { value: 'htmlInCanvas', label: 'HTML-in-Canvas', desc: 'Chrome 148+ 新特性' },
+];
+
 const handleStartShot = () => {
   const screenShot = new ScreenShot({
+    mode: config.mode as any,
     exportFormat: config.format,
     quality: config.quality,
     filename: config.filename,
@@ -37,6 +45,19 @@ const handleStartShot = () => {
     <main class="demo-main">
       <div class="config-panel">
         <h3>配置</h3>
+
+        <div class="config-item">
+          <label>截图模式</label>
+          <div class="radio-group">
+            <label v-for="m in modes" :key="m.value" class="radio-label" :title="m.desc">
+              <input v-model="config.mode" type="radio" :value="m.value">
+              {{ m.label }}
+            </label>
+          </div>
+          <p class="config-hint" v-if="config.mode === 'htmlInCanvas'">
+            需要 Chrome 148+ 并启用 chrome://flags/#canvas-draw-element
+          </p>
+        </div>
 
         <div class="config-item">
           <label>导出格式</label>
@@ -189,5 +210,12 @@ input[type="range"] {
   &:hover {
     opacity: 0.9;
   }
+}
+
+.config-hint {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #f5a623;
+  line-height: 1.4;
 }
 </style>

@@ -135,11 +135,131 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
   };
 
   /**
+   * 初始化 HTML-in-Canvas 模式
+   * 使用 Chrome 148+ 的 drawElementImage API 将页面内容绘制到 canvas
+   * 需要启用 chrome://flags/#canvas-draw-element
+   */
+  const initHtmlInCanvasMode = async (): Promise<void> => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    // 创建带 layoutsubtree 的源 canvas
+    const sourceCanvasElement = createCanvas();
+    sourceCanvasElement.setAttribute('layoutsubtree', '');
+    sourceCanvasElement.width = width;
+    sourceCanvasElement.height = height;
+    sourceCanvasElement.style.width = `${width}px`;
+    sourceCanvasElement.style.height = `${height}px`;
+    sourceCanvasElement.style.pointerEvents = 'none';
+    sourceCanvasElement.style.zIndex = '-1';
+    sourceCanvasElement.style.opacity = '0';
+
+    // 创建页面内容的容器作为 canvas 子元素
+    const contentWrapper = document.createElement('div');
+    contentWrapper.style.width = `${width}px`;
+    contentWrapper.style.height = `${height}px`;
+    contentWrapper.style.overflow = 'hidden';
+    contentWrapper.style.position = 'absolute';
+    contentWrapper.style.top = '0';
+    contentWrapper.style.left = '0';
+
+    // 克隆 body 内容到 wrapper 中
+    const bodyClone = document.body.cloneNode(true) as HTMLElement;
+    // 移除截图工具自身的容器避免循环
+    const screenshotContainers = bodyClone.querySelectorAll('[data-screenshot-container]');
+    screenshotContainers.forEach(el => el.remove());
+    contentWrapper.appendChild(bodyClone);
+    sourceCanvasElement.appendChild(contentWrapper);
+    document.body.appendChild(sourceCanvasElement);
+
+    const sourceContext = sourceCanvasElement.getContext('2d');
+    if (!sourceContext) {
+      throw new Error('Failed to get 2d context for HTML-in-Canvas');
+    }
+
+    // 检测 drawElementImage 是否可用
+    if (typeof sourceContext.drawElementImage !== 'function') {
+      sourceCanvasElement.remove();
+      throw new Error(
+        'HTML-in-Canvas API 不可用。请使用 Chrome 148+ 并启用 chrome://flags/#canvas-draw-element',
+      );
+    }
+
+    // 等待浏览器完成渲染（paint record 需要至少一帧）
+    // 优先用 onpaint 事件，回退到 rAF + setTimeout
+    await new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        sourceCanvasElement.onpaint = null;
+        reject(new Error('等待渲染超时，请确认 chrome://flags/#canvas-draw-element 已启用'));
+      }, 3000);
+
+      const drawAndResolve = () => {
+        clearTimeout(timeout);
+        try {
+          sourceContext!.drawElementImage(contentWrapper, 0, 0, width, height);
+          resolve();
+        }
+        catch (e) {
+          reject(e instanceof Error ? e : new Error(String(e)));
+        }
+      };
+
+      // 尝试用 onpaint 事件（规范推荐方式）
+      if ('onpaint' in sourceCanvasElement) {
+        sourceCanvasElement.onpaint = () => {
+          sourceCanvasElement.onpaint = null;
+          drawAndResolve();
+        };
+      }
+      else {
+        // 回退：等待两帧确保布局和绘制完成
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            drawAndResolve();
+          });
+        });
+      }
+    });
+
+    // 创建绘图 canvas
+    const drawCanvasElement = createCanvas();
+    drawCanvasElement.width = width;
+    drawCanvasElement.height = height;
+    const drawContext = drawCanvasElement.getContext('2d');
+    if (drawContext) {
+      drawContext.drawImage(sourceCanvasElement, 0, 0);
+    }
+
+    document.body.appendChild(drawCanvasElement);
+
+    // 清理源 canvas 的 DOM 节点（内容已绘制，不再需要）
+    sourceCanvasElement.remove();
+
+    // 创建一个干净的源 canvas（不带 layoutsubtree）用于后续流程
+    const cleanSourceCanvas = createCanvas();
+    cleanSourceCanvas.width = width;
+    cleanSourceCanvas.height = height;
+    const cleanSourceCtx = cleanSourceCanvas.getContext('2d');
+    if (cleanSourceCtx) {
+      cleanSourceCtx.drawImage(drawCanvasElement, 0, 0);
+    }
+
+    setSourceCanvasElement(cleanSourceCanvas);
+    setDrawCanvasElement(drawCanvasElement);
+    setIsInitialized(true);
+  };
+
+  /**
    * 开始截图
    */
   const startShot = async () => {
     try {
-      await initDisplayMediaMode();
+      if (options.mode === 'htmlInCanvas') {
+        await initHtmlInCanvasMode();
+      }
+      else {
+        await initDisplayMediaMode();
+      }
     }
     catch (error) {
       const isPermissionDenied = error instanceof DOMException && error.name === 'NotAllowedError';

@@ -50,7 +50,7 @@ interface ToolsConfig {
 }
 
 interface ScreenShotOptions {
-  mode?: 'media'
+  mode?: 'media' | 'htmlInCanvas'
   afterFinished?: () => void
   tools?: ToolsConfig
   exportFormat?: ExportFormat
