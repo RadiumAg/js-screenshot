@@ -25,22 +25,24 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
 }) => {
   const {
     activeTarget,
-    setActiveTarget,
-    setIsLock,
     isLock,
+    themeColor,
     operateHistory,
     drawCanvasElement,
     dotControllerSize,
     toolsConfig,
+    setActiveTarget,
+    setIsLock,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
-    setActiveTarget: state.setActiveTarget,
-    setIsLock: state.setIsLock,
+    themeColor: state.themeColor,
     isLock: state.isLock,
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
     dotControllerSize: state.dotControllerSize,
     toolsConfig: state.toolsConfig,
+    setActiveTarget: state.setActiveTarget,
+    setIsLock: state.setIsLock,
   })));
 
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -205,7 +207,8 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     textBoxTextarea.style.fontFamily = 'system-ui';
     textBoxTextarea.style.lineHeight = `${lineHeight}px`;
     textBoxTextarea.style.padding = `${shifting.paddingTopBottom}px ${shifting.paddingLeftRight}px`;
-    textBoxTextarea.style.border = `1px solid ${textColor}`;
+    textBoxTextarea.style.border = `2px solid ${themeColor}`;
+    textBoxTextarea.style.borderRadius = '6px';
     textBoxTextarea.style.minWidth = `${minWidth}px`;
     textBoxTextarea.style.minHeight = `${minHeight}px`;
   });
