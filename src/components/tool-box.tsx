@@ -98,6 +98,9 @@ export const ToolBox: FC<ToolBoxProps> = ({
 
   const toolBoxClass = `${Style.toolBox} ${Style[resolvedTheme]}`;
   const accentRgb = hexToRgb(themeColor);
+  const activeBgAlpha = resolvedTheme === 'dark' ? 0.25 : 0.12;
+  const glowAlpha = resolvedTheme === 'dark' ? 0.6 : 0.4;
+  const glowSize = resolvedTheme === 'dark' ? '4px' : '3px';
 
   return (
     <div
@@ -109,6 +112,8 @@ export const ToolBox: FC<ToolBoxProps> = ({
         pointerEvents: 'auto',
         '--ss-accent': themeColor,
         '--ss-accent-rgb': accentRgb,
+        '--ss-btn-active-bg': `rgba(${accentRgb}, ${activeBgAlpha})`,
+        '--ss-btn-active-glow': `drop-shadow(0 0 ${glowSize} rgba(${accentRgb}, ${glowAlpha}))`,
       } as any}
     >
       <TextBoxTool

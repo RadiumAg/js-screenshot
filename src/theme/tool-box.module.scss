@@ -16,8 +16,6 @@
   --ss-toolbar-bg: #1e293b;
   --ss-toolbar-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
   --ss-btn-hover-bg: rgba(255, 255, 255, 0.1);
-  --ss-btn-active-bg: rgba(var(--ss-accent-rgb), 0.25);
-  --ss-btn-active-glow: drop-shadow(0 0 4px rgba(var(--ss-accent-rgb), 0.6));
   --ss-icon-filter: brightness(0) invert(1);
   --ss-icon-opacity: 0.85;
   --ss-icon-hover-opacity: 1;
@@ -29,8 +27,6 @@
   --ss-toolbar-bg: #ffffff;
   --ss-toolbar-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.05);
   --ss-btn-hover-bg: rgba(0, 0, 0, 0.06);
-  --ss-btn-active-bg: rgba(var(--ss-accent-rgb), 0.12);
-  --ss-btn-active-glow: drop-shadow(0 0 3px rgba(var(--ss-accent-rgb), 0.4));
   --ss-icon-filter: none;
   --ss-icon-opacity: 0.65;
   --ss-icon-hover-opacity: 0.9;
