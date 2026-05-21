@@ -333,7 +333,7 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
     editDiv.style.borderRadius = '6px';
     editDiv.style.outline = 'none';
     editDiv.style.zIndex = '10000';
-    editDiv.style.background = 'rgba(255,255,255,0.95)';
+    editDiv.style.background = 'transparent';
     editDiv.style.whiteSpace = 'pre-wrap';
     editDiv.style.wordBreak = 'break-word';
 
