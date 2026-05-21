@@ -23,11 +23,17 @@ const DRAWING_TOOLS = [ACTIVE_TYPE.textBox, ACTIVE_TYPE.rect];
 export const ColorPicker: FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ x: number, y: number } | null>(null);
-  const { currentColor, activeTarget, setCurrentColor } = useScreenshotStore(useShallow(state => ({
+  const { currentColor, activeTarget, setCurrentColor, uiTheme } = useScreenshotStore(useShallow(state => ({
     currentColor: state.currentColor,
     activeTarget: state.activeTarget,
     setCurrentColor: state.setCurrentColor,
+    uiTheme: state.uiTheme,
   })));
+
+  // 解析实际主题
+  const resolvedTheme = uiTheme === 'auto'
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : uiTheme;
 
   const isVisible = activeTarget !== null && DRAWING_TOOLS.includes(activeTarget as ACTIVE_TYPE);
 
@@ -46,7 +52,7 @@ export const ColorPicker: FC = () => {
       const btn = document.querySelector(`[data-tool-btn="${activeTarget}"]`);
       if (btn) {
         const rect = btn.getBoundingClientRect();
-        setPos({ x: rect.left + rect.width / 2, y: rect.bottom + 6 });
+        setPos({ x: rect.left + rect.width / 2, y: rect.bottom + 12 });
       }
     };
 
@@ -77,10 +83,12 @@ export const ColorPicker: FC = () => {
   if (!isVisible || !pos)
     return null;
 
+  const panelClass = `${Style.colorPanel} ${resolvedTheme === 'light' ? Style.light : ''}`;
+
   return createPortal(
     <div
       ref={panelRef}
-      class={Style.colorPanel}
+      class={panelClass}
       style={{
         position: 'fixed',
         left: `${pos.x}px`,

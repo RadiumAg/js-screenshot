@@ -21,11 +21,16 @@ const COLORS = [
 export const PenOptions: FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ x: number, y: number } | null>(null);
-  const { activeTarget, toolsConfig, setToolsConfig } = useScreenshotStore(useShallow(state => ({
+  const { activeTarget, toolsConfig, setToolsConfig, uiTheme } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
     toolsConfig: state.toolsConfig,
     setToolsConfig: state.setToolsConfig,
+    uiTheme: state.uiTheme,
   })));
+
+  const resolvedTheme = uiTheme === 'auto'
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : uiTheme;
 
   const isVisible = activeTarget === ACTIVE_TYPE.pen;
   const penConfig = toolsConfig.pen ?? {};
@@ -56,7 +61,7 @@ export const PenOptions: FC = () => {
       const btn = document.querySelector(`[data-tool-btn="${ACTIVE_TYPE.pen}"]`);
       if (btn) {
         const rect = btn.getBoundingClientRect();
-        setPos({ x: rect.left + rect.width / 2, y: rect.bottom + 6 });
+        setPos({ x: rect.left + rect.width / 2, y: rect.bottom + 12 });
       }
     };
 
@@ -88,7 +93,7 @@ export const PenOptions: FC = () => {
   return createPortal(
     <div
       ref={panelRef}
-      class={Style.optionsPanel}
+      class={`${Style.optionsPanel} ${resolvedTheme === 'light' ? Style.light : ''}`}
       style={{
         position: 'fixed',
         left: `${pos.x}px`,

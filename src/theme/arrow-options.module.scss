@@ -1,50 +1,119 @@
 .optionsPanel {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px;
-  background: #fff;
-  border-radius: 5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   z-index: 1000;
+
+  // Dark (default)
+  background: rgba(15, 23, 42, 0.92);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  &.light {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    .divider {
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .optionBtn {
+      svg {
+        stroke: rgba(0, 0, 0, 0.7);
+      }
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      &.active {
+        background-color: rgba(37, 99, 235, 0.1);
+      }
+    }
+
+    .lineIcon {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .slider {
+      background: rgba(0, 0, 0, 0.08);
+
+      &::-webkit-slider-thumb {
+        background: #2563eb;
+        box-shadow: 0 1px 4px rgba(37, 99, 235, 0.3);
+      }
+
+      &::-moz-range-thumb {
+        background: #2563eb;
+        box-shadow: 0 1px 4px rgba(37, 99, 235, 0.3);
+      }
+    }
+
+    .colorDot {
+      &:hover {
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+      }
+
+      &.active {
+        border-color: rgba(37, 99, 235, 0.8);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      }
+    }
+
+    .whiteDot {
+      border: 1.5px solid rgba(0, 0, 0, 0.12);
+    }
+  }
 }
 
 .section {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
 }
 
 .divider {
   width: 1px;
-  height: 18px;
-  background: rgba(0, 0, 0, 0.15);
-  margin: 0 2px;
+  height: 20px;
+  background: var(--ss-separator-color, rgba(255, 255, 255, 0.1));
+  margin: 0 4px;
+  flex-shrink: 0;
 }
 
 .optionBtn {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 3px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease-out, transform 0.12s ease-out;
+
+  svg {
+    stroke: var(--ss-icon-color, rgba(255, 255, 255, 0.85));
+  }
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--ss-btn-hover-bg, rgba(255, 255, 255, 0.08));
+  }
+
+  &:active {
+    transform: scale(0.92);
   }
 
   &.active {
-    background-color: rgba(0, 120, 255, 0.3);
+    background-color: var(--ss-btn-active-bg, rgba(34, 197, 94, 0.2));
   }
 }
 
 .lineIcon {
   width: 16px;
   height: 2px;
-  background: #333;
+  background: var(--ss-icon-color, rgba(255, 255, 255, 0.85));
   border-radius: 1px;
 }
 
@@ -55,11 +124,11 @@
 }
 
 .slider {
-  width: 60px;
+  width: 64px;
   height: 4px;
   -webkit-appearance: none;
   appearance: none;
-  background: #ddd;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -67,41 +136,54 @@
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: #0078ff;
+    background: #22c55e;
     cursor: pointer;
+    box-shadow: 0 1px 4px rgba(34, 197, 94, 0.3);
+    transition: transform 0.12s ease-out;
+  }
+
+  &::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
   }
 
   &::-moz-range-thumb {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: #0078ff;
+    background: #22c55e;
     border: none;
     cursor: pointer;
+    box-shadow: 0 1px 4px rgba(34, 197, 94, 0.3);
   }
 }
 
 .colorDot {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease-out, transform 0.12s ease-out, box-shadow 0.15s ease-out;
 
   &:hover {
-    transform: scale(1.2);
+    transform: scale(1.15);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+  }
+
+  &:active {
+    transform: scale(0.92);
   }
 
   &.active {
-    border-color: rgba(0, 120, 255, 0.8);
-    transform: scale(1.15);
+    border-color: rgba(34, 197, 94, 0.9);
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
   }
 }
 
 .whiteDot {
-  border: 1px solid #ccc;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
 }
