@@ -4,15 +4,6 @@ import { animateThrottleFn } from '@screenshots/utils';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
-
-/** Convert hex color (#RRGGBB) to "R, G, B" string */
-function hexToRgb(hex: string): string {
-  const cleaned = hex.replace('#', '');
-  const r = Number.parseInt(cleaned.slice(0, 2), 16);
-  const g = Number.parseInt(cleaned.slice(2, 4), 16);
-  const b = Number.parseInt(cleaned.slice(4, 6), 16);
-  return `${r}, ${g}, ${b}`;
-}
 import { ArrowTool } from './tools/arrow-tool';
 import { CopyButton } from './tools/copy-button';
 import { EllipseTool } from './tools/ellipse-tool';
@@ -22,6 +13,15 @@ import { RectTool } from './tools/rect-tool';
 import { RefuseButton } from './tools/refuse-button';
 import { SaveButton } from './tools/save-button';
 import { TextBoxTool } from './tools/text-box-tool';
+
+/** Convert hex color (#RRGGBB) to "R, G, B" string */
+function hexToRgb(hex: string): string {
+  const cleaned = hex.replace('#', '');
+  const r = Number.parseInt(cleaned.slice(0, 2), 16);
+  const g = Number.parseInt(cleaned.slice(2, 4), 16);
+  const b = Number.parseInt(cleaned.slice(4, 6), 16);
+  return `${r}, ${g}, ${b}`;
+}
 
 export interface ToolBoxProps {
   cutoutBoxX: number
@@ -51,7 +51,8 @@ export const ToolBox: FC<ToolBoxProps> = ({
 
   // 解析实际主题：auto 模式跟随系统 prefers-color-scheme
   const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>(() => {
-    if (uiTheme !== 'auto') return uiTheme;
+    if (uiTheme !== 'auto')
+      return uiTheme;
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
 
@@ -107,9 +108,9 @@ export const ToolBox: FC<ToolBoxProps> = ({
       ref={elRef}
       class={toolBoxClass}
       style={{
-        position: 'fixed',
-        zIndex: '4',
-        pointerEvents: 'auto',
+        'position': 'fixed',
+        'zIndex': '4',
+        'pointerEvents': 'auto',
         '--ss-accent': themeColor,
         '--ss-accent-rgb': accentRgb,
         '--ss-btn-active-bg': `rgba(${accentRgb}, ${activeBgAlpha})`,

@@ -23,5 +23,5 @@ interface CanvasRenderingContext2D {
    * 将 canvas 子元素绘制到 canvas 中
    * 需要 canvas 设置 layoutsubtree 属性
    */
-  drawElementImage(element: Element, x?: number, y?: number, width?: number, height?: number): DOMMatrix
+  drawElementImage: (element: Element, x?: number, y?: number, width?: number, height?: number) => DOMMatrix
 }

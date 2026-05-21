@@ -155,13 +155,15 @@ export function getShapeBoundingBox(shape: Shape): BoundingBox {
 function getTextWidth(shape: TextShape): number {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
-  if (!ctx) return 100;
+  if (!ctx)
+    return 100;
 
   ctx.font = `${shape.style.fontSize}px ${shape.style.fontFamily}`;
   let maxWidth = 0;
   for (const line of shape.lines) {
     const measured = ctx.measureText(line).width;
-    if (measured > maxWidth) maxWidth = measured;
+    if (measured > maxWidth)
+      maxWidth = measured;
   }
   return Math.max(maxWidth, 40);
 }

@@ -29,6 +29,7 @@ const DotController: FC<DotControllerProps> = ({
     drawCanvasElement,
     dotControllerSize,
     themeColor,
+    operateHistory,
     setActiveTarget,
   } = useScreenshotStore(useShallow(state => ({
     container: state.container,
@@ -36,6 +37,7 @@ const DotController: FC<DotControllerProps> = ({
     drawCanvasElement: state.drawCanvasElement,
     dotControllerSize: state.dotControllerSize,
     themeColor: state.themeColor,
+    operateHistory: state.operateHistory,
     setActiveTarget: state.setActiveTarget,
   }),
   ));
@@ -50,6 +52,7 @@ const DotController: FC<DotControllerProps> = ({
     onUpdateAxis(distance.xDistance, distance.yDistance, consume);
   }, onMouseUp() {
     setActiveTarget(null);
+    operateHistory.clear();
   }, onMouseDown() {
     setActiveTarget(activeType);
   } });
