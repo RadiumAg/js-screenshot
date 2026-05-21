@@ -31,6 +31,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     activeTarget,
     isLock,
     dotControllerSize,
+    themeColor,
     setIsLock,
     setIsFirstInit,
     setActiveTarget,
@@ -43,6 +44,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     activeTarget: state.activeTarget,
     isLock: state.isLock,
     dotControllerSize: state.dotControllerSize,
+    themeColor: state.themeColor,
     setIsLock: state.setIsLock,
     setIsFirstInit: state.setIsFirstInit,
     setActiveTarget: state.setActiveTarget,
@@ -581,6 +583,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
             top: position.y,
             width: size.width,
             height: size.height,
+            border: `1.5px solid ${themeColor}`,
           }}
         >
         </div>
