@@ -398,18 +398,18 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     });
   });
 
-  // 首次锁定截图框时，保存初始快照到历史（用于撤销第一条操作）
+  // 首次锁定截图框时，保存整个 canvas 的完整快照（含遮罩），供各工具 redraw 恢复完整画面
   useEffect(() => {
-    if (isLock && operateHistory.length === 0 && contextRef.current) {
+    if (isLock && operateHistory.length === 0 && contextRef.current && drawCanvasElement) {
       const imageData = contextRef.current.getImageData(
-        position.x,
-        position.y,
-        size.width || 1,
-        size.height || 1,
+        0,
+        0,
+        drawCanvasElement.width,
+        drawCanvasElement.height,
       );
       operateHistory.push({
         imageData,
-        position: { x: position.x, y: position.y },
+        position: { x: 0, y: 0 },
       });
     }
   }, [isLock]);

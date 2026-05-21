@@ -81,7 +81,7 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
   // shapes 或 selectedShapeId 变化时重绘
   useEffect(() => {
     redrawShapes();
-  }, [shapes, selectedShapeId]);
+  }, [shapes, selectedShapeId, redrawShapes]);
 
   /**
    * 处理鼠标按下 - 选中图形或开始拖拽

@@ -87,7 +87,7 @@ export const RectTool: FC<RectToolProps> = (_props) => {
     if (!contextRef.current)
       return;
 
-    // 恢复背景
+    // 恢复完整画面（含遮罩），operateHistory[0] 是整个 canvas 的快照
     if (operateHistory.length > 0) {
       const initialEntry = operateHistory[0];
       contextRef.current.putImageData(initialEntry.imageData, initialEntry.position.x, initialEntry.position.y);
