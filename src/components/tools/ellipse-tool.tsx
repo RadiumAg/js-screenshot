@@ -93,8 +93,9 @@ export const EllipseTool: FC<EllipseToolProps> = (_props) => {
       contextRef.current.putImageData(initialEntry.imageData, initialEntry.position.x, initialEntry.position.y);
     }
 
-    // 渲染已确认的图形
-    renderAllShapes(contextRef.current, shapes);
+    // 渲染已确认的图形（从 store 获取最新 shapes，避免闭包过时）
+    const currentShapes = useScreenshotStore.getState().shapes;
+    renderAllShapes(contextRef.current, currentShapes);
 
     // 渲染临时图形（正在绘制中的）
     if (tempShape) {
