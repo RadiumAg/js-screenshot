@@ -1,7 +1,8 @@
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/arrow-options.module.scss';
+import { useMemoizedFn } from 'ahooks';
 import { createPortal } from 'preact/compat';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 import { ACTIVE_TYPE } from '../utils/share';
@@ -31,19 +32,19 @@ export const PenOptions: FC = () => {
   const lineWidth = penConfig.lineWidth ?? 2;
   const penColor = penConfig.color ?? 'red';
 
-  const handleSetLineWidth = useCallback((width: number) => {
+  const handleSetLineWidth = useMemoizedFn((width: number) => {
     setToolsConfig({
       ...toolsConfig,
       pen: { ...penConfig, lineWidth: width },
     });
-  }, [toolsConfig, penConfig, setToolsConfig]);
+  });
 
-  const handleSetColor = useCallback((color: string) => {
+  const handleSetColor = useMemoizedFn((color: string) => {
     setToolsConfig({
       ...toolsConfig,
       pen: { ...penConfig, color },
     });
-  }, [toolsConfig, penConfig, setToolsConfig]);
+  });
 
   useEffect(() => {
     if (!isVisible) {

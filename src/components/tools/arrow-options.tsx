@@ -1,7 +1,8 @@
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/arrow-options.module.scss';
+import { useMemoizedFn } from 'ahooks';
 import { createPortal } from 'preact/compat';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 import { ACTIVE_TYPE } from '../utils/share';
@@ -32,26 +33,26 @@ export const ArrowOptions: FC = () => {
   const lineWidth = arrowConfig.lineWidth ?? 2;
   const arrowColor = arrowConfig.color ?? 'red';
 
-  const handleSetLineType = useCallback((type: 'arrow' | 'line') => {
+  const handleSetLineType = useMemoizedFn((type: 'arrow' | 'line') => {
     setToolsConfig({
       ...toolsConfig,
       arrow: { ...arrowConfig, lineType: type },
     });
-  }, [toolsConfig, arrowConfig, setToolsConfig]);
+  });
 
-  const handleSetLineWidth = useCallback((width: number) => {
+  const handleSetLineWidth = useMemoizedFn((width: number) => {
     setToolsConfig({
       ...toolsConfig,
       arrow: { ...arrowConfig, lineWidth: width },
     });
-  }, [toolsConfig, arrowConfig, setToolsConfig]);
+  });
 
-  const handleSetColor = useCallback((color: string) => {
+  const handleSetColor = useMemoizedFn((color: string) => {
     setToolsConfig({
       ...toolsConfig,
       arrow: { ...arrowConfig, color },
     });
-  }, [toolsConfig, arrowConfig, setToolsConfig]);
+  });
 
   // 计算面板位置
   useEffect(() => {

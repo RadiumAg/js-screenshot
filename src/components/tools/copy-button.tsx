@@ -1,7 +1,8 @@
 import type { FC } from 'preact/compat';
 import copy from '@screenshots/assets/images/copy.svg';
 import Style from '@screenshots/theme/copy.module.scss';
-import { useCallback, useRef, useState } from 'preact/hooks';
+import { useMemoizedFn } from 'ahooks';
+import { useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 
@@ -27,7 +28,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
   const [tipText, setTipText] = useState<string | null>(null);
   const tipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const showTip = useCallback((text: string) => {
+  const showTip = useMemoizedFn((text: string) => {
     if (tipTimerRef.current) {
       clearTimeout(tipTimerRef.current);
     }
@@ -36,9 +37,9 @@ export const CopyButton: FC<CopyButtonProps> = ({
       setTipText(null);
       tipTimerRef.current = null;
     }, 1500);
-  }, []);
+  });
 
-  const handleClick = useCallback(async () => {
+  const handleClick = useMemoizedFn(async () => {
     if (!drawCanvasElement) {
       return;
     }
@@ -89,14 +90,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
     catch {
       showTip('复制失败');
     }
-  }, [
-    drawCanvasElement,
-    cutoutBoxX,
-    cutoutBoxY,
-    cutoutBoxWidth,
-    cutoutBoxHeight,
-    showTip,
-  ]);
+  });
 
   return (
     <div class={Style.copy} onClick={handleClick}>
