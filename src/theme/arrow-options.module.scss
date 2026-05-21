@@ -7,66 +7,8 @@
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   z-index: 1000;
-
-  // Dark (default)
-  background: rgba(15, 23, 42, 0.92);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
-
-  &.light {
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
-
-    .divider {
-      background: rgba(0, 0, 0, 0.08);
-    }
-
-    .optionBtn {
-      svg {
-        stroke: rgba(0, 0, 0, 0.7);
-      }
-
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-      }
-
-      &.active {
-        background-color: rgba(37, 99, 235, 0.1);
-      }
-    }
-
-    .lineIcon {
-      background: rgba(0, 0, 0, 0.7);
-    }
-
-    .slider {
-      background: rgba(0, 0, 0, 0.08);
-
-      &::-webkit-slider-thumb {
-        background: #2563eb;
-        box-shadow: 0 1px 4px rgba(37, 99, 235, 0.3);
-      }
-
-      &::-moz-range-thumb {
-        background: #2563eb;
-        box-shadow: 0 1px 4px rgba(37, 99, 235, 0.3);
-      }
-    }
-
-    .colorDot {
-      &:hover {
-        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-      }
-
-      &.active {
-        border-color: rgba(37, 99, 235, 0.8);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-      }
-    }
-
-    .whiteDot {
-      border: 1.5px solid rgba(0, 0, 0, 0.12);
-    }
-  }
+  background: var(--ss-surface);
+  box-shadow: var(--ss-surface-shadow);
 }
 
 .section {
@@ -78,7 +20,7 @@
 .divider {
   width: 1px;
   height: 20px;
-  background: var(--ss-separator-color, rgba(255, 255, 255, 0.1));
+  background: var(--ss-border-subtle);
   margin: 0 4px;
   flex-shrink: 0;
 }
@@ -94,11 +36,11 @@
   transition: background-color 0.15s ease-out, transform 0.12s ease-out;
 
   svg {
-    stroke: var(--ss-icon-color, rgba(255, 255, 255, 0.85));
+    stroke: var(--ss-text-primary);
   }
 
   &:hover {
-    background-color: var(--ss-btn-hover-bg, rgba(255, 255, 255, 0.08));
+    background-color: var(--ss-hover-overlay);
   }
 
   &:active {
@@ -106,14 +48,14 @@
   }
 
   &.active {
-    background-color: var(--ss-btn-active-bg, rgba(34, 197, 94, 0.2));
+    background-color: rgba(var(--ss-accent-rgb), 0.18);
   }
 }
 
 .lineIcon {
   width: 16px;
   height: 2px;
-  background: var(--ss-icon-color, rgba(255, 255, 255, 0.85));
+  background: var(--ss-text-primary);
   border-radius: 1px;
 }
 
@@ -128,7 +70,7 @@
   height: 4px;
   -webkit-appearance: none;
   appearance: none;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--ss-border-subtle);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -139,9 +81,9 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #22c55e;
+    background: var(--ss-accent);
     cursor: pointer;
-    box-shadow: 0 1px 4px rgba(34, 197, 94, 0.3);
+    box-shadow: 0 1px 4px rgba(var(--ss-accent-rgb), 0.3);
     transition: transform 0.12s ease-out;
   }
 
@@ -153,10 +95,10 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #22c55e;
+    background: var(--ss-accent);
     border: none;
     cursor: pointer;
-    box-shadow: 0 1px 4px rgba(34, 197, 94, 0.3);
+    box-shadow: 0 1px 4px rgba(var(--ss-accent-rgb), 0.3);
   }
 }
 
@@ -170,7 +112,7 @@
 
   &:hover {
     transform: scale(1.15);
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 2px var(--ss-hover-overlay);
   }
 
   &:active {
@@ -178,12 +120,12 @@
   }
 
   &.active {
-    border-color: rgba(34, 197, 94, 0.9);
+    border-color: var(--ss-accent);
     transform: scale(1.1);
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    box-shadow: 0 0 0 3px rgba(var(--ss-accent-rgb), 0.2);
   }
 }
 
 .whiteDot {
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border: 1.5px solid var(--ss-border-subtle);
 }

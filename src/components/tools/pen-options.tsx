@@ -1,5 +1,6 @@
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/arrow-options.module.scss';
+import { getPanelStyle, resolveTheme } from '@screenshots/theme/tokens';
 import { useMemoizedFn } from 'ahooks';
 import { createPortal } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
@@ -28,9 +29,8 @@ export const PenOptions: FC = () => {
     uiTheme: state.uiTheme,
   })));
 
-  const resolvedTheme = uiTheme === 'auto'
-    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-    : uiTheme;
+  const resolvedTheme = resolveTheme(uiTheme);
+  const panelTokens = getPanelStyle(resolvedTheme);
 
   const isVisible = activeTarget === ACTIVE_TYPE.pen;
   const penConfig = toolsConfig.pen ?? {};
@@ -93,12 +93,13 @@ export const PenOptions: FC = () => {
   return createPortal(
     <div
       ref={panelRef}
-      class={`${Style.optionsPanel} ${resolvedTheme === 'light' ? Style.light : ''}`}
+      class={Style.optionsPanel}
       style={{
         position: 'fixed',
         left: `${pos.x}px`,
         top: `${pos.y}px`,
         transform: 'translateX(-50%)',
+        ...panelTokens,
       }}
     >
       {/* 粗细滑块 */}

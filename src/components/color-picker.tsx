@@ -1,5 +1,6 @@
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/color-picker.module.scss';
+import { getPanelStyle, resolveTheme } from '@screenshots/theme/tokens';
 import { useMemoizedFn } from 'ahooks';
 import { createPortal } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
@@ -30,10 +31,8 @@ export const ColorPicker: FC = () => {
     uiTheme: state.uiTheme,
   })));
 
-  // 解析实际主题
-  const resolvedTheme = uiTheme === 'auto'
-    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-    : uiTheme;
+  const resolvedTheme = resolveTheme(uiTheme);
+  const panelTokens = getPanelStyle(resolvedTheme);
 
   const isVisible = activeTarget !== null && DRAWING_TOOLS.includes(activeTarget as ACTIVE_TYPE);
 
@@ -83,17 +82,16 @@ export const ColorPicker: FC = () => {
   if (!isVisible || !pos)
     return null;
 
-  const panelClass = `${Style.colorPanel} ${resolvedTheme === 'light' ? Style.light : ''}`;
-
   return createPortal(
     <div
       ref={panelRef}
-      class={panelClass}
+      class={Style.colorPanel}
       style={{
         position: 'fixed',
         left: `${pos.x}px`,
         top: `${pos.y}px`,
         transform: 'translateX(-50%)',
+        ...panelTokens,
       }}
     >
       {COLORS.map(color => (

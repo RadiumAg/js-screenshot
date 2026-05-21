@@ -1,5 +1,6 @@
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/arrow-options.module.scss';
+import { getPanelStyle, resolveTheme } from '@screenshots/theme/tokens';
 import { useMemoizedFn } from 'ahooks';
 import { createPortal } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
@@ -28,9 +29,8 @@ export const ArrowOptions: FC = () => {
     uiTheme: state.uiTheme,
   })));
 
-  const resolvedTheme = uiTheme === 'auto'
-    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-    : uiTheme;
+  const resolvedTheme = resolveTheme(uiTheme);
+  const panelTokens = getPanelStyle(resolvedTheme);
 
   const isVisible = activeTarget === ACTIVE_TYPE.arrow;
   const arrowConfig = toolsConfig.arrow ?? {};
@@ -103,12 +103,13 @@ export const ArrowOptions: FC = () => {
   return createPortal(
     <div
       ref={panelRef}
-      class={`${Style.optionsPanel} ${resolvedTheme === 'light' ? Style.light : ''}`}
+      class={Style.optionsPanel}
       style={{
         position: 'fixed',
         left: `${pos.x}px`,
         top: `${pos.y}px`,
         transform: 'translateX(-50%)',
+        ...panelTokens,
       }}
     >
       {/* 形状切换 */}
@@ -119,8 +120,8 @@ export const ArrowOptions: FC = () => {
           title="箭头"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <line x1="2" y1="14" x2="13" y2="3" stroke="#333" strokeWidth="2" />
-            <polyline points="8,2 14,2 14,8" fill="none" stroke="#333" strokeWidth="2" />
+            <line x1="2" y1="14" x2="13" y2="3" stroke="currentColor" strokeWidth="2" />
+            <polyline points="8,2 14,2 14,8" fill="none" stroke="currentColor" strokeWidth="2" />
           </svg>
         </div>
         <div
