@@ -1,4 +1,4 @@
-import type { ArrowShape, BoundingBox, ControlPoint, EllipseShape, LineShape, RectShape, Shape } from './types';
+import type { ArrowShape, BoundingBox, ControlPoint, EllipseShape, LineShape, RectShape, Shape, TextShape } from './types';
 import { ControlPointPosition, ShapeType } from './types';
 
 /**
@@ -67,6 +67,20 @@ function renderLine(ctx: CanvasRenderingContext2D, shape: LineShape): void {
 }
 
 /**
+ * 渲染单个文本
+ */
+function renderText(ctx: CanvasRenderingContext2D, shape: TextShape): void {
+  const { x, y, lines, style } = shape;
+  ctx.fillStyle = style.color;
+  ctx.font = `${style.fontSize}px ${style.fontFamily}`;
+  ctx.textBaseline = 'top';
+
+  lines.forEach((line, index) => {
+    ctx.fillText(line, x, y + index * style.lineHeight);
+  });
+}
+
+/**
  * 渲染单个图形
  */
 export function renderShape(ctx: CanvasRenderingContext2D, shape: Shape): void {
@@ -82,6 +96,9 @@ export function renderShape(ctx: CanvasRenderingContext2D, shape: Shape): void {
       break;
     case ShapeType.Line:
       renderLine(ctx, shape);
+      break;
+    case ShapeType.Text:
+      renderText(ctx, shape);
       break;
   }
 }
@@ -122,7 +139,31 @@ export function getShapeBoundingBox(shape: Shape): BoundingBox {
         width: Math.abs(shape.endX - shape.startX),
         height: Math.abs(shape.endY - shape.startY),
       };
+    case ShapeType.Text:
+      return {
+        x: shape.x,
+        y: shape.y,
+        width: getTextWidth(shape),
+        height: shape.lines.length * shape.style.lineHeight,
+      };
   }
+}
+
+/**
+ * 估算文本宽度（用于包围盒计算）
+ */
+function getTextWidth(shape: TextShape): number {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return 100;
+
+  ctx.font = `${shape.style.fontSize}px ${shape.style.fontFamily}`;
+  let maxWidth = 0;
+  for (const line of shape.lines) {
+    const measured = ctx.measureText(line).width;
+    if (measured > maxWidth) maxWidth = measured;
+  }
+  return Math.max(maxWidth, 40);
 }
 
 /**
@@ -138,7 +179,7 @@ export function getControlPoints(shape: Shape): ControlPoint[] {
     { position: ControlPointPosition.TopRight, x: x + width, y, cursor: 'nesw-resize' },
     { position: ControlPointPosition.MiddleLeft, x, y: y + height / 2, cursor: 'ew-resize' },
     { position: ControlPointPosition.MiddleRight, x: x + width, y: y + height / 2, cursor: 'ew-resize' },
-    { position: ControlPointPosition.BottomLeft, x: x + width, y: y + height, cursor: 'nesw-resize' },
+    { position: ControlPointPosition.BottomLeft, x, y: y + height, cursor: 'nesw-resize' },
     { position: ControlPointPosition.BottomCenter, x: x + width / 2, y: y + height, cursor: 'ns-resize' },
     { position: ControlPointPosition.BottomRight, x: x + width, y: y + height, cursor: 'nwse-resize' },
   ];
@@ -146,10 +187,10 @@ export function getControlPoints(shape: Shape): ControlPoint[] {
 
 /**
  * 渲染选中态（包围盒虚线 + 控制点）
+ * TextShape 只显示包围盒，不显示控制点
  */
 export function renderSelection(ctx: CanvasRenderingContext2D, shape: Shape, themeColor = '#1677ff'): void {
   const box = getShapeBoundingBox(shape);
-  const controlPoints = getControlPoints(shape);
   const controlPointRadius = 4;
 
   // 绘制虚线包围盒
@@ -160,15 +201,18 @@ export function renderSelection(ctx: CanvasRenderingContext2D, shape: Shape, the
   ctx.strokeRect(box.x - 4, box.y - 4, box.width + 8, box.height + 8);
   ctx.setLineDash([]);
 
-  // 绘制控制点
-  for (const point of controlPoints) {
-    ctx.beginPath();
-    ctx.fillStyle = '#ffffff';
-    ctx.strokeStyle = themeColor;
-    ctx.lineWidth = 1.5;
-    ctx.arc(point.x, point.y, controlPointRadius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
+  // TextShape 不需要控制点
+  if (shape.type !== ShapeType.Text) {
+    const controlPoints = getControlPoints(shape);
+    for (const point of controlPoints) {
+      ctx.beginPath();
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = themeColor;
+      ctx.lineWidth = 1.5;
+      ctx.arc(point.x, point.y, controlPointRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
   }
 
   ctx.restore();

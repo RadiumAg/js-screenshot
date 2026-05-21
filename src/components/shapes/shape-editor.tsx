@@ -1,5 +1,5 @@
 import type { FC } from 'preact/compat';
-import type { ControlPoint, Shape } from './types';
+import type { ControlPoint, Shape, TextShape } from './types';
 import { useMemoizedFn } from 'ahooks';
 import { useEffect, useRef } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
@@ -49,6 +49,7 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
   const dragTypeRef = useRef<'move' | 'resize'>('move');
   const activeControlPointRef = useRef<ControlPoint | null>(null);
   const originalShapeRef = useRef<Shape | null>(null);
+  const editingTextRef = useRef<HTMLDivElement | null>(null);
 
   const selectedShape = shapes.find(s => s.id === selectedShapeId) ?? null;
 
@@ -146,37 +147,6 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
   });
 
   /**
-   * 处理鼠标移动 - 拖拽图形或调整大小
-   */
-  const handleMouseMove = useMemoizedFn((event: MouseEvent) => {
-    if (!isDraggingRef.current || !originalShapeRef.current || !selectedShapeId)
-      return;
-
-    const dx = event.clientX - dragStartRef.current.x;
-    const dy = event.clientY - dragStartRef.current.y;
-    const original = originalShapeRef.current;
-
-    if (dragTypeRef.current === 'move') {
-      applyMove(original, dx, dy);
-    }
-    else if (dragTypeRef.current === 'resize' && activeControlPointRef.current) {
-      applyResize(original, dx, dy, activeControlPointRef.current.position);
-    }
-  });
-
-  /**
-   * 处理鼠标松开 - 结束拖拽
-   */
-  const handleMouseUp = useMemoizedFn(() => {
-    if (!isDraggingRef.current)
-      return;
-    isDraggingRef.current = false;
-    activeControlPointRef.current = null;
-    originalShapeRef.current = null;
-    setActiveTarget(null);
-  });
-
-  /**
    * 应用移动变换
    */
   const applyMove = useMemoizedFn((original: Shape, dx: number, dy: number) => {
@@ -195,6 +165,9 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
           endX: original.endX + dx,
           endY: original.endY + dy,
         });
+        break;
+      case ShapeType.Text:
+        updateShape(original.id, { x: original.x + dx, y: original.y + dy });
         break;
     }
   });
@@ -267,7 +240,6 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
         break;
       case ShapeType.Arrow:
       case ShapeType.Line: {
-        // 对于线段/箭头，映射包围盒变换到起止点
         const origBox = getShapeBoundingBox(original);
         const scaleX = origBox.width !== 0 ? newWidth / origBox.width : 1;
         const scaleY = origBox.height !== 0 ? newHeight / origBox.height : 1;
@@ -286,10 +258,44 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
   });
 
   /**
+   * 处理鼠标移动 - 拖拽图形或调整大小
+   */
+  const handleMouseMove = useMemoizedFn((event: MouseEvent) => {
+    if (!isDraggingRef.current || !originalShapeRef.current || !selectedShapeId)
+      return;
+
+    const dx = event.clientX - dragStartRef.current.x;
+    const dy = event.clientY - dragStartRef.current.y;
+    const original = originalShapeRef.current;
+
+    if (dragTypeRef.current === 'move') {
+      applyMove(original, dx, dy);
+    }
+    else if (dragTypeRef.current === 'resize' && activeControlPointRef.current) {
+      applyResize(original, dx, dy, activeControlPointRef.current.position);
+    }
+  });
+
+  /**
+   * 处理鼠标松开 - 结束拖拽
+   */
+  const handleMouseUp = useMemoizedFn(() => {
+    if (!isDraggingRef.current)
+      return;
+    isDraggingRef.current = false;
+    activeControlPointRef.current = null;
+    originalShapeRef.current = null;
+    setActiveTarget(null);
+  });
+
+  /**
    * 处理键盘事件 - Delete 删除选中图形
    */
   const handleKeyDown = useMemoizedFn((event: KeyboardEvent) => {
     if (!selectedShapeId)
+      return;
+    // 编辑文本时不响应 Delete
+    if (editingTextRef.current)
       return;
 
     if (event.key === 'Delete' || event.key === 'Backspace') {
@@ -299,23 +305,98 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
     }
   });
 
+  /**
+   * 双击 TextShape 时弹出编辑框重新输入
+   */
+  const handleDblClick = useMemoizedFn((event: MouseEvent) => {
+    const hitShape = hitTestShape(event.clientX, event.clientY, shapes);
+    if (!hitShape || hitShape.type !== ShapeType.Text)
+      return;
+
+    const textShape = hitShape as TextShape;
+    selectShape(textShape.id);
+
+    // 创建 contenteditable div 覆盖在文本位置
+    const editDiv = document.createElement('div');
+    editDiv.setAttribute('contenteditable', 'true');
+    editDiv.style.position = 'fixed';
+    editDiv.style.left = `${textShape.x - 10}px`;
+    editDiv.style.top = `${textShape.y - 6}px`;
+    editDiv.style.minWidth = '40px';
+    editDiv.style.minHeight = `${textShape.style.lineHeight}px`;
+    editDiv.style.padding = '6px 10px';
+    editDiv.style.color = textShape.style.color;
+    editDiv.style.fontSize = `${textShape.style.fontSize}px`;
+    editDiv.style.fontFamily = textShape.style.fontFamily;
+    editDiv.style.lineHeight = `${textShape.style.lineHeight}px`;
+    editDiv.style.border = `2px solid ${themeColor}`;
+    editDiv.style.borderRadius = '6px';
+    editDiv.style.outline = 'none';
+    editDiv.style.zIndex = '10000';
+    editDiv.style.background = 'rgba(255,255,255,0.95)';
+    editDiv.style.whiteSpace = 'pre-wrap';
+    editDiv.style.wordBreak = 'break-word';
+
+    // 填入已有文本
+    editDiv.textContent = textShape.lines.join('\n');
+
+    editDiv.addEventListener('blur', () => {
+      const newText = editDiv.textContent;
+      const newLines = newText.split('\n');
+      const hasContent = newLines.length > 0 && !(newLines.length === 1 && !newLines[0]);
+
+      if (hasContent) {
+        updateShape(textShape.id, { text: newText, lines: newLines });
+      }
+      else {
+        removeShape(textShape.id);
+      }
+
+      editDiv.remove();
+      editingTextRef.current = null;
+      redrawShapes();
+    });
+
+    editDiv.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.stopPropagation();
+      }
+    });
+
+    document.body.appendChild(editDiv);
+    editingTextRef.current = editDiv;
+    editDiv.focus();
+
+    // 光标移到末尾
+    const selection = window.getSelection();
+    if (selection) {
+      selection.selectAllChildren(editDiv);
+      selection.collapseToEnd();
+    }
+
+    event.stopImmediatePropagation();
+    event.preventDefault();
+  });
+
   // 注册事件（使用 capture 阶段，确保在工具的 mousedown 之前触发）
   useEffect(() => {
     if (!drawCanvasElement)
       return;
 
     drawCanvasElement.addEventListener('mousedown', handleMouseDown, true);
+    drawCanvasElement.addEventListener('dblclick', handleDblClick, true);
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       drawCanvasElement.removeEventListener('mousedown', handleMouseDown, true);
+      drawCanvasElement.removeEventListener('dblclick', handleDblClick, true);
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [drawCanvasElement, selectedShape, shapes]);
+  }, [drawCanvasElement, handleDblClick, handleKeyDown, handleMouseDown, handleMouseMove, handleMouseUp, selectedShape, shapes]);
 
   // 更新光标
   useEffect(() => {

@@ -6,6 +6,7 @@ export enum ShapeType {
   Ellipse = 'ellipse',
   Arrow = 'arrow',
   Line = 'line',
+  Text = 'text',
 }
 
 /**
@@ -85,9 +86,32 @@ export interface LineShape {
 }
 
 /**
+ * 文本样式
+ */
+export interface TextStyle {
+  color: string
+  fontSize: number
+  fontFamily: string
+  lineHeight: number
+}
+
+/**
+ * 文本图形
+ */
+export interface TextShape {
+  id: string
+  type: ShapeType.Text
+  x: number
+  y: number
+  text: string
+  lines: string[]
+  style: TextStyle
+}
+
+/**
  * 所有图形的联合类型
  */
-export type Shape = RectShape | EllipseShape | ArrowShape | LineShape;
+export type Shape = RectShape | EllipseShape | ArrowShape | LineShape | TextShape;
 
 /**
  * 图形的包围盒（用于选中态和控制点计算）

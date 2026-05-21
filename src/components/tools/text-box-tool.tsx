@@ -5,6 +5,7 @@ import { useMemoizedFn, useMount } from 'ahooks';
 import { useEffect, useRef } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
+import { ShapeType } from '../shapes/types';
 import { ACTIVE_TYPE } from '../utils/share';
 
 export interface TextBoxToolProps {
@@ -33,6 +34,8 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     toolsConfig,
     setActiveTarget,
     setIsLock,
+    addShape,
+    getShapesSnapshot,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
     themeColor: state.themeColor,
@@ -43,6 +46,8 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     toolsConfig: state.toolsConfig,
     setActiveTarget: state.setActiveTarget,
     setIsLock: state.setIsLock,
+    addShape: state.addShape,
+    getShapesSnapshot: state.getShapesSnapshot,
   })));
 
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -53,7 +58,6 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
   const textColor = toolsConfig.textBox?.color ?? '#ff0000';
   /* 统一行高：预览 line-height 和 canvas 逐行偏移量必须相同 */
   const lineHeight = Math.round(fontSize * 1.4);
-  const fontString = `${fontSize}px system-ui`;
 
   const shifting = {
     x: 15,
@@ -127,33 +131,6 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     }
     return lines;
   });
-
-  /**
-   * 渲染文本到 canvas，与预览 DOM 完全一致：
-   * 同样的颜色、字体、行高、位置
-   */
-  const renderToCanvas = useMemoizedFn(
-    (element: HTMLDivElement, boxLeft: number, boxTop: number) => {
-      const ctx = contextRef.current;
-      if (!ctx)
-        return;
-
-      const lines = extractLinesFromElement(element);
-      if (lines.length === 0 || (lines.length === 1 && !lines[0]))
-        return;
-
-      ctx.fillStyle = textColor;
-      ctx.font = fontString;
-      ctx.textBaseline = 'top';
-
-      const drawX = boxLeft + shifting.paddingLeftRight;
-      const drawStartY = boxTop + shifting.paddingTopBottom;
-
-      lines.forEach((line, index) => {
-        ctx.fillText(line, drawX, drawStartY + index * lineHeight);
-      });
-    },
-  );
 
   const setPosition = useMemoizedFn(
     (textBoxTextarea: HTMLDivElement, event: MouseEvent) => {
@@ -259,19 +236,40 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
       setStyle(textBoxTextarea);
 
       textBoxTextarea.addEventListener('blur', () => {
-        renderToCanvas(textBoxTextarea, lastXy.x, lastXy.y);
+        const lines = extractLinesFromElement(textBoxTextarea);
+        const hasContent = lines.length > 0 && !(lines.length === 1 && !lines[0]);
 
-        if (contextRef.current) {
-          const imageData = contextRef.current.getImageData(
-            cutoutBoxX,
-            cutoutBoxY,
-            cutoutBoxWidth,
-            cutoutBoxHeight,
-          );
-          operateHistory.push({
-            imageData,
-            position: { x: cutoutBoxX, y: cutoutBoxY },
-          });
+        if (hasContent) {
+          const textShape = {
+            id: `text-${Date.now()}`,
+            type: ShapeType.Text as const,
+            x: lastXy.x + shifting.paddingLeftRight,
+            y: lastXy.y + shifting.paddingTopBottom,
+            text: lines.join('\n'),
+            lines,
+            style: {
+              color: textColor,
+              fontSize,
+              fontFamily: 'system-ui',
+              lineHeight,
+            },
+          };
+          addShape(textShape);
+
+          // 保存历史记录快照
+          if (contextRef.current) {
+            const imageData = contextRef.current.getImageData(
+              cutoutBoxX,
+              cutoutBoxY,
+              cutoutBoxWidth,
+              cutoutBoxHeight,
+            );
+            operateHistory.push({
+              imageData,
+              position: { x: cutoutBoxX, y: cutoutBoxY },
+              shapes: getShapesSnapshot(),
+            });
+          }
         }
       });
 

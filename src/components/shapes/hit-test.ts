@@ -101,6 +101,15 @@ function hitTestLine(mouseX: number, mouseY: number, shape: Shape & { type: type
 }
 
 /**
+ * 检测点是否在文本包围盒内
+ */
+function hitTestText(mouseX: number, mouseY: number, shape: Shape & { type: typeof ShapeType.Text }): boolean {
+  const box = getShapeBoundingBox(shape);
+  return mouseX >= box.x && mouseX <= box.x + box.width
+    && mouseY >= box.y && mouseY <= box.y + box.height;
+}
+
+/**
  * 检测点击命中了哪个图形（从后往前检测，后绘制的在上面）
  */
 export function hitTestShape(mouseX: number, mouseY: number, shapes: Shape[]): Shape | null {
@@ -118,6 +127,9 @@ export function hitTestShape(mouseX: number, mouseY: number, shapes: Shape[]): S
       case ShapeType.Arrow:
       case ShapeType.Line:
         hit = hitTestLine(mouseX, mouseY, shape);
+        break;
+      case ShapeType.Text:
+        hit = hitTestText(mouseX, mouseY, shape);
         break;
     }
 
