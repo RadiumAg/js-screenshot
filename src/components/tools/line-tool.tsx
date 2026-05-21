@@ -84,7 +84,8 @@ export const LineTool: FC<LineToolProps> = (_props) => {
    * 重绘画布：恢复背景 + 已有图形 + 临时图形
    */
   const redraw = useMemoizedFn((tempShape?: LineShape | null) => {
-    if (!contextRef.current) return;
+    if (!contextRef.current)
+      return;
 
     // 恢复背景
     if (operateHistory.length > 0) {
@@ -128,8 +129,10 @@ export const LineTool: FC<LineToolProps> = (_props) => {
 
   const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
-      if (!contextRef.current) return;
-      if (activeTarget !== ACTIVE_TYPE.line) return;
+      if (!contextRef.current)
+        return;
+      if (activeTarget !== ACTIVE_TYPE.line)
+        return;
 
       setIsDrawing(true);
       setStartPoint({ x: event.clientX, y: event.clientY });
@@ -138,8 +141,10 @@ export const LineTool: FC<LineToolProps> = (_props) => {
 
   const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
-      if (!contextRef.current) return;
-      if (!isDrawing || activeTarget !== ACTIVE_TYPE.line) return;
+      if (!contextRef.current)
+        return;
+      if (!isDrawing || activeTarget !== ACTIVE_TYPE.line)
+        return;
 
       let endX = event.clientX;
       let endY = event.clientY;
@@ -172,7 +177,8 @@ export const LineTool: FC<LineToolProps> = (_props) => {
   );
 
   const handleMouseUp = useMemoizedFn(() => {
-    if (!isDrawing || activeTarget !== ACTIVE_TYPE.line) return;
+    if (!isDrawing || activeTarget !== ACTIVE_TYPE.line)
+      return;
 
     setIsDrawing(false);
 
