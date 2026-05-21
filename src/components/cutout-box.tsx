@@ -329,6 +329,9 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
           if (preEntry.shapes) {
             restoreShapesSnapshot(preEntry.shapes);
           }
+          else {
+            restoreShapesSnapshot([]);
+          }
         }
       }
       // 重做: Ctrl/Cmd+Shift+Z 或 Ctrl/Cmd+Y
@@ -341,6 +344,9 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
           contextRef.current.putImageData(nextEntry.imageData, nextEntry.position.x, nextEntry.position.y);
           if (nextEntry.shapes) {
             restoreShapesSnapshot(nextEntry.shapes);
+          }
+          else {
+            restoreShapesSnapshot([]);
           }
         }
       }

@@ -18,6 +18,9 @@ class OperateHistory extends Array<HistoryEntry> {
   private currentHistoryIndex = -1;
 
   push(...items: HistoryEntry[]) {
+    if (this.currentHistoryIndex < this.length - 1) {
+      this.length = this.currentHistoryIndex + 1;
+    }
     const result = super.push(...items);
     this.currentHistoryIndex = this.length - 1;
     // Evict oldest entries when exceeding max capacity

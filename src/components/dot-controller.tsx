@@ -3,8 +3,8 @@ import Style from '@screenshots/theme/dot-controller.module.scss';
 import { memo } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
-import { useScreenshotStore } from '../store/screenshot-store';
 import { useLongPressAndDrag } from '../hooks/use-long-press-and-drag';
+import { useScreenshotStore } from '../store/screenshot-store';
 import { ACTIVE_TYPE } from './utils/share';
 
 export interface DotControllerProps {
