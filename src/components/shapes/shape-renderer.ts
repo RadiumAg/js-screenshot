@@ -147,7 +147,7 @@ export function getControlPoints(shape: Shape): ControlPoint[] {
 /**
  * 渲染选中态（包围盒虚线 + 控制点）
  */
-export function renderSelection(ctx: CanvasRenderingContext2D, shape: Shape): void {
+export function renderSelection(ctx: CanvasRenderingContext2D, shape: Shape, themeColor = '#1677ff'): void {
   const box = getShapeBoundingBox(shape);
   const controlPoints = getControlPoints(shape);
   const controlPointRadius = 4;
@@ -155,7 +155,7 @@ export function renderSelection(ctx: CanvasRenderingContext2D, shape: Shape): vo
   // 绘制虚线包围盒
   ctx.save();
   ctx.setLineDash([4, 4]);
-  ctx.strokeStyle = '#1890ff';
+  ctx.strokeStyle = themeColor;
   ctx.lineWidth = 1;
   ctx.strokeRect(box.x - 4, box.y - 4, box.width + 8, box.height + 8);
   ctx.setLineDash([]);
@@ -164,7 +164,7 @@ export function renderSelection(ctx: CanvasRenderingContext2D, shape: Shape): vo
   for (const point of controlPoints) {
     ctx.beginPath();
     ctx.fillStyle = '#ffffff';
-    ctx.strokeStyle = '#1890ff';
+    ctx.strokeStyle = themeColor;
     ctx.lineWidth = 1.5;
     ctx.arc(point.x, point.y, controlPointRadius, 0, Math.PI * 2);
     ctx.fill();

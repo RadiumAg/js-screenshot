@@ -28,12 +28,14 @@ const DotController: FC<DotControllerProps> = ({
     activeTarget,
     drawCanvasElement,
     dotControllerSize,
+    themeColor,
     setActiveTarget,
   } = useScreenshotStore(useShallow(state => ({
     container: state.container,
     activeTarget: state.activeTarget,
     drawCanvasElement: state.drawCanvasElement,
     dotControllerSize: state.dotControllerSize,
+    themeColor: state.themeColor,
     setActiveTarget: state.setActiveTarget,
   }),
   ));
@@ -77,6 +79,7 @@ const DotController: FC<DotControllerProps> = ({
         style={{
           width: `${dotControllerSize}px`,
           height: `${dotControllerSize}px`,
+          backgroundColor: themeColor,
         }}
         class={Style['dot-controller']}
       />

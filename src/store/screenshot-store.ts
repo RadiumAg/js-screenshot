@@ -114,6 +114,8 @@ export interface ScreenshotStore {
 
   // 常量
   dotControllerSize: number
+  themeColor: string
+  setThemeColor: (color: string) => void
 
   // 工具配置
   toolsConfig: ToolsConfig
@@ -159,6 +161,8 @@ export const useScreenshotStore = create<ScreenshotStore>()(
       isLock: false,
       isFirstInit: true,
       dotControllerSize: 10,
+      themeColor: '#1677ff',
+      setThemeColor: color => set({ themeColor: color }),
       toolsConfig: {},
       exportFormat: 'image/png',
       exportQuality: 1,

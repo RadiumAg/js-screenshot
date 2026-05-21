@@ -30,6 +30,7 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
     activeTarget,
     setActiveTarget,
     operateHistory,
+    themeColor,
   } = useScreenshotStore(useShallow(state => ({
     shapes: state.shapes,
     selectedShapeId: state.selectedShapeId,
@@ -40,6 +41,7 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
     activeTarget: state.activeTarget,
     setActiveTarget: state.setActiveTarget,
     operateHistory: state.operateHistory,
+    themeColor: state.themeColor,
   })));
 
   const isDraggingRef = useRef(false);
@@ -71,7 +73,7 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
 
     // 渲染选中态
     if (selectedShape) {
-      renderSelection(ctx, selectedShape);
+      renderSelection(ctx, selectedShape, themeColor);
     }
   });
 
