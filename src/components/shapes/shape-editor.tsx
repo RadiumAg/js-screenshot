@@ -316,6 +316,16 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
     const textShape = hitShape as TextShape;
     selectShape(textShape.id);
 
+    // 编辑期间隐藏 canvas 上该文本的渲染（重绘时跳过它）
+    const editingShapeId = textShape.id;
+    const ctx = drawCanvasElement?.getContext('2d');
+    if (ctx && operateHistory.length > 0) {
+      const initialEntry = operateHistory[0];
+      ctx.putImageData(initialEntry.imageData, initialEntry.position.x, initialEntry.position.y);
+      const otherShapes = shapes.filter(s => s.id !== editingShapeId);
+      renderAllShapes(ctx, otherShapes);
+    }
+
     // 创建 contenteditable div 覆盖在文本位置
     const editDiv = document.createElement('div');
     editDiv.setAttribute('contenteditable', 'true');
@@ -333,7 +343,7 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
     editDiv.style.borderRadius = '6px';
     editDiv.style.outline = 'none';
     editDiv.style.zIndex = '10000';
-    editDiv.style.background = 'transparent';
+    editDiv.style.background = 'white';
     editDiv.style.whiteSpace = 'pre-wrap';
     editDiv.style.wordBreak = 'break-word';
 
