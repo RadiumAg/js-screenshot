@@ -1,5 +1,6 @@
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/dot-controller.module.scss';
+import { useMemoizedFn } from 'ahooks';
 import { memo } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
@@ -45,6 +46,17 @@ const DotController: FC<DotControllerProps> = ({
   const elRef = useRef<HTMLDivElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
+  const resetOperateHistory = useMemoizedFn(() => {
+    if (!contextRef.current || !drawCanvasElement)
+      return;
+    const imageData = contextRef.current.getImageData(0, 0, drawCanvasElement.width, drawCanvasElement.height);
+    operateHistory.clear();
+    operateHistory.push({
+      imageData,
+      position: { x: 0, y: 0 },
+    });
+  });
+
   useLongPressAndDrag({ target: elRef, container, onDrag(distance, consume) {
     if (activeTarget !== activeType)
       return;
@@ -52,7 +64,10 @@ const DotController: FC<DotControllerProps> = ({
     onUpdateAxis(distance.xDistance, distance.yDistance, consume);
   }, onMouseUp() {
     setActiveTarget(null);
-    operateHistory.clear();
+    // 拖动结束后，用最新 canvas 内容重置基础快照
+    requestAnimationFrame(() => {
+      resetOperateHistory();
+    });
   }, onMouseDown() {
     setActiveTarget(activeType);
   } });
