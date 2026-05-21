@@ -4,6 +4,15 @@ import { animateThrottleFn } from '@screenshots/utils';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
+
+/** Convert hex color (#RRGGBB) to "R, G, B" string */
+function hexToRgb(hex: string): string {
+  const cleaned = hex.replace('#', '');
+  const r = Number.parseInt(cleaned.slice(0, 2), 16);
+  const g = Number.parseInt(cleaned.slice(2, 4), 16);
+  const b = Number.parseInt(cleaned.slice(4, 6), 16);
+  return `${r}, ${g}, ${b}`;
+}
 import { ArrowTool } from './tools/arrow-tool';
 import { CopyButton } from './tools/copy-button';
 import { EllipseTool } from './tools/ellipse-tool';
@@ -35,8 +44,9 @@ export const ToolBox: FC<ToolBoxProps> = ({
   const elRef = useRef<HTMLDivElement>(null);
   const positionRef = useRef({ x: 0, y: 0 });
 
-  const { uiTheme } = useScreenshotStore(useShallow(state => ({
+  const { uiTheme, themeColor } = useScreenshotStore(useShallow(state => ({
     uiTheme: state.uiTheme,
+    themeColor: state.themeColor,
   })));
 
   // 解析实际主题：auto 模式跟随系统 prefers-color-scheme
@@ -87,6 +97,7 @@ export const ToolBox: FC<ToolBoxProps> = ({
   }, [cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, throttledUpdatePosition]);
 
   const toolBoxClass = `${Style.toolBox} ${Style[resolvedTheme]}`;
+  const accentRgb = hexToRgb(themeColor);
 
   return (
     <div
@@ -96,7 +107,9 @@ export const ToolBox: FC<ToolBoxProps> = ({
         position: 'fixed',
         zIndex: '4',
         pointerEvents: 'auto',
-      }}
+        '--ss-accent': themeColor,
+        '--ss-accent-rgb': accentRgb,
+      } as any}
     >
       <TextBoxTool
         cutoutBoxX={cutoutBoxX}

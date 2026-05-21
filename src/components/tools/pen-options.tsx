@@ -22,15 +22,16 @@ const COLORS = [
 export const PenOptions: FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ x: number, y: number } | null>(null);
-  const { activeTarget, toolsConfig, setToolsConfig, uiTheme } = useScreenshotStore(useShallow(state => ({
+  const { activeTarget, toolsConfig, setToolsConfig, uiTheme, themeColor } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
     toolsConfig: state.toolsConfig,
     setToolsConfig: state.setToolsConfig,
     uiTheme: state.uiTheme,
+    themeColor: state.themeColor,
   })));
 
   const resolvedTheme = resolveTheme(uiTheme);
-  const panelTokens = getPanelStyle(resolvedTheme);
+  const panelTokens = getPanelStyle(resolvedTheme, themeColor);
 
   const isVisible = activeTarget === ACTIVE_TYPE.pen;
   const penConfig = toolsConfig.pen ?? {};

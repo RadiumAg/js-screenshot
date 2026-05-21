@@ -3,14 +3,20 @@
  * Since portals render to document.body, they cannot inherit CSS variables
  * from the tool-box container. These tokens are injected via inline style.
  *
- * Palette source: UI Pro Max — Developer Tool (#22C55E) + Blue accent (#2563EB)
+ * Palette source: UI Pro Max — Developer Tool palette
  */
 
-export const PANEL_TOKENS = {
+/** Convert hex color (#RRGGBB) to "R, G, B" string */
+function hexToRgb(hex: string): string {
+  const cleaned = hex.replace('#', '');
+  const r = Number.parseInt(cleaned.slice(0, 2), 16);
+  const g = Number.parseInt(cleaned.slice(2, 4), 16);
+  const b = Number.parseInt(cleaned.slice(4, 6), 16);
+  return `${r}, ${g}, ${b}`;
+}
+
+const BASE_TOKENS = {
   dark: {
-    '--ss-accent': '#22c55e',
-    '--ss-accent-rgb': '34, 197, 94',
-    '--ss-accent-hover': '#16a34a',
     '--ss-muted-fg': '#94a3b8',
     '--ss-surface': 'rgba(15, 23, 42, 0.92)',
     '--ss-surface-shadow': '0 8px 32px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2)',
@@ -22,9 +28,6 @@ export const PANEL_TOKENS = {
     '--ss-icon-opacity': '0.85',
   },
   light: {
-    '--ss-accent': '#2563eb',
-    '--ss-accent-rgb': '37, 99, 235',
-    '--ss-accent-hover': '#1d4ed8',
     '--ss-muted-fg': '#64748b',
     '--ss-surface': 'rgba(255, 255, 255, 0.95)',
     '--ss-surface-shadow': '0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06)',
@@ -46,6 +49,16 @@ export function resolveTheme(uiTheme: string): ResolvedTheme {
   return uiTheme as ResolvedTheme;
 }
 
-export function getPanelStyle(theme: ResolvedTheme) {
-  return PANEL_TOKENS[theme] as Record<string, string>;
+/**
+ * Get panel style tokens with dynamic accent color from themeColor.
+ * @param theme - resolved theme (dark/light)
+ * @param themeColor - user-configured accent color (hex), e.g. '#1677ff'
+ */
+export function getPanelStyle(theme: ResolvedTheme, themeColor: string): Record<string, string> {
+  const accentRgb = hexToRgb(themeColor);
+  return {
+    ...BASE_TOKENS[theme],
+    '--ss-accent': themeColor,
+    '--ss-accent-rgb': accentRgb,
+  };
 }
