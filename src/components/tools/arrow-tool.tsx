@@ -1,10 +1,13 @@
 import type { FC } from 'preact/compat';
+import type { ArrowShape } from '../shapes/types';
 import arrow from '@screenshots/assets/images/arrow.svg';
-import { useMount, useMemoizedFn } from 'ahooks';
 import Style from '@screenshots/theme/arrow.module.scss';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
+import { renderAllShapes, renderShape } from '../shapes/shape-renderer';
+import { ShapeType } from '../shapes/types';
 import { ACTIVE_TYPE } from '../utils/share';
 
 export interface ArrowToolProps {
@@ -17,12 +20,7 @@ export interface ArrowToolProps {
 /**
  * 箭头工具组件
  */
-export const ArrowTool: FC<ArrowToolProps> = ({
-  cutoutBoxX,
-  cutoutBoxY,
-  cutoutBoxWidth,
-  cutoutBoxHeight,
-}) => {
+export const ArrowTool: FC<ArrowToolProps> = (_props) => {
   const {
     activeTarget,
     setActiveTarget,
@@ -30,6 +28,9 @@ export const ArrowTool: FC<ArrowToolProps> = ({
     operateHistory,
     drawCanvasElement,
     toolsConfig,
+    shapes,
+    addShape,
+    selectShape,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
     setActiveTarget: state.setActiveTarget,
@@ -37,16 +38,19 @@ export const ArrowTool: FC<ArrowToolProps> = ({
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
     toolsConfig: state.toolsConfig,
+    shapes: state.shapes,
+    addShape: state.addShape,
+    selectShape: state.selectShape,
   })));
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
-  const firstScreenShotImageDataRef = useRef<ImageData | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+  const tempShapeRef = useRef<ArrowShape | null>(null);
 
   const arrowColor = toolsConfig.arrow?.color ?? 'red';
   const arrowWidth = toolsConfig.arrow?.lineWidth ?? 2;
-  const arrowHeadLength = (toolsConfig.arrow?.arrowSize ?? 10) * arrowWidth / 2;
+  const arrowSize = toolsConfig.arrow?.arrowSize ?? 10;
   const lineType = toolsConfig.arrow?.lineType ?? 'arrow';
 
   useEffect(() => {
@@ -57,117 +61,105 @@ export const ArrowTool: FC<ArrowToolProps> = ({
     }
   }, [drawCanvasElement]);
 
-  const isCurrentArea = useMemoizedFn(
-    (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
-      return x >= minX && x <= maxX && y >= minY && y <= maxY;
-    },
-  );
+  /**
+   * 重绘画布：恢复背景 + 已有图形 + 临时图形
+   */
+  const redraw = useMemoizedFn((tempShape?: ArrowShape | null) => {
+    if (!contextRef.current) return;
 
-  const drawArrow = useMemoizedFn(
-    (fromX: number, fromY: number, toX: number, toY: number) => {
-      if (!contextRef.current)
-        return;
+    // 恢复背景
+    if (operateHistory.length > 0) {
+      const initialEntry = operateHistory[0];
+      contextRef.current.putImageData(initialEntry.imageData, initialEntry.position.x, initialEntry.position.y);
+    }
 
-      const angle = Math.atan2(toY - fromY, toX - fromX);
-      const bodyEndX = toX - arrowHeadLength * 0.6 * Math.cos(angle);
-      const bodyEndY = toY - arrowHeadLength * 0.6 * Math.sin(angle);
+    // 渲染已确认的图形
+    renderAllShapes(contextRef.current, shapes);
 
-      contextRef.current.beginPath();
-      contextRef.current.moveTo(fromX, fromY);
-      contextRef.current.lineTo(bodyEndX, bodyEndY);
-      contextRef.current.stroke();
-
-      if (lineType === 'arrow') {
-        const headX1 = toX - arrowHeadLength * Math.cos(angle - Math.PI / 6);
-        const headY1 = toY - arrowHeadLength * Math.sin(angle - Math.PI / 6);
-        const headX2 = toX - arrowHeadLength * Math.cos(angle + Math.PI / 6);
-        const headY2 = toY - arrowHeadLength * Math.sin(angle + Math.PI / 6);
-        contextRef.current.beginPath();
-        contextRef.current.moveTo(toX, toY);
-        contextRef.current.lineTo(headX1, headY1);
-        contextRef.current.lineTo(headX2, headY2);
-        contextRef.current.closePath();
-        contextRef.current.fill();
-      }
-    },
-  );
+    // 渲染临时图形（正在绘制中的）
+    if (tempShape) {
+      renderShape(contextRef.current, tempShape);
+    }
+  });
 
   const handleClick = useMemoizedFn(() => {
     setIsLock(true);
+    selectShape(null);
     setActiveTarget(ACTIVE_TYPE.arrow);
   });
 
   const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
-      if (!contextRef.current)
-        return;
+      if (!contextRef.current) return;
+      if (activeTarget !== ACTIVE_TYPE.arrow) return;
 
-      firstScreenShotImageDataRef.current = contextRef.current.getImageData(
-        cutoutBoxX,
-        cutoutBoxY,
-        cutoutBoxWidth,
-        cutoutBoxHeight,
-      );
-
-      if (activeTarget !== ACTIVE_TYPE.arrow)
-        return;
-
-      isCurrentArea(
-        cutoutBoxX,
-        cutoutBoxX + cutoutBoxWidth,
-        cutoutBoxY,
-        cutoutBoxY + cutoutBoxHeight,
-        event.clientX,
-        event.clientY,
-      );
       setIsDrawing(true);
       setStartPoint({ x: event.clientX, y: event.clientY });
-
-      contextRef.current.beginPath();
-      contextRef.current.strokeStyle = arrowColor;
-      contextRef.current.fillStyle = arrowColor;
-      contextRef.current.lineWidth = arrowWidth;
     },
   );
 
   const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
-      if (!firstScreenShotImageDataRef.current || !contextRef.current)
-        return;
-      if (!isDrawing || activeTarget !== ACTIVE_TYPE.arrow)
-        return;
+      if (!contextRef.current) return;
+      if (!isDrawing || activeTarget !== ACTIVE_TYPE.arrow) return;
 
-      contextRef.current.putImageData(
-        firstScreenShotImageDataRef.current,
-        cutoutBoxX,
-        cutoutBoxY,
-      );
+      const tempShape: ArrowShape = {
+        id: '__temp__',
+        type: ShapeType.Arrow,
+        startX: startPoint.x,
+        startY: startPoint.y,
+        endX: event.clientX,
+        endY: event.clientY,
+        arrowSize,
+        lineType,
+        style: { color: arrowColor, lineWidth: arrowWidth },
+      };
 
-      drawArrow(startPoint.x, startPoint.y, event.clientX, event.clientY);
+      tempShapeRef.current = tempShape;
+      redraw(tempShape);
     },
   );
 
   const handleMouseUp = useMemoizedFn(() => {
-    if (!isDrawing || activeTarget !== ACTIVE_TYPE.arrow || !contextRef.current)
-      return;
+    if (!isDrawing || activeTarget !== ACTIVE_TYPE.arrow) return;
 
     setIsDrawing(false);
 
-    const imageData = contextRef.current.getImageData(
-      cutoutBoxX,
-      cutoutBoxY,
-      cutoutBoxWidth,
-      cutoutBoxHeight,
-    );
-    operateHistory.push({
-      imageData,
-      position: { x: cutoutBoxX, y: cutoutBoxY },
-    });
+    if (tempShapeRef.current) {
+      const { startX, startY, endX, endY } = tempShapeRef.current;
+      // 只添加非零长度的箭头
+      if (Math.abs(endX - startX) > 0 || Math.abs(endY - startY) > 0) {
+        const newShape: ArrowShape = {
+          ...tempShapeRef.current,
+          id: `arrow-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        };
+        addShape(newShape);
+
+        // 重绘最终画面并保存历史（包含 shapes 快照）
+        redraw(null);
+        if (contextRef.current && operateHistory.length > 0) {
+          const initialEntry = operateHistory[0];
+          const imageData = contextRef.current.getImageData(
+            initialEntry.position.x,
+            initialEntry.position.y,
+            initialEntry.imageData.width,
+            initialEntry.imageData.height,
+          );
+          const updatedShapes = useScreenshotStore.getState().shapes;
+          operateHistory.push({
+            imageData,
+            position: { ...initialEntry.position },
+            shapes: JSON.parse(JSON.stringify(updatedShapes)),
+          });
+        }
+      }
+    }
+
+    tempShapeRef.current = null;
   });
 
   useMount(() => {
-    if (!drawCanvasElement)
-      return;
+    if (!drawCanvasElement) return;
 
     drawCanvasElement.addEventListener('mousedown', handleMouseDown as EventListener);
     drawCanvasElement.addEventListener('mousemove', handleMouseMove as EventListener);

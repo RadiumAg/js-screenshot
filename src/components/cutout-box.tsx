@@ -1,13 +1,14 @@
 import type { AnyFun } from '@screenshots/utils';
 import type { FC } from 'preact/compat';
-import { useMount, useMemoizedFn } from 'ahooks';
 import Style from '@screenshots/theme/cutout-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
 import { ColorPicker } from './color-picker';
 import DotController from './dot-controller';
+import { ShapeEditor } from './shapes/shape-editor';
 import { ToolBox } from './tool-box';
 import { ArrowOptions } from './tools/arrow-options';
 import { PenOptions } from './tools/pen-options';
@@ -33,6 +34,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     setIsLock,
     setIsFirstInit,
     setActiveTarget,
+    restoreShapesSnapshot,
   } = useScreenshotStore(useShallow(state => ({
     container: state.container,
     drawCanvasElement: state.drawCanvasElement,
@@ -44,6 +46,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     setIsLock: state.setIsLock,
     setIsFirstInit: state.setIsFirstInit,
     setActiveTarget: state.setActiveTarget,
+    restoreShapesSnapshot: state.restoreShapesSnapshot,
   })));
   const miniDotControllerSize = dotControllerSize * 3;
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -318,9 +321,12 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
 
       // 撤销: Ctrl/Cmd+Z (不按 Shift)
       if (isModifier && event.key === 'z' && !event.shiftKey) {
-        const preImageData = operateHistory.prev();
-        if (preImageData && contextRef.current) {
-          contextRef.current.putImageData(preImageData.imageData, preImageData.position.x, preImageData.position.y);
+        const preEntry = operateHistory.prev();
+        if (preEntry && contextRef.current) {
+          contextRef.current.putImageData(preEntry.imageData, preEntry.position.x, preEntry.position.y);
+          if (preEntry.shapes) {
+            restoreShapesSnapshot(preEntry.shapes);
+          }
         }
       }
       // 重做: Ctrl/Cmd+Shift+Z 或 Ctrl/Cmd+Y
@@ -328,9 +334,12 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
         (isModifier && event.shiftKey && event.key === 'Z')
         || (isModifier && event.key === 'y')
       ) {
-        const nextImageData = operateHistory.next();
-        if (nextImageData && contextRef.current) {
-          contextRef.current.putImageData(nextImageData.imageData, nextImageData.position.x, nextImageData.position.y);
+        const nextEntry = operateHistory.next();
+        if (nextEntry && contextRef.current) {
+          contextRef.current.putImageData(nextEntry.imageData, nextEntry.position.x, nextEntry.position.y);
+          if (nextEntry.shapes) {
+            restoreShapesSnapshot(nextEntry.shapes);
+          }
         }
       }
     },
@@ -609,6 +618,14 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
           {/* 箭头选项 */}
           <ArrowOptions />
           <PenOptions />
+
+          {/* 图形编辑器（选中、拖拽、控制点） */}
+          <ShapeEditor
+            cutoutBoxX={position.x}
+            cutoutBoxY={position.y}
+            cutoutBoxWidth={size.width}
+            cutoutBoxHeight={size.height}
+          />
         </>
       )}
     </>

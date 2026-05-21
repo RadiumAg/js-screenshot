@@ -1,7 +1,7 @@
 import type { FC } from 'preact/compat';
 import mosaic from '@screenshots/assets/images/mosaic.svg';
-import { useMount, useMemoizedFn } from 'ahooks';
 import Style from '@screenshots/theme/mosaic.module.scss';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';

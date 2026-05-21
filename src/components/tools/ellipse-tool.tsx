@@ -1,10 +1,13 @@
 import type { FC } from 'preact/compat';
+import type { EllipseShape } from '../shapes/types';
 import ellipse from '@screenshots/assets/images/ellipse.svg';
-import { useMount, useMemoizedFn } from 'ahooks';
 import Style from '@screenshots/theme/ellipse.module.scss';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
+import { renderAllShapes } from '../shapes/shape-renderer';
+import { ShapeType } from '../shapes/types';
 import { ACTIVE_TYPE } from '../utils/share';
 
 export interface EllipseToolProps {
@@ -17,33 +20,34 @@ export interface EllipseToolProps {
 /**
  * 椭圆工具组件
  */
-export const EllipseTool: FC<EllipseToolProps> = ({
-  cutoutBoxX,
-  cutoutBoxY,
-  cutoutBoxWidth,
-  cutoutBoxHeight,
-}) => {
+export const EllipseTool: FC<EllipseToolProps> = (_props) => {
   const {
     activeTarget,
     setActiveTarget,
     setIsLock,
-    operateHistory,
     drawCanvasElement,
     toolsConfig,
+    shapes,
+    addShape,
+    selectShape,
+    operateHistory,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
     setActiveTarget: state.setActiveTarget,
     setIsLock: state.setIsLock,
-    operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
     toolsConfig: state.toolsConfig,
+    shapes: state.shapes,
+    addShape: state.addShape,
+    selectShape: state.selectShape,
+    operateHistory: state.operateHistory,
   })));
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
-  const firstScreenShotImageDataRef = useRef<ImageData | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const shiftPressedRef = useRef(false);
+  const tempShapeRef = useRef<EllipseShape | null>(null);
 
   const ellipseColor = toolsConfig.ellipse?.color ?? 'red';
   const ellipseWidth = toolsConfig.ellipse?.lineWidth ?? 2;
@@ -76,26 +80,49 @@ export const EllipseTool: FC<EllipseToolProps> = ({
     };
   }, []);
 
+  /**
+   * 重绘画布：恢复背景 + 已有图形 + 临时图形
+   */
+  const redraw = useMemoizedFn((tempShape?: EllipseShape | null) => {
+    if (!contextRef.current) return;
+
+    // 恢复背景
+    if (operateHistory.length > 0) {
+      const initialEntry = operateHistory[0];
+      contextRef.current.putImageData(initialEntry.imageData, initialEntry.position.x, initialEntry.position.y);
+    }
+
+    // 渲染已确认的图形
+    renderAllShapes(contextRef.current, shapes);
+
+    // 渲染临时图形（正在绘制中的）
+    if (tempShape) {
+      contextRef.current.beginPath();
+      contextRef.current.strokeStyle = tempShape.style.color;
+      contextRef.current.lineWidth = tempShape.style.lineWidth;
+      contextRef.current.ellipse(
+        tempShape.cx,
+        tempShape.cy,
+        Math.abs(tempShape.rx),
+        Math.abs(tempShape.ry),
+        0,
+        0,
+        Math.PI * 2,
+      );
+      contextRef.current.stroke();
+    }
+  });
+
   const handleClick = useMemoizedFn(() => {
     setIsLock(true);
+    selectShape(null);
     setActiveTarget(ACTIVE_TYPE.ellipse);
   });
 
   const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
-      if (!contextRef.current) {
-        return;
-      }
-      if (activeTarget !== ACTIVE_TYPE.ellipse) {
-        return;
-      }
-
-      firstScreenShotImageDataRef.current = contextRef.current.getImageData(
-        cutoutBoxX,
-        cutoutBoxY,
-        cutoutBoxWidth,
-        cutoutBoxHeight,
-      );
+      if (!contextRef.current) return;
+      if (activeTarget !== ACTIVE_TYPE.ellipse) return;
 
       setIsDrawing(true);
       setStartPoint({ x: event.clientX, y: event.clientY });
@@ -104,21 +131,8 @@ export const EllipseTool: FC<EllipseToolProps> = ({
 
   const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
-      if (
-        !firstScreenShotImageDataRef.current
-        || !contextRef.current
-      ) {
-        return;
-      }
-      if (!isDrawing || activeTarget !== ACTIVE_TYPE.ellipse) {
-        return;
-      }
-
-      contextRef.current.putImageData(
-        firstScreenShotImageDataRef.current,
-        cutoutBoxX,
-        cutoutBoxY,
-      );
+      if (!contextRef.current) return;
+      if (!isDrawing || activeTarget !== ACTIVE_TYPE.ellipse) return;
 
       const centerX = (startPoint.x + event.clientX) / 2;
       const centerY = (startPoint.y + event.clientY) / 2;
@@ -132,51 +146,57 @@ export const EllipseTool: FC<EllipseToolProps> = ({
         radiusY = r;
       }
 
-      if (radiusX > 0 && radiusY > 0) {
-        contextRef.current.beginPath();
-        contextRef.current.strokeStyle = ellipseColor;
-        contextRef.current.lineWidth = ellipseWidth;
-        contextRef.current.ellipse(
-          centerX,
-          centerY,
-          radiusX,
-          radiusY,
-          0,
-          0,
-          Math.PI * 2,
-        );
-        contextRef.current.stroke();
-      }
+      const tempShape: EllipseShape = {
+        id: '__temp__',
+        type: ShapeType.Ellipse,
+        cx: centerX,
+        cy: centerY,
+        rx: radiusX,
+        ry: radiusY,
+        style: { color: ellipseColor, lineWidth: ellipseWidth },
+      };
+
+      tempShapeRef.current = tempShape;
+      redraw(tempShape);
     },
   );
 
   const handleMouseUp = useMemoizedFn(() => {
-    if (
-      !isDrawing
-      || activeTarget !== ACTIVE_TYPE.ellipse
-      || !contextRef.current
-    ) {
-      return;
-    }
+    if (!isDrawing || activeTarget !== ACTIVE_TYPE.ellipse) return;
 
     setIsDrawing(false);
 
-    const imageData = contextRef.current.getImageData(
-      cutoutBoxX,
-      cutoutBoxY,
-      cutoutBoxWidth,
-      cutoutBoxHeight,
-    );
-    operateHistory.push({
-      imageData,
-      position: { x: cutoutBoxX, y: cutoutBoxY },
-    });
+    if (tempShapeRef.current && (tempShapeRef.current.rx !== 0 || tempShapeRef.current.ry !== 0)) {
+      const newShape: EllipseShape = {
+        ...tempShapeRef.current,
+        id: `ellipse-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      };
+      addShape(newShape);
+
+      // 重绘最终画面并保存历史（包含 shapes 快照）
+      redraw(null);
+      if (contextRef.current && operateHistory.length > 0) {
+        const initialEntry = operateHistory[0];
+        const imageData = contextRef.current.getImageData(
+          initialEntry.position.x,
+          initialEntry.position.y,
+          initialEntry.imageData.width,
+          initialEntry.imageData.height,
+        );
+        const updatedShapes = useScreenshotStore.getState().shapes;
+        operateHistory.push({
+          imageData,
+          position: { ...initialEntry.position },
+          shapes: JSON.parse(JSON.stringify(updatedShapes)),
+        });
+      }
+    }
+
+    tempShapeRef.current = null;
   });
 
   useMount(() => {
-    if (!drawCanvasElement) {
-      return;
-    }
+    if (!drawCanvasElement) return;
 
     drawCanvasElement.addEventListener('mousedown', handleMouseDown as EventListener);
     drawCanvasElement.addEventListener('mousemove', handleMouseMove as EventListener);

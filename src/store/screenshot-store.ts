@@ -1,10 +1,12 @@
 import type { ExportFormat, ToolsConfig } from '@screenshots/utils';
+import type { Shape } from '../components/shapes/types';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 export interface HistoryEntry {
   imageData: ImageData
   position: { x: number, y: number }
+  shapes?: Shape[]
 }
 
 /**
@@ -127,6 +129,16 @@ export interface ScreenshotStore {
   currentColor: string
   setCurrentColor: (color: string) => void
 
+  // 图形管理
+  shapes: Shape[]
+  selectedShapeId: string | null
+  addShape: (shape: Shape) => void
+  updateShape: (id: string, updates: Partial<Shape>) => void
+  removeShape: (id: string) => void
+  selectShape: (id: string | null) => void
+  getShapesSnapshot: () => Shape[]
+  restoreShapesSnapshot: (snapshot: Shape[]) => void
+
   // 重置状态
   resetState: () => void
 }
@@ -152,6 +164,8 @@ export const useScreenshotStore = create<ScreenshotStore>()(
       exportQuality: 1,
       exportFilename: '',
       currentColor: '#000000',
+      shapes: [],
+      selectedShapeId: null,
 
       // 设置容器
       setContainer: container => set({ container }),
@@ -195,6 +209,34 @@ export const useScreenshotStore = create<ScreenshotStore>()(
         });
       },
 
+      // 图形管理
+      addShape: (shape) => {
+        const { shapes } = get();
+        set({ shapes: [...shapes, shape] });
+      },
+      updateShape: (id, updates) => {
+        const { shapes } = get();
+        set({
+          shapes: shapes.map(s => (s.id === id ? { ...s, ...updates } as Shape : s)),
+        });
+      },
+      removeShape: (id) => {
+        const { shapes, selectedShapeId } = get();
+        set({
+          shapes: shapes.filter(s => s.id !== id),
+          selectedShapeId: selectedShapeId === id ? null : selectedShapeId,
+        });
+      },
+      selectShape: (id) => {
+        set({ selectedShapeId: id });
+      },
+      getShapesSnapshot: () => {
+        return JSON.parse(JSON.stringify(get().shapes));
+      },
+      restoreShapesSnapshot: (snapshot) => {
+        set({ shapes: snapshot, selectedShapeId: null });
+      },
+
       // 重置状态
       resetState: () => {
         const { operateHistory, videoElement } = get();
@@ -216,6 +258,8 @@ export const useScreenshotStore = create<ScreenshotStore>()(
           isLock: false,
           isFirstInit: true,
           currentColor: '#000000',
+          shapes: [],
+          selectedShapeId: null,
         });
       },
     }),

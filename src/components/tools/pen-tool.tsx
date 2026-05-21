@@ -77,7 +77,7 @@ export const PenTool: FC<PenToolProps> = ({
         const points = pointsRef.current;
         points.push({ x: event.clientX, y: event.clientY });
 
-contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 2;
+        contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 2;
         // 使用二次贝塞尔曲线平滑连线
         if (points.length >= 3) {
           const lastTwo = points[points.length - 2];

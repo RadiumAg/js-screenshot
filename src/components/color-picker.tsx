@@ -1,6 +1,6 @@
 import type { FC } from 'preact/compat';
-import { useMemoizedFn } from 'ahooks';
 import Style from '@screenshots/theme/color-picker.module.scss';
+import { useMemoizedFn } from 'ahooks';
 import { createPortal } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
