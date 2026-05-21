@@ -136,16 +136,25 @@ export const PenTool: FC<PenToolProps> = ({
   );
 
   const handleMouseUp = useMemoizedFn(() => {
-    if (isMouseDownRef.current && contextRef.current) {
-      const imageData = contextRef.current.getImageData(
-        cutoutBoxX,
-        cutoutBoxY,
-        cutoutBoxWidth,
-        cutoutBoxHeight,
+    if (isMouseDownRef.current && contextRef.current && drawCanvasElement) {
+      // pen 直接画像素，完成后更新 operateHistory[0] 基础快照
+      // 这样其他工具的 redraw 从基础快照恢复时就包含 pen 的内容
+      const fullImageData = contextRef.current.getImageData(
+        0,
+        0,
+        drawCanvasElement.width,
+        drawCanvasElement.height,
       );
+      if (operateHistory.length > 0) {
+        operateHistory[0] = {
+          imageData: fullImageData,
+          position: { x: 0, y: 0 },
+        };
+      }
+      // 同时 push 一条用于撤销
       operateHistory.push({
-        imageData,
-        position: { x: cutoutBoxX, y: cutoutBoxY },
+        imageData: fullImageData,
+        position: { x: 0, y: 0 },
       });
     }
     isMouseDownRef.current = false;

@@ -28,7 +28,6 @@ export const ArrowTool: FC<ArrowToolProps> = (_props) => {
     operateHistory,
     drawCanvasElement,
     toolsConfig,
-    shapes,
     addShape,
     selectShape,
   } = useScreenshotStore(useShallow(state => ({
@@ -38,7 +37,6 @@ export const ArrowTool: FC<ArrowToolProps> = (_props) => {
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
     toolsConfig: state.toolsConfig,
-    shapes: state.shapes,
     addShape: state.addShape,
     selectShape: state.selectShape,
   })));
