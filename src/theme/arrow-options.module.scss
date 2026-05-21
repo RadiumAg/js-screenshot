@@ -33,10 +33,11 @@
   justify-content: center;
   border-radius: 6px;
   cursor: pointer;
+  color: var(--ss-text-primary);
   transition: background-color 0.15s ease-out, transform 0.12s ease-out;
 
   svg {
-    stroke: var(--ss-text-primary);
+    stroke: currentColor;
   }
 
   &:hover {
