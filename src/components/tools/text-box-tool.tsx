@@ -1,7 +1,7 @@
 import type { FC } from 'preact/compat';
 import textBox from '@screenshots/assets/images/text-box.svg';
 import Style from '@screenshots/theme/text-box.module.scss';
-import { useMemoizedFn, useMount } from 'ahooks';
+import { useEventListener, useMemoizedFn, useUnmount } from 'ahooks';
 import { useRef } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
@@ -277,16 +277,10 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     },
   );
 
-  useMount(() => {
-    if (!drawCanvasElement)
-      return;
+  useEventListener('mousedown', handleMouseDown, { target: () => drawCanvasElement });
 
-    drawCanvasElement.addEventListener('mousedown', handleMouseDown as EventListener);
-
-    return () => {
-      drawCanvasElement.removeEventListener('mousedown', handleMouseDown as EventListener);
-      preTextareaRef.current?.remove();
-    };
+  useUnmount(() => {
+    preTextareaRef.current?.remove();
   });
 
   return (

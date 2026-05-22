@@ -2,8 +2,8 @@ import type { FC } from 'preact/compat';
 import type { RectShape } from '../shapes/types';
 import rect from '@screenshots/assets/images/rect.svg';
 import Style from '@screenshots/theme/rect.module.scss';
-import { useMemoizedFn, useMount } from 'ahooks';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEventListener, useMemoizedFn } from 'ahooks';
+import { useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 import { renderAllShapes } from '../shapes/shape-renderer';
@@ -52,24 +52,18 @@ export const RectTool: FC<RectToolProps> = (_props) => {
   const rectWidth = toolsConfig.rect?.lineWidth ?? 2;
 
   // 监听 Shift 键
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Shift') {
-        shiftPressedRef.current = true;
-      }
-    };
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Shift') {
-        shiftPressedRef.current = false;
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
+  const handleKeyDown = useMemoizedFn((e: KeyboardEvent) => {
+    if (e.key === 'Shift') {
+      shiftPressedRef.current = true;
+    }
+  });
+  const handleKeyUp = useMemoizedFn((e: KeyboardEvent) => {
+    if (e.key === 'Shift') {
+      shiftPressedRef.current = false;
+    }
+  });
+  useEventListener('keydown', handleKeyDown);
+  useEventListener('keyup', handleKeyUp);
 
   /**
    * 重绘画布：恢复背景 + 已有图形 + 临时图形
@@ -182,20 +176,9 @@ export const RectTool: FC<RectToolProps> = (_props) => {
     tempShapeRef.current = null;
   });
 
-  useMount(() => {
-    if (!drawCanvasElement)
-      return;
-
-    drawCanvasElement.addEventListener('mousedown', handleMouseDown as EventListener);
-    drawCanvasElement.addEventListener('mousemove', handleMouseMove as EventListener);
-    drawCanvasElement.addEventListener('mouseup', handleMouseUp as EventListener);
-
-    return () => {
-      drawCanvasElement.removeEventListener('mousedown', handleMouseDown as EventListener);
-      drawCanvasElement.removeEventListener('mousemove', handleMouseMove as EventListener);
-      drawCanvasElement.removeEventListener('mouseup', handleMouseUp as EventListener);
-    };
-  });
+  useEventListener('mousedown', handleMouseDown, { target: () => drawCanvasElement });
+  useEventListener('mousemove', handleMouseMove, { target: () => drawCanvasElement });
+  useEventListener('mouseup', handleMouseUp, { target: () => drawCanvasElement });
 
   return (
     <div

@@ -27,17 +27,25 @@ function renderEllipse(ctx: CanvasRenderingContext2D, shape: EllipseShape): void
  */
 function renderArrow(ctx: CanvasRenderingContext2D, shape: ArrowShape): void {
   const { startX, startY, endX, endY, arrowSize, lineType, style } = shape;
-  ctx.beginPath();
-  ctx.strokeStyle = style.color;
-  ctx.lineWidth = style.lineWidth;
-  ctx.moveTo(startX, startY);
-  ctx.lineTo(endX, endY);
-  ctx.stroke();
 
   if (lineType === 'arrow') {
     const angle = Math.atan2(endY - startY, endX - startX);
     const headLength = arrowSize * style.lineWidth / 2;
 
+    // 箭头三角形底边中点（线段终止于此，与三角形无缝衔接）
+    const baseX = endX - headLength * Math.cos(angle);
+    const baseY = endY - headLength * Math.sin(angle);
+
+    // 画线段：从起点到三角形底边中点
+    ctx.beginPath();
+    ctx.strokeStyle = style.color;
+    ctx.lineWidth = style.lineWidth;
+    ctx.lineCap = 'round';
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(baseX, baseY);
+    ctx.stroke();
+
+    // 画箭头三角形
     ctx.beginPath();
     ctx.fillStyle = style.color;
     ctx.moveTo(endX, endY);
@@ -51,6 +59,14 @@ function renderArrow(ctx: CanvasRenderingContext2D, shape: ArrowShape): void {
     );
     ctx.closePath();
     ctx.fill();
+  }
+  else {
+    ctx.beginPath();
+    ctx.strokeStyle = style.color;
+    ctx.lineWidth = style.lineWidth;
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+    ctx.stroke();
   }
 }
 

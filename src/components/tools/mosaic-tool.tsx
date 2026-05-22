@@ -1,7 +1,7 @@
 import type { FC } from 'preact/compat';
 import mosaic from '@screenshots/assets/images/mosaic.svg';
 import Style from '@screenshots/theme/mosaic.module.scss';
-import { useMemoizedFn, useMount } from 'ahooks';
+import { useEventListener, useMemoizedFn } from 'ahooks';
 import { useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
@@ -197,20 +197,9 @@ export const MosaicTool: FC<MosaicToolProps> = ({
     });
   });
 
-  useMount(() => {
-    if (!drawCanvasElement)
-      return;
-
-    drawCanvasElement.addEventListener('mousedown', handleMouseDown as EventListener);
-    drawCanvasElement.addEventListener('mousemove', handleMouseMove as EventListener);
-    drawCanvasElement.addEventListener('mouseup', handleMouseUp as EventListener);
-
-    return () => {
-      drawCanvasElement.removeEventListener('mousedown', handleMouseDown as EventListener);
-      drawCanvasElement.removeEventListener('mousemove', handleMouseMove as EventListener);
-      drawCanvasElement.removeEventListener('mouseup', handleMouseUp as EventListener);
-    };
-  });
+  useEventListener('mousedown', handleMouseDown, { target: () => drawCanvasElement });
+  useEventListener('mousemove', handleMouseMove, { target: () => drawCanvasElement });
+  useEventListener('mouseup', handleMouseUp, { target: () => drawCanvasElement });
 
   return (
     <div class={`${Style.mosaic}${activeTarget === ACTIVE_TYPE.mosaic ? ` ${Style.active}` : ''}`} onClick={handleClick} tabIndex={0}>
