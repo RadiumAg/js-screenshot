@@ -18,6 +18,8 @@ interface ArrowToolConfig extends ToolConfig {
 interface TextBoxToolConfig extends ToolConfig {
   fontSize?: number
   fontFamily?: string
+  filled?: boolean
+  backgroundColor?: string
 }
 
 interface MosaicToolConfig extends ToolConfig {

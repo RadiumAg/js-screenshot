@@ -84,10 +84,21 @@ function renderLine(ctx: CanvasRenderingContext2D, shape: LineShape): void {
  */
 function renderText(ctx: CanvasRenderingContext2D, shape: TextShape): void {
   const { x, y, lines, style } = shape;
-  ctx.fillStyle = style.color;
   ctx.font = `${style.fontSize}px ${style.fontFamily}`;
   ctx.textBaseline = 'top';
 
+  if (style.filled && style.backgroundColor) {
+    const padding = 6;
+    const totalHeight = lines.length * style.lineHeight + padding * 2;
+    const maxWidth = lines.reduce((max, line) => Math.max(max, ctx.measureText(line).width), 0) + padding * 2;
+
+    ctx.fillStyle = style.backgroundColor;
+    ctx.beginPath();
+    ctx.roundRect(x - padding, y - padding, maxWidth, totalHeight, 4);
+    ctx.fill();
+  }
+
+  ctx.fillStyle = style.color;
   lines.forEach((line, index) => {
     ctx.fillText(line, x, y + index * style.lineHeight);
   });

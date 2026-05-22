@@ -6,12 +6,11 @@ import { useMemoizedFn, useMount } from 'ahooks';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
-import { ColorPicker } from './color-picker';
 import DotController from './dot-controller';
 import { ShapeEditor } from './shapes/shape-editor';
 import { ToolBox } from './tool-box';
 import { ArrowOptions } from './tools/arrow-options';
-import { PenOptions } from './tools/pen-options';
+import { ShapeOptions } from './tools/shape-options';
 import { SizeIndicator } from './tools/size-indicator';
 import { ACTIVE_TYPE } from './utils/share';
 
@@ -622,12 +621,12 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
             onCancel={handleCancel}
           />
 
-          {/* 颜色选择器 */}
-          <ColorPicker />
-
           {/* 箭头选项 */}
           <ArrowOptions />
-          <PenOptions />
+
+          <ShapeOptions activeType="pen" configKey="pen" />
+          <ShapeOptions activeType="rect" configKey="rect" />
+          <ShapeOptions activeType="ellipse" configKey="ellipse" />
 
           {/* 图形编辑器（选中、拖拽、控制点） */}
           <ShapeEditor

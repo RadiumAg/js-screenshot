@@ -54,10 +54,9 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
 
   const preTextareaRef = useRef<HTMLDivElement | null>(null);
 
-  const fontSize = toolsConfig.textBox?.fontSize ?? 20;
-  /* 统一颜色：预览 DOM 和 canvas 渲染都用同一个值 */
+  const fontSize = toolsConfig.textBox?.fontSize ?? 24;
   const textColor = toolsConfig.textBox?.color ?? '#ff0000';
-  /* 统一行高：预览 line-height 和 canvas 逐行偏移量必须相同 */
+  const filled = toolsConfig.textBox?.filled ?? false;
   const lineHeight = Math.round(fontSize * 1.4);
 
   const shifting = {
@@ -172,7 +171,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     textBoxTextarea.setAttribute('contenteditable', 'true');
     textBoxTextarea.classList.add(Style['text-box-input']);
 
-    textBoxTextarea.style.color = textColor;
+    textBoxTextarea.style.color = filled ? '#ffffff' : textColor;
     textBoxTextarea.style.fontSize = `${fontSize}px`;
     textBoxTextarea.style.fontFamily = 'system-ui';
     textBoxTextarea.style.lineHeight = `${lineHeight}px`;
@@ -181,6 +180,10 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     textBoxTextarea.style.borderRadius = '6px';
     textBoxTextarea.style.minWidth = `${minWidth}px`;
     textBoxTextarea.style.minHeight = `${minHeight}px`;
+
+    if (filled) {
+      textBoxTextarea.style.backgroundColor = textColor;
+    }
   });
 
   const handleClick = useMemoizedFn(() => {
@@ -241,10 +244,12 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
             text: lines.join('\n'),
             lines,
             style: {
-              color: textColor,
+              color: filled ? '#ffffff' : textColor,
               fontSize,
               fontFamily: 'system-ui',
               lineHeight,
+              filled,
+              backgroundColor: filled ? textColor : undefined,
             },
           };
           addShape(textShape);

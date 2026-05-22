@@ -93,6 +93,8 @@ export interface TextStyle {
   fontSize: number
   fontFamily: string
   lineHeight: number
+  filled?: boolean
+  backgroundColor?: string
 }
 
 /**

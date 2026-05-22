@@ -5,6 +5,9 @@
   position: fixed;
   padding: 4px;
   border-radius: 10px;
+  position: fixed;
+  z-index: 4;
+  pointer-events: auto;
   background-color: var(--ss-toolbar-bg);
   box-shadow: var(--ss-toolbar-shadow);
   -webkit-backdrop-filter: blur(8px);

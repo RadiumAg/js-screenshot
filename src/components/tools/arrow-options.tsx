@@ -1,39 +1,17 @@
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/arrow-options.module.scss';
-import { getPanelStyle, resolveTheme } from '@screenshots/theme/tokens';
 import { useMemoizedFn } from 'ahooks';
-import { createPortal } from 'preact/compat';
-import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 import { ACTIVE_TYPE } from '../utils/share';
-
-const COLORS = [
-  '#000000',
-  '#ff0000',
-  '#0000ff',
-  '#00b050',
-  '#ffc000',
-  '#ff6600',
-  '#9933ff',
-  '#ffffff',
-];
+import { ColorPalette, LineWidthSlider, OptionsPanel } from './options';
 
 export const ArrowOptions: FC = () => {
-  const panelRef = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState<{ x: number, y: number } | null>(null);
-  const { activeTarget, toolsConfig, uiTheme, themeColor, setToolsConfig } = useScreenshotStore(useShallow(state => ({
-    activeTarget: state.activeTarget,
+  const { toolsConfig, setToolsConfig } = useScreenshotStore(useShallow(state => ({
     toolsConfig: state.toolsConfig,
-    uiTheme: state.uiTheme,
-    themeColor: state.themeColor,
     setToolsConfig: state.setToolsConfig,
   })));
 
-  const resolvedTheme = resolveTheme(uiTheme);
-  const panelTokens = getPanelStyle(resolvedTheme, themeColor);
-
-  const isVisible = activeTarget === ACTIVE_TYPE.arrow;
   const arrowConfig = toolsConfig.arrow ?? {};
   const lineType = arrowConfig.lineType ?? 'arrow';
   const lineWidth = arrowConfig.lineWidth ?? 2;
@@ -60,59 +38,8 @@ export const ArrowOptions: FC = () => {
     });
   });
 
-  useEffect(() => {
-    if (!isVisible) {
-      setPos(null);
-      return;
-    }
-
-    const updatePos = () => {
-      const btn = document.querySelector(`[data-tool-btn="${ACTIVE_TYPE.arrow}"]`);
-      if (btn) {
-        const rect = btn.getBoundingClientRect();
-        setPos({ x: rect.left + rect.width / 2, y: rect.bottom + 12 });
-      }
-    };
-
-    updatePos();
-    const timer = setTimeout(updatePos, 0);
-    return () => clearTimeout(timer);
-  }, [isVisible]);
-
-  // 点击外部关闭
-  useEffect(() => {
-    if (!isVisible)
-      return;
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        const target = e.target as HTMLElement;
-        if (!target.closest('[data-tool-btn]') && !target.closest('canvas')) {
-          useScreenshotStore.getState().setActiveTarget(null);
-        }
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [isVisible]);
-
-  if (!isVisible || !pos)
-    return null;
-
-  return createPortal(
-    <div
-      ref={panelRef}
-      class={Style.optionsPanel}
-      style={{
-        position: 'fixed',
-        left: `${pos.x}px`,
-        top: `${pos.y}px`,
-        transform: 'translateX(-50%)',
-        ...panelTokens,
-      }}
-    >
-      {/* 形状切换 */}
+  return (
+    <OptionsPanel activeType={ACTIVE_TYPE.arrow}>
       <div class={Style.section}>
         <div
           class={`${Style.optionBtn} ${lineType === 'arrow' ? Style.active : ''}`}
@@ -134,33 +61,9 @@ export const ArrowOptions: FC = () => {
       </div>
 
       <div class={Style.divider} />
-
-      {/* 粗细滑块 */}
-      <div class={Style.sliderSection}>
-        <input
-          type="range"
-          class={Style.slider}
-          min="1"
-          max="10"
-          value={lineWidth}
-          onInput={e => handleSetLineWidth(Number((e.target as HTMLInputElement).value))}
-        />
-      </div>
-
+      <LineWidthSlider value={lineWidth} onChange={handleSetLineWidth} />
       <div class={Style.divider} />
-
-      {/* 颜色选择 */}
-      <div class={Style.section}>
-        {COLORS.map(color => (
-          <div
-            key={color}
-            class={`${Style.colorDot} ${arrowColor === color ? Style.active : ''} ${color === '#ffffff' ? Style.whiteDot : ''}`}
-            style={{ backgroundColor: color }}
-            onClick={() => handleSetColor(color)}
-          />
-        ))}
-      </div>
-    </div>,
-    document.body,
+      <ColorPalette currentColor={arrowColor} onColorChange={handleSetColor} />
+    </OptionsPanel>
   );
 };

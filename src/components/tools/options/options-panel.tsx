@@ -1,56 +1,31 @@
+import type { ComponentChildren } from 'preact';
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/arrow-options.module.scss';
 import { getPanelStyle, resolveTheme } from '@screenshots/theme/tokens';
-import { useMemoizedFn } from 'ahooks';
 import { createPortal } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
-import { useScreenshotStore } from '../../store/screenshot-store';
-import { ACTIVE_TYPE } from '../utils/share';
+import { useScreenshotStore } from '../../../store/screenshot-store';
 
-const COLORS = [
-  '#000000',
-  '#ff0000',
-  '#0000ff',
-  '#00b050',
-  '#ffc000',
-  '#ff6600',
-  '#9933ff',
-  '#ffffff',
-];
+export interface OptionsPanelProps {
+  activeType: string
+  children: ComponentChildren
+}
 
-export const PenOptions: FC = () => {
+export const OptionsPanel: FC<OptionsPanelProps> = (props) => {
+  const { activeType, children } = props;
   const panelRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ x: number, y: number } | null>(null);
-  const { activeTarget, toolsConfig, uiTheme, themeColor, setToolsConfig } = useScreenshotStore(useShallow(state => ({
+
+  const { activeTarget, uiTheme, themeColor } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
-    toolsConfig: state.toolsConfig,
     uiTheme: state.uiTheme,
     themeColor: state.themeColor,
-    setToolsConfig: state.setToolsConfig,
   })));
 
   const resolvedTheme = resolveTheme(uiTheme);
   const panelTokens = getPanelStyle(resolvedTheme, themeColor);
-
-  const isVisible = activeTarget === ACTIVE_TYPE.pen;
-  const penConfig = toolsConfig.pen ?? {};
-  const lineWidth = penConfig.lineWidth ?? 2;
-  const penColor = penConfig.color ?? 'red';
-
-  const handleSetLineWidth = useMemoizedFn((width: number) => {
-    setToolsConfig({
-      ...toolsConfig,
-      pen: { ...penConfig, lineWidth: width },
-    });
-  });
-
-  const handleSetColor = useMemoizedFn((color: string) => {
-    setToolsConfig({
-      ...toolsConfig,
-      pen: { ...penConfig, color },
-    });
-  });
+  const isVisible = activeTarget === activeType;
 
   useEffect(() => {
     if (!isVisible) {
@@ -59,7 +34,7 @@ export const PenOptions: FC = () => {
     }
 
     const updatePos = () => {
-      const btn = document.querySelector(`[data-tool-btn="${ACTIVE_TYPE.pen}"]`);
+      const btn = document.querySelector(`[data-tool-btn="${activeType}"]`);
       if (btn) {
         const rect = btn.getBoundingClientRect();
         setPos({ x: rect.left + rect.width / 2, y: rect.bottom + 12 });
@@ -103,31 +78,7 @@ export const PenOptions: FC = () => {
         ...panelTokens,
       }}
     >
-      {/* 粗细滑块 */}
-      <div class={Style.sliderSection}>
-        <input
-          type="range"
-          class={Style.slider}
-          min="1"
-          max="20"
-          value={lineWidth}
-          onInput={e => handleSetLineWidth(Number((e.target as HTMLInputElement).value))}
-        />
-      </div>
-
-      <div class={Style.divider} />
-
-      {/* 颜色选择 */}
-      <div class={Style.section}>
-        {COLORS.map(color => (
-          <div
-            key={color}
-            class={`${Style.colorDot} ${penColor === color ? Style.active : ''} ${color === '#ffffff' ? Style.whiteDot : ''}`}
-            style={{ backgroundColor: color }}
-            onClick={() => handleSetColor(color)}
-          />
-        ))}
-      </div>
+      {children}
     </div>,
     document.body,
   );

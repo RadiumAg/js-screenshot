@@ -130,3 +130,47 @@
 .whiteDot {
   border: 1.5px solid var(--ss-border-subtle);
 }
+
+.fontSizeSection {
+  display: flex;
+  align-items: center;
+}
+
+.fontSizeSelect {
+  height: 28px;
+  padding: 0 24px 0 8px;
+  border-radius: 6px;
+  border: 1px solid var(--ss-border-subtle);
+  background: transparent;
+  color: var(--ss-text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  outline: none;
+  transition: border-color 0.15s ease-out;
+
+  &:hover {
+    border-color: var(--ss-accent);
+  }
+
+  &:focus {
+    border-color: var(--ss-accent);
+    box-shadow: 0 0 0 2px rgba(var(--ss-accent-rgb), 0.15);
+  }
+
+  option {
+    background: var(--ss-surface, #1e293b);
+    color: var(--ss-text-primary);
+  }
+}
+
+.sliderLabel {
+  margin-left: 6px;
+  font-size: 11px;
+  color: var(--ss-text-secondary);
+  white-space: nowrap;
+}

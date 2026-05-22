@@ -13,6 +13,8 @@ import { PenTool } from './tools/pen-tool';
 import { RectTool } from './tools/rect-tool';
 import { RefuseButton } from './tools/refuse-button';
 import { SaveButton } from './tools/save-button';
+import { ShapeOptions } from './tools/shape-options';
+import { TextBoxOptions } from './tools/text-box-options';
 import { TextBoxTool } from './tools/text-box-tool';
 
 export interface ToolBoxProps {
@@ -96,9 +98,6 @@ export const ToolBox: FC<ToolBoxProps> = ({
       ref={elRef}
       class={toolBoxClass}
       style={{
-        'position': 'fixed',
-        'zIndex': '4',
-        'pointerEvents': 'auto',
         ...panelTokens,
       } as any}
     >
@@ -151,6 +150,9 @@ export const ToolBox: FC<ToolBoxProps> = ({
         cutoutBoxWidth={cutoutBoxWidth}
         cutoutBoxHeight={cutoutBoxHeight}
       />
+      <TextBoxOptions />
+      <ShapeOptions activeType="rect" configKey="rect" />
+      <ShapeOptions activeType="ellipse" configKey="ellipse" />
     </div>
   );
 };
