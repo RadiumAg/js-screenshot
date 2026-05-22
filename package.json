@@ -5,7 +5,23 @@
   "author": "",
   "license": "ISC",
   "keywords": [],
-  "main": "index.js",
+  "main": "dist/cjs/screen-shot.js",
+  "module": "dist/esm/screen-shot.js",
+  "types": "dist/esm/screen-shot.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/screen-shot.d.ts",
+      "import": "./dist/esm/screen-shot.js",
+      "require": "./dist/cjs/screen-shot.js"
+    },
+    "./style": "./dist/esm/screen-shot.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "engines": {
     "pnpm": ">=9"
   },

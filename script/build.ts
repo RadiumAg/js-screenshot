@@ -64,6 +64,7 @@ async function build(format: ModuleFormat) {
 function getBuildConfig(format: ModuleFormat) {
   const output = {
     esm: {
+      format: 'esm',
       file: resolve(outputDist, './esm/screen-shot.js'),
       globals: { html2canvas: 'html2canvas' },
     },
