@@ -15,8 +15,8 @@ A lightweight, framework-agnostic web screenshot SDK with built-in annotation to
 - **Customizable** — configurable colors, sizes, line widths, font sizes per tool
 - **Export options** — PNG, JPEG, or WebP with quality control
 - **Dark / Light / Auto theme** support
-- **Tiny runtime** — built on [Preact](https://preactjs.com), lightweight and fast
-- **Easy integration** — simple class-based API, works in any web app
+- **Tiny runtime** — built on [Preact](https://preactjs.com), bundled into the output, no extra dependency for consumers
+- **Zero framework lock-in** — works in any web app via vanilla JS API
 
 ## Installation
 
