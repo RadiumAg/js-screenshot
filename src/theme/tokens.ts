@@ -56,9 +56,14 @@ export function resolveTheme(uiTheme: string): ResolvedTheme {
  */
 export function getPanelStyle(theme: ResolvedTheme, themeColor: string): Record<string, string> {
   const accentRgb = hexToRgb(themeColor);
+  const activeBgAlpha = theme === 'dark' ? 0.25 : 0.12;
+  const glowAlpha = theme === 'dark' ? 0.6 : 0.4;
+  const glowSize = theme === 'dark' ? '4px' : '3px';
   return {
     ...BASE_TOKENS[theme],
     '--ss-accent': themeColor,
     '--ss-accent-rgb': accentRgb,
+    '--ss-btn-active-bg': `rgba(${accentRgb}, ${activeBgAlpha})`,
+    '--ss-btn-active-glow': `drop-shadow(0 0 ${glowSize} rgba(${accentRgb}, ${glowAlpha}))`,
   };
 }

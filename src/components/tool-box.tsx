@@ -1,4 +1,5 @@
 import type { FC } from 'preact/compat';
+import { getPanelStyle } from '@screenshots/theme/tokens';
 import Style from '@screenshots/theme/tool-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -13,15 +14,6 @@ import { RectTool } from './tools/rect-tool';
 import { RefuseButton } from './tools/refuse-button';
 import { SaveButton } from './tools/save-button';
 import { TextBoxTool } from './tools/text-box-tool';
-
-/** Convert hex color (#RRGGBB) to "R, G, B" string */
-function hexToRgb(hex: string): string {
-  const cleaned = hex.replace('#', '');
-  const r = Number.parseInt(cleaned.slice(0, 2), 16);
-  const g = Number.parseInt(cleaned.slice(2, 4), 16);
-  const b = Number.parseInt(cleaned.slice(4, 6), 16);
-  return `${r}, ${g}, ${b}`;
-}
 
 export interface ToolBoxProps {
   cutoutBoxX: number
@@ -97,10 +89,7 @@ export const ToolBox: FC<ToolBoxProps> = ({
   }, [cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, throttledUpdatePosition]);
 
   const toolBoxClass = `${Style.toolBox} ${Style[resolvedTheme]}`;
-  const accentRgb = hexToRgb(themeColor);
-  const activeBgAlpha = resolvedTheme === 'dark' ? 0.25 : 0.12;
-  const glowAlpha = resolvedTheme === 'dark' ? 0.6 : 0.4;
-  const glowSize = resolvedTheme === 'dark' ? '4px' : '3px';
+  const panelTokens = getPanelStyle(resolvedTheme, themeColor);
 
   return (
     <div
@@ -110,10 +99,7 @@ export const ToolBox: FC<ToolBoxProps> = ({
         'position': 'fixed',
         'zIndex': '4',
         'pointerEvents': 'auto',
-        '--ss-accent': themeColor,
-        '--ss-accent-rgb': accentRgb,
-        '--ss-btn-active-bg': `rgba(${accentRgb}, ${activeBgAlpha})`,
-        '--ss-btn-active-glow': `drop-shadow(0 0 ${glowSize} rgba(${accentRgb}, ${glowAlpha}))`,
+        ...panelTokens,
       } as any}
     >
       <TextBoxTool
