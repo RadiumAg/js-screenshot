@@ -1,0 +1,251 @@
+---
+description: 项目组件架构、状态管理和 Preact 框架使用规范
+alwaysApply: true
+enabled: true
+---
+
+# 组件架构与状态管理规范
+
+## 技术栈约束
+
+### 框架选择
+- **必须**使用 `preact` 和 `preact/compat` 作为 UI 框架，**禁止**引入 React
+- **必须**使用 `preact/hooks` 中的 hooks API（`useState`, `useEffect`, `useRef`, `useMemo` 等）
+- **必须**使用 `ahooks` 提供的增强 hooks（`useMemoizedFn`, `useMount`, `useUnmount`, `useEventListener`）
+- **必须**使用 `zustand` 作为全局状态管理方案
+
+### 路径别名
+- **必须**使用 `@screenshots/` 路径别名引用 `src/` 下的资源
+- 别名映射：`@screenshots/assets` → `src/assets`, `@screenshots/theme` → `src/theme`, `@screenshots/utils` → `src/utils`
+
+```typescript
+// ✅ 正确做法
+import pen from '@screenshots/assets/images/pen.svg';
+import Style from '@screenshots/theme/pen.module.scss';
+import { animateThrottleFn } from '@screenshots/utils';
+
+// ❌ 错误做法
+import pen from '../../assets/images/pen.svg';
+import Style from '../../theme/pen.module.scss';
+```
+
+## Zustand Store 规范
+
+### Store 定义
+- **必须**使用 `create<StateInterface>()(devtools(...))` 模式定义 store
+- **必须**为 store 提供完整的 TypeScript 接口定义
+- **必须**使用 `devtools` 中间件包裹 store，并提供 `name` 标识
+
+```typescript
+// ✅ 正确做法
+export const useScreenshotStore = create<ScreenshotStore>()(
+  devtools(
+    (set, get) => ({
+      // state & actions
+    }),
+    { name: 'screenshot-store' },
+  ),
+);
+
+// ❌ 错误做法
+export const useScreenshotStore = create((set) => ({
+  // 缺少类型定义和 devtools
+}));
+```
+
+### Store 消费
+- **必须**使用 `useShallow` selector 从 store 中选取状态，避免不必要的重渲染
+- **必须**只选取组件实际使用的状态字段
+- **禁止**在组件中直接订阅整个 store
+
+```typescript
+// ✅ 正确做法
+const { activeTarget, drawCanvasContext, toolsConfig } = useScreenshotStore(
+  useShallow(state => ({
+    activeTarget: state.activeTarget,
+    drawCanvasContext: state.drawCanvasContext,
+    toolsConfig: state.toolsConfig,
+  })),
+);
+
+// ❌ 错误做法 - 订阅整个 store
+const store = useScreenshotStore();
+
+// ❌ 错误做法 - 不使用 useShallow
+const { activeTarget } = useScreenshotStore(state => ({
+  activeTarget: state.activeTarget,
+}));
+```
+
+### Store 外部访问
+- 在非组件代码（事件回调、工具函数）中，**必须**使用 `useScreenshotStore.getState()` 访问最新状态
+- **禁止**在闭包中捕获过时的 store 状态
+
+```typescript
+// ✅ 正确做法
+const handleMouseUp = useMemoizedFn(() => {
+  const currentShapes = useScreenshotStore.getState().shapes;
+  renderAllShapes(ctx, currentShapes);
+});
+
+// ❌ 错误做法 - 闭包中 shapes 可能过时
+const handleMouseUp = useMemoizedFn(() => {
+  renderAllShapes(ctx, shapes); // shapes 来自组件渲染时的快照
+});
+```
+
+## Preact 组件模式
+
+### 组件声明
+- **必须**使用 `const Component: FC<Props> = (...) => {}` 形式声明函数式组件
+- **必须**从 `preact/compat` 导入 `FC` 类型
+- **必须**为组件 Props 定义 `interface`，并以 `XxxProps` 命名
+
+```typescript
+// ✅ 正确做法
+import type { FC } from 'preact/compat';
+
+export interface ToolBoxProps {
+  cutoutBoxX: number
+  cutoutBoxY: number
+  cutoutBoxWidth: number
+  cutoutBoxHeight: number
+  onCancel: () => void
+}
+
+export const ToolBox: FC<ToolBoxProps> = ({
+  cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, onCancel,
+}) => { /* ... */ };
+```
+
+### Props 解构
+- **必须**在组件参数列表中直接解构 props
+- **禁止**在函数体内二次解构
+- 未使用的 props 使用 `_props` 命名
+
+```typescript
+// ✅ 正确做法
+export const ArrowTool: FC<ArrowToolProps> = (_props) => {
+  // 不直接使用 props，仅通过 store 获取状态
+};
+
+// ✅ 正确做法
+export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
+  // 直接使用 onComplete
+};
+
+// ❌ 错误做法
+export const Tool: FC<ToolProps> = (props) => {
+  const { x, y } = props; // 函数体内解构
+};
+```
+
+### Hooks 使用规范
+- **必须**使用 `useMemoizedFn` 包裹所有事件处理函数，避免闭包陷阱
+- **必须**使用 `useEventListener`（来自 ahooks）绑定 canvas/document 级别的事件
+- **必须**使用 `useMount` / `useUnmount` 处理组件生命周期
+- **必须**使用 `useRef` 存储不触发重渲染的可变状态
+
+```typescript
+// ✅ 正确做法
+const isMouseDownRef = useRef(false);
+
+const handleMouseMove = useMemoizedFn((event: MouseEvent) => {
+  if (!isMouseDownRef.current) return;
+  // 处理逻辑
+});
+
+useEventListener('mousemove', handleMouseMove, { target: () => drawCanvasElement });
+
+// ❌ 错误做法 - 未使用 useMemoizedFn，闭包中状态可能过时
+const handleMouseMove = (event: MouseEvent) => {
+  if (!isMouseDown) return; // isMouseDown 可能是旧值
+};
+drawCanvasElement?.addEventListener('mousemove', handleMouseMove);
+```
+
+## 组件清理规范
+
+### 资源释放
+- **必须**在组件卸载时清理所有创建的 DOM 元素
+- **必须**在组件卸载时重置 store 中的相关状态
+- **必须**使用 `useEffect` 的 return 或 `useUnmount` 执行清理
+
+```typescript
+// ✅ 正确做法
+useEffect(() => {
+  return () => {
+    drawCanvasElement?.remove();
+    setIsLock(false);
+    setIsFirstInit(true);
+    setActiveTarget(null);
+  };
+}, []);
+
+// ✅ 正确做法 - 清理临时 DOM 元素
+useUnmount(() => {
+  preTextareaRef.current?.remove();
+});
+```
+
+### 事件监听器清理
+- 使用 `useEventListener` 时自动处理清理，无需手动移除
+- 手动添加的事件监听器**必须**在 `useEffect` return 中移除
+- 使用 capture 阶段的事件**必须**在移除时也指定 `true`
+
+```typescript
+// ✅ 正确做法
+useEffect(() => {
+  drawCanvasElement.addEventListener('mousedown', handleMouseDown, true);
+  document.addEventListener('mousemove', handleMouseMove);
+  return () => {
+    drawCanvasElement.removeEventListener('mousedown', handleMouseDown, true);
+    document.removeEventListener('mousemove', handleMouseMove);
+  };
+}, [drawCanvasElement]);
+```
+
+## 样式规范
+
+### CSS Modules
+- **必须**使用 SCSS Modules（`*.module.scss`）管理组件样式
+- **必须**通过 `Style['class-name']` 或 `Style.className` 引用样式类
+- 样式文件放在 `src/theme/` 目录下，与组件名称对应
+
+```typescript
+// ✅ 正确做法
+import Style from '@screenshots/theme/pen.module.scss';
+
+<div class={`${Style.pen}${isActive ? ` ${Style.active}` : ''}`}>
+```
+
+### 主题系统
+- **必须**使用 CSS 变量（`--ss-*` 前缀）实现主题切换
+- **必须**通过 `getPanelStyle()` 函数获取主题 token 对象
+- 支持 `dark`、`light`、`auto` 三种主题模式
+- `auto` 模式**必须**使用 `window.matchMedia('(prefers-color-scheme: dark)')` 检测
+
+### 内联样式
+- Canvas 覆盖层和动态定位元素使用内联 `style` 对象
+- 内联样式中使用 `class` 而非 `className`（Preact 约定）
+
+## 导出规范
+
+### 组件导出
+- **必须**使用具名导出 `export const`
+- **必须**同时导出组件的 Props 接口
+- **禁止**使用 `export default`（`memo` 包裹的组件除外）
+
+```typescript
+// ✅ 正确做法
+export interface PenToolProps { /* ... */ }
+export const PenTool: FC<PenToolProps> = ({ ... }) => { /* ... */ };
+
+// ✅ 正确做法 - memo 组件使用 default export
+const DotController: FC<DotControllerProps> = ({ ... }) => { /* ... */ };
+export default memo(DotController);
+```
+
+### 类型导出
+- **必须**在 `index.ts` 中统一重导出公共类型和工具函数
+- 使用 `export type` 语法导出纯类型
