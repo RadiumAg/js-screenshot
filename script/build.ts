@@ -83,8 +83,8 @@ function getBuildConfig(format: ModuleFormat) {
   const buildConfig: RollupWatchOptions = {
     input: resolve(__dirname, '../src/screen-shot.tsx'),
     plugins: [
-      resolveModule(), // 解析node_modules中的模块
-      commonjs(), // 将CommonJS模块转换为ES6模块
+      resolveModule(),
+      commonjs(),
       alias({
         entries: [
           { find: '@screenshots', replacement: resolve(__dirname, '../src') },
@@ -133,7 +133,7 @@ function getBuildConfig(format: ModuleFormat) {
         'preventAssignment': true,
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       }),
-    ],
+    ] as any,
     external: ['html2canvas'],
     output: output[format],
   };
