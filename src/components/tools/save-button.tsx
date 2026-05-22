@@ -55,12 +55,9 @@ export const SaveButton: FC<SaveButtonProps> = ({
     screenCanvas.height = cutoutBoxHeight;
     screenCanvas.getContext('2d')?.putImageData(screenShotData, 0, 0);
 
-    // 读取用户配置
     const format = exportFormat;
     const quality = exportQuality;
     const customFilename = exportFilename;
-
-    // 生成文件名
     const now = new Date();
     const ts = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
     const ext = format.replace('image/', '');

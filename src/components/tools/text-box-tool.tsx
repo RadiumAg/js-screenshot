@@ -249,7 +249,6 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
           };
           addShape(textShape);
 
-          // 保存历史记录快照
           if (drawCanvasContext) {
             const imageData = drawCanvasContext.getImageData(
               cutoutBoxX,

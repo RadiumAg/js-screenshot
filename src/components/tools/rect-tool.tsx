@@ -51,20 +51,6 @@ export const RectTool: FC<RectToolProps> = (_props) => {
   const rectColor = toolsConfig.rect?.color ?? 'red';
   const rectWidth = toolsConfig.rect?.lineWidth ?? 2;
 
-  // 监听 Shift 键
-  const handleKeyDown = useMemoizedFn((e: KeyboardEvent) => {
-    if (e.key === 'Shift') {
-      shiftPressedRef.current = true;
-    }
-  });
-  const handleKeyUp = useMemoizedFn((e: KeyboardEvent) => {
-    if (e.key === 'Shift') {
-      shiftPressedRef.current = false;
-    }
-  });
-  useEventListener('keydown', handleKeyDown);
-  useEventListener('keyup', handleKeyUp);
-
   /**
    * 重绘画布：恢复背景 + 已有图形 + 临时图形
    */

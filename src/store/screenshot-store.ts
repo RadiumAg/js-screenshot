@@ -87,7 +87,6 @@ export type ActiveTarget = string | null;
  * Screenshot Store 接口
  */
 export interface ScreenshotStore {
-  // 容器元素
   container: HTMLDivElement | null
 
   // Canvas 元素
@@ -96,50 +95,40 @@ export interface ScreenshotStore {
   sourceCanvasElement: HTMLCanvasElement | null
   videoElement: HTMLVideoElement | null
 
-  // 设置元素的方法
   setContainer: (container: HTMLDivElement) => void
   setDrawCanvasElement: (canvas: HTMLCanvasElement | null) => void
   setSourceCanvasElement: (canvas: HTMLCanvasElement | null) => void
   setVideoElement: (video: HTMLVideoElement | null) => void
 
-  // 操作历史
   operateHistory: OperateHistory
 
-  // 激活的目标
   activeTarget: ActiveTarget
   setActiveTarget: (target: ActiveTarget) => void
 
-  // 状态标志
   isLock: boolean
   setIsLock: (value: boolean) => void
 
   isFirstInit: boolean
   setIsFirstInit: (value: boolean) => void
 
-  // 常量
   dotControllerSize: number
   themeColor: string
   setThemeColor: (color: string) => void
 
-  // UI 主题 (dark / light / auto)
   uiTheme: 'dark' | 'light' | 'auto'
   setUiTheme: (theme: 'dark' | 'light' | 'auto') => void
 
-  // 工具配置
   toolsConfig: ToolsConfig
   setToolsConfig: (config: ToolsConfig) => void
 
-  // 导出配置
   exportFormat: ExportFormat
   exportQuality: number
   exportFilename: string
   setExportOptions: (format?: ExportFormat, quality?: number, filename?: string) => void
 
-  // 当前颜色
   currentColor: string
   setCurrentColor: (color: string) => void
 
-  // 图形管理
   shapes: Shape[]
   selectedShapeId: string | null
   addShape: (shape: Shape) => void
@@ -149,7 +138,6 @@ export interface ScreenshotStore {
   getShapesSnapshot: () => Shape[]
   restoreShapesSnapshot: (snapshot: Shape[]) => void
 
-  // 重置状态
   resetState: () => void
 }
 
@@ -159,7 +147,6 @@ export interface ScreenshotStore {
 export const useScreenshotStore = create<ScreenshotStore>()(
   devtools(
     (set, get) => ({
-      // 初始状态
       container: null,
       drawCanvasElement: null,
       drawCanvasContext: null,
@@ -193,24 +180,19 @@ export const useScreenshotStore = create<ScreenshotStore>()(
       setSourceCanvasElement: sourceCanvasElement => set({ sourceCanvasElement }),
       setVideoElement: videoElement => set({ videoElement }),
 
-      // 设置激活目标
       setActiveTarget: activeTarget => set({ activeTarget }),
 
-      // 设置状态标志
       setIsLock: isLock => set({ isLock }),
       setIsFirstInit: isFirstInit => set({ isFirstInit }),
 
-      // 设置工具配置
       setToolsConfig: toolsConfig => set({ toolsConfig }),
 
-      // 设置导出配置
       setExportOptions: (format, quality, filename) => set({
         exportFormat: format ?? 'image/png',
         exportQuality: quality ?? 1,
         exportFilename: filename ?? '',
       }),
 
-      // 设置当前颜色
       setCurrentColor: (color) => {
         const { toolsConfig } = get();
         set({
@@ -227,7 +209,6 @@ export const useScreenshotStore = create<ScreenshotStore>()(
         });
       },
 
-      // 图形管理
       addShape: (shape) => {
         const { shapes } = get();
         set({ shapes: [...shapes, shape] });
@@ -255,7 +236,6 @@ export const useScreenshotStore = create<ScreenshotStore>()(
         set({ shapes: snapshot, selectedShapeId: null });
       },
 
-      // 重置状态
       resetState: () => {
         const { operateHistory, videoElement } = get();
 

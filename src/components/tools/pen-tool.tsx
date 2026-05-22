@@ -56,7 +56,6 @@ export const PenTool: FC<PenToolProps> = ({
   const handleClick = useMemoizedFn(() => {
     setIsLock(true);
     setActiveTarget(ACTIVE_TYPE.pen);
-    // Tool is now active
   });
 
   const handleMouseMove = useMemoizedFn(

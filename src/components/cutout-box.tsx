@@ -107,7 +107,6 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     if (!drawCanvasElement)
       return;
 
-    // 清除所有内容
     drawCanvasContext.clearRect(
       0,
       0,
@@ -115,7 +114,6 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       drawCanvasElement.height,
     );
 
-    // 重绘整个源图像
     const documentArea = sourceContextRef.current.getImageData(
       0,
       0,
@@ -470,7 +468,6 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 只在组件卸载时执行清理
   }, []);
 
-  // 初始化 sourceContext
   useMount(() => {
     if (sourceCanvasElement) {
       sourceContextRef.current = sourceCanvasElement.getContext('2d', {
@@ -499,7 +496,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       const yOk = newY === position.y + yDistance;
       consume(xOk && yOk ? 'xy' : xOk ? 'x' : yOk ? 'y' : 'xy');
       throttledUpdatePosition();
-    }) }, // 左上
+    }) },
     { x: position.x + size.width / 2, y: position.y, cursor: 'ns-resize', onUpdateAxis: updateWrapper((_xDistance: number, yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
       const newY = clamp(position.y + yDistance, 0, position.y + size.height - miniDotControllerSize);
       const actualDy = newY - position.y;
@@ -509,7 +506,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       const yOk = newY === position.y + yDistance;
       consume(yOk ? 'xy' : 'x');
       throttledUpdatePosition();
-    }) }, // 上中
+    }) },
     { x: position.x + size.width, y: position.y, cursor: 'nesw-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
       const newY = clamp(position.y + yDistance, 0, position.y + size.height - miniDotControllerSize);
       const actualDy = newY - position.y;
@@ -521,14 +518,14 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       const yOk = newY === position.y + yDistance;
       consume(xOk && yOk ? 'xy' : xOk ? 'x' : yOk ? 'y' : 'xy');
       throttledUpdatePosition();
-    }) }, // 上右
+    }) },
     { x: position.x + size.width, y: position.y + size.height / 2, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, _yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
       const newW = clamp(size.width + xDistance, miniDotControllerSize, canvasWidth - position.x);
       setSize({ ...size, width: newW });
       const xOk = newW === size.width + xDistance;
       consume(xOk ? 'xy' : 'y');
       throttledUpdatePosition();
-    }) }, // 右中
+    }) },
     { x: position.x + size.width, y: position.y + size.height, cursor: 'nwse-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
       const newW = clamp(size.width + xDistance, miniDotControllerSize, canvasWidth - position.x);
       const newH = clamp(size.height + yDistance, miniDotControllerSize, canvasHeight - position.y);
@@ -537,14 +534,14 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       const yOk = newH === size.height + yDistance;
       consume(xOk && yOk ? 'xy' : xOk ? 'x' : yOk ? 'y' : 'xy');
       throttledUpdatePosition();
-    }) }, // 右下
+    }) },
     { x: position.x + size.width / 2, y: position.y + size.height, cursor: 'ns-resize', onUpdateAxis: updateWrapper((_xDistance: number, yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
       const newH = clamp(size.height + yDistance, miniDotControllerSize, canvasHeight - position.y);
       setSize({ ...size, height: newH });
       const yOk = newH === size.height + yDistance;
       consume(yOk ? 'xy' : 'x');
       throttledUpdatePosition();
-    }) }, // 下中
+    }) },
     { x: position.x, y: position.y + size.height, cursor: 'nesw-resize', onUpdateAxis: updateWrapper((xDistance: number, yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
       const newX = clamp(position.x + xDistance, 0, position.x + size.width - miniDotControllerSize);
       const actualDx = newX - position.x;
@@ -556,7 +553,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       const yOk = newH === size.height + yDistance;
       consume(xOk && yOk ? 'xy' : xOk ? 'x' : yOk ? 'y' : 'xy');
       throttledUpdatePosition();
-    }) }, // 下左
+    }) },
     { x: position.x, y: position.y + size.height / 2, cursor: 'ew-resize', onUpdateAxis: updateWrapper((xDistance: number, _yDistance: number, consume: (axis?: 'x' | 'y' | 'xy') => void) => {
       const newX = clamp(position.x + xDistance, 0, position.x + size.width - miniDotControllerSize);
       const actualDx = newX - position.x;
@@ -566,7 +563,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       const xOk = newX === position.x + xDistance;
       consume(xOk ? 'xy' : 'y');
       throttledUpdatePosition();
-    }) }, // 左中
+    }) },
   ];
 
   const showSelection = selectionCreated || (isDrawingSelection && size.width > 0 && size.height > 0);

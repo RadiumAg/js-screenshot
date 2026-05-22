@@ -11,7 +11,6 @@ class ScreenShot {
   async shot(): Promise<any> {
     return new Promise((resolve, reject) => {
       try {
-        // 创建并渲染 ScreenShot 组件
         this.container = createAndRenderComponent(
           <ScreenShotComponent
             options={this.screenShotOptions}
@@ -36,7 +35,6 @@ class ScreenShot {
    * 销毁截图实例
    */
   destroy() {
-    // 先清理 store 状态（包括停止 MediaStream tracks）
     useScreenshotStore.getState().resetState();
 
     if (this.container) {

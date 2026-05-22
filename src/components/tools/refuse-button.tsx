@@ -18,13 +18,10 @@ export const RefuseButton: FC<RefuseButtonProps> = ({ onCancel }) => {
   })));
 
   const handleClick = () => {
-    // 清空操作历史
     operateHistory.clear();
 
-    // 移除 canvas
     drawCanvasElement?.remove();
 
-    // 调用取消回调
     onCancel();
   };
 

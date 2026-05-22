@@ -65,7 +65,6 @@ export const ToolBox: FC<ToolBoxProps> = ({
     const handler = (event: MediaQueryListEvent) => {
       setResolvedTheme(event.matches ? 'dark' : 'light');
     };
-    setResolvedTheme(mediaQuery.matches ? 'dark' : 'light');
     mediaQuery.addEventListener('change', handler);
     return () => mediaQuery.removeEventListener('change', handler);
   }, [uiTheme]);

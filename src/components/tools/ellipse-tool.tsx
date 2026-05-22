@@ -51,7 +51,6 @@ export const EllipseTool: FC<EllipseToolProps> = (_props) => {
   const ellipseColor = toolsConfig.ellipse?.color ?? 'red';
   const ellipseWidth = toolsConfig.ellipse?.lineWidth ?? 2;
 
-  // 监听 Shift 键
   const handleKeyDown = useMemoizedFn((e: KeyboardEvent) => {
     if (e.key === 'Shift') {
       shiftPressedRef.current = true;

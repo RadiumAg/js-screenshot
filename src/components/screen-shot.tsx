@@ -344,12 +344,10 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
  * ScreenShot 函数式组件
  */
 export const ScreenShot: FC<ScreenShotProps & { container?: HTMLDivElement | null }> = ({ options, container, onComplete, onError }) => {
-  // 初始化store中的container
   const { setContainer } = useScreenshotStore(useShallow(state => ({
     setContainer: state.setContainer,
   })));
 
-  // 设置容器
   useEffect(() => {
     if (container) {
       setContainer(container);

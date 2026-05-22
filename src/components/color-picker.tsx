@@ -41,7 +41,6 @@ export const ColorPicker: FC = () => {
     setCurrentColor(color);
   });
 
-  // 计算面板位置
   useEffect(() => {
     if (!isVisible) {
       setPos(null);
@@ -62,7 +61,6 @@ export const ColorPicker: FC = () => {
     return () => clearTimeout(timer);
   }, [isVisible, activeTarget]);
 
-  // 点击外部关闭
   useEffect(() => {
     if (!isVisible)
       return;

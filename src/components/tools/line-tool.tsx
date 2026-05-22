@@ -192,7 +192,6 @@ export const LineTool: FC<LineToolProps> = (_props) => {
   useEventListener('mousemove', handleMouseMove, { target: () => drawCanvasElement });
   useEventListener('mouseup', handleMouseUp, { target: () => drawCanvasElement });
 
-  // 监听 Shift 键
   const handleKeyDown = useMemoizedFn((e: KeyboardEvent) => {
     if (e.key === 'Shift') {
       shiftPressedRef.current = true;

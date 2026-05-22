@@ -43,7 +43,6 @@ function renderArrow(ctx: CanvasRenderingContext2D, shape: ArrowShape): void {
     ctx.lineTo(lineEndX, lineEndY);
     ctx.stroke();
 
-    // 画箭头三角形（覆盖住线段末端）
     ctx.beginPath();
     ctx.fillStyle = style.color;
     ctx.moveTo(endX, endY);
@@ -209,7 +208,6 @@ export function renderSelection(ctx: CanvasRenderingContext2D, shape: Shape, the
   const box = getShapeBoundingBox(shape);
   const controlPointRadius = 4;
 
-  // 绘制虚线包围盒
   ctx.save();
   ctx.setLineDash([4, 4]);
   ctx.strokeStyle = themeColor;
@@ -217,7 +215,6 @@ export function renderSelection(ctx: CanvasRenderingContext2D, shape: Shape, the
   ctx.strokeRect(box.x - 4, box.y - 4, box.width + 8, box.height + 8);
   ctx.setLineDash([]);
 
-  // TextShape 不需要控制点
   if (shape.type !== ShapeType.Text) {
     const controlPoints = getControlPoints(shape);
     for (const point of controlPoints) {

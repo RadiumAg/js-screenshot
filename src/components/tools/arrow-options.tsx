@@ -60,7 +60,6 @@ export const ArrowOptions: FC = () => {
     });
   });
 
-  // 计算面板位置
   useEffect(() => {
     if (!isVisible) {
       setPos(null);
