@@ -53,18 +53,20 @@ export const OptionsPanel: FC<OptionsPanelProps> = (props) => {
     const handleClickOutside = (e: MouseEvent) => {
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
         const target = e.target as HTMLElement;
-        const isToolBtn = target.closest('[data-tool-btn]');
-        const isCanvas = target.closest('canvas');
-        const isTextInput = target.tagName === 'TEXTAREA' || target.tagName === 'INPUT' || target.isContentEditable;
-        if (!isToolBtn && !isCanvas && !isTextInput) {
-          useScreenshotStore.getState().setActiveTarget(null);
-        }
+        if (target.closest('[data-tool-btn]'))
+          return;
+        const store = useScreenshotStore.getState();
+        if (store.activeTarget !== activeType)
+          return;
+        if (store.isLock)
+          return;
+        store.setActiveTarget(null);
       }
     };
 
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
-  }, [isVisible]);
+  }, [isVisible, activeType]);
 
   if (!isVisible || !pos)
     return null;
