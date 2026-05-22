@@ -22,12 +22,12 @@ const COLORS = [
 export const ArrowOptions: FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ x: number, y: number } | null>(null);
-  const { activeTarget, toolsConfig, setToolsConfig, uiTheme, themeColor } = useScreenshotStore(useShallow(state => ({
+  const { activeTarget, toolsConfig, uiTheme, themeColor, setToolsConfig } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
     toolsConfig: state.toolsConfig,
-    setToolsConfig: state.setToolsConfig,
     uiTheme: state.uiTheme,
     themeColor: state.themeColor,
+    setToolsConfig: state.setToolsConfig,
   })));
 
   const resolvedTheme = resolveTheme(uiTheme);

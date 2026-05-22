@@ -23,22 +23,22 @@ export interface LineToolProps {
 export const LineTool: FC<LineToolProps> = (_props) => {
   const {
     activeTarget,
-    setActiveTarget,
-    setIsLock,
     drawCanvasElement,
     toolsConfig,
+    operateHistory,
+    setActiveTarget,
+    setIsLock,
     addShape,
     selectShape,
-    operateHistory,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
-    setActiveTarget: state.setActiveTarget,
-    setIsLock: state.setIsLock,
     drawCanvasElement: state.drawCanvasElement,
     toolsConfig: state.toolsConfig,
+    operateHistory: state.operateHistory,
+    setActiveTarget: state.setActiveTarget,
+    setIsLock: state.setIsLock,
     addShape: state.addShape,
     selectShape: state.selectShape,
-    operateHistory: state.operateHistory,
   })));
 
   const [isDrawing, setIsDrawing] = useState(false);
@@ -49,34 +49,6 @@ export const LineTool: FC<LineToolProps> = (_props) => {
 
   const lineColor = toolsConfig.line?.color ?? 'red';
   const lineWidth = toolsConfig.line?.lineWidth ?? 2;
-
-  useEffect(() => {
-    if (drawCanvasElement) {
-      contextRef.current = drawCanvasElement.getContext('2d', {
-        willReadFrequently: true,
-      });
-    }
-  }, [drawCanvasElement]);
-
-  // 监听 Shift 键
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Shift') {
-        shiftPressedRef.current = true;
-      }
-    };
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Shift') {
-        shiftPressedRef.current = false;
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
 
   /**
    * 重绘画布：恢复背景 + 已有图形 + 临时图形
@@ -230,6 +202,34 @@ export const LineTool: FC<LineToolProps> = (_props) => {
       drawCanvasElement.removeEventListener('mouseup', handleMouseUp as EventListener);
     };
   });
+
+  useEffect(() => {
+    if (drawCanvasElement) {
+      contextRef.current = drawCanvasElement.getContext('2d', {
+        willReadFrequently: true,
+      });
+    }
+  }, [drawCanvasElement]);
+
+  // 监听 Shift 键
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') {
+        shiftPressedRef.current = true;
+      }
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') {
+        shiftPressedRef.current = false;
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   return (
     <div

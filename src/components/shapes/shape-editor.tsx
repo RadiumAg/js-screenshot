@@ -23,25 +23,25 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
   const {
     shapes,
     selectedShapeId,
+    drawCanvasElement,
+    activeTarget,
+    operateHistory,
+    themeColor,
     selectShape,
     updateShape,
     removeShape,
-    drawCanvasElement,
-    activeTarget,
     setActiveTarget,
-    operateHistory,
-    themeColor,
   } = useScreenshotStore(useShallow(state => ({
     shapes: state.shapes,
     selectedShapeId: state.selectedShapeId,
+    drawCanvasElement: state.drawCanvasElement,
+    activeTarget: state.activeTarget,
+    operateHistory: state.operateHistory,
+    themeColor: state.themeColor,
     selectShape: state.selectShape,
     updateShape: state.updateShape,
     removeShape: state.removeShape,
-    drawCanvasElement: state.drawCanvasElement,
-    activeTarget: state.activeTarget,
     setActiveTarget: state.setActiveTarget,
-    operateHistory: state.operateHistory,
-    themeColor: state.themeColor,
   })));
 
   const isDraggingRef = useRef(false);

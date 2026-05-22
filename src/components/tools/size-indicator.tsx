@@ -39,7 +39,6 @@ export const SizeIndicator: FC<SizeIndicatorProps> = ({
       }}
     >
       {width}
-      {' '}
       *
       {height}
     </div>

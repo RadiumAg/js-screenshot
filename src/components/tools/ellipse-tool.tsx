@@ -23,22 +23,22 @@ export interface EllipseToolProps {
 export const EllipseTool: FC<EllipseToolProps> = (_props) => {
   const {
     activeTarget,
-    setActiveTarget,
-    setIsLock,
     drawCanvasElement,
     toolsConfig,
+    operateHistory,
+    setActiveTarget,
+    setIsLock,
     addShape,
     selectShape,
-    operateHistory,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
-    setActiveTarget: state.setActiveTarget,
-    setIsLock: state.setIsLock,
     drawCanvasElement: state.drawCanvasElement,
     toolsConfig: state.toolsConfig,
+    operateHistory: state.operateHistory,
+    setActiveTarget: state.setActiveTarget,
+    setIsLock: state.setIsLock,
     addShape: state.addShape,
     selectShape: state.selectShape,
-    operateHistory: state.operateHistory,
   })));
 
   const [isDrawing, setIsDrawing] = useState(false);

@@ -23,20 +23,20 @@ export interface ArrowToolProps {
 export const ArrowTool: FC<ArrowToolProps> = (_props) => {
   const {
     activeTarget,
-    setActiveTarget,
-    setIsLock,
     operateHistory,
     drawCanvasElement,
     toolsConfig,
+    setActiveTarget,
+    setIsLock,
     addShape,
     selectShape,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
-    setActiveTarget: state.setActiveTarget,
-    setIsLock: state.setIsLock,
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
     toolsConfig: state.toolsConfig,
+    setActiveTarget: state.setActiveTarget,
+    setIsLock: state.setIsLock,
     addShape: state.addShape,
     selectShape: state.selectShape,
   })));

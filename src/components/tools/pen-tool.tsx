@@ -25,20 +25,20 @@ export const PenTool: FC<PenToolProps> = ({
 }) => {
   const {
     activeTarget,
-    setActiveTarget,
-    setIsLock,
     operateHistory,
     drawCanvasElement,
     dotControllerSize,
     toolsConfig,
+    setActiveTarget,
+    setIsLock,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
-    setActiveTarget: state.setActiveTarget,
-    setIsLock: state.setIsLock,
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
     dotControllerSize: state.dotControllerSize,
     toolsConfig: state.toolsConfig,
+    setActiveTarget: state.setActiveTarget,
+    setIsLock: state.setIsLock,
   })));
 
   const isMouseDownRef = useRef(false);

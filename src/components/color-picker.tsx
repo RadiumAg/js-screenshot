@@ -24,12 +24,12 @@ const DRAWING_TOOLS = [ACTIVE_TYPE.textBox, ACTIVE_TYPE.rect];
 export const ColorPicker: FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ x: number, y: number } | null>(null);
-  const { currentColor, activeTarget, setCurrentColor, uiTheme, themeColor } = useScreenshotStore(useShallow(state => ({
+  const { currentColor, activeTarget, uiTheme, themeColor, setCurrentColor } = useScreenshotStore(useShallow(state => ({
     currentColor: state.currentColor,
     activeTarget: state.activeTarget,
-    setCurrentColor: state.setCurrentColor,
     uiTheme: state.uiTheme,
     themeColor: state.themeColor,
+    setCurrentColor: state.setCurrentColor,
   })));
 
   const resolvedTheme = resolveTheme(uiTheme);

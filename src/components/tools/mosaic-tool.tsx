@@ -27,16 +27,16 @@ export const MosaicTool: FC<MosaicToolProps> = ({
     activeTarget,
     operateHistory,
     drawCanvasElement,
+    toolsConfig,
     setActiveTarget,
     setIsLock,
-    toolsConfig,
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
+    toolsConfig: state.toolsConfig,
     setActiveTarget: state.setActiveTarget,
     setIsLock: state.setIsLock,
-    toolsConfig: state.toolsConfig,
   })));
 
   const [isDrawing, setIsDrawing] = useState(false);
