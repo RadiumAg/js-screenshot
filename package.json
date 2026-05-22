@@ -1,7 +1,7 @@
 {
   "name": "js-screenshot",
   "version": "1.0.0",
-  "description": "🔥 Drop-in web screenshot SDK — capture, annotate & export in one API call. No framework needed.",
+  "description": "🔥 Drop-in web screenshot SDK — capture, annotate & export in one API call.",
   "author": "",
   "license": "ISC",
   "keywords": [],
