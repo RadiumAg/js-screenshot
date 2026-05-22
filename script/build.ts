@@ -74,6 +74,7 @@ function getBuildConfig(format: ModuleFormat) {
     },
     iife: {
       format: 'iife',
+      name: 'ScreenShot',
       file: resolve(outputDist, './iife/screen-shot.js'),
       globals: { html2canvas: 'html2canvas' },
     },
