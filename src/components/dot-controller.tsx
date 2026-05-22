@@ -1,7 +1,7 @@
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/dot-controller.module.scss';
 import { memo } from 'preact/compat';
-import { useEffect, useRef } from 'preact/hooks';
+import { useRef } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useLongPressAndDrag } from '../hooks/use-long-press-and-drag';
 import { useScreenshotStore } from '../store/screenshot-store';
@@ -30,7 +30,7 @@ const DotController: FC<DotControllerProps> = ({
   const {
     container,
     activeTarget,
-    drawCanvasElement,
+    drawCanvasContext,
     dotControllerSize,
     themeColor,
     operateHistory,
@@ -38,7 +38,7 @@ const DotController: FC<DotControllerProps> = ({
   } = useScreenshotStore(useShallow(state => ({
     container: state.container,
     activeTarget: state.activeTarget,
-    drawCanvasElement: state.drawCanvasElement,
+    drawCanvasContext: state.drawCanvasContext,
     dotControllerSize: state.dotControllerSize,
     themeColor: state.themeColor,
     operateHistory: state.operateHistory,
@@ -47,7 +47,6 @@ const DotController: FC<DotControllerProps> = ({
   ));
   const activeType = ACTIVE_TYPE.dotController + cursor;
   const elRef = useRef<HTMLDivElement>(null);
-  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
   useLongPressAndDrag({ target: elRef, container, onDrag(distance, consume) {
     if (activeTarget !== activeType)
@@ -60,8 +59,8 @@ const DotController: FC<DotControllerProps> = ({
     // 清空 shapes，避免调整裁剪框后旧图形被重新渲染
     useScreenshotStore.getState().restoreShapesSnapshot([]);
     requestAnimationFrame(() => {
-      if (contextRef.current && size.width > 0 && size.height > 0) {
-        const imageData = contextRef.current.getImageData(
+      if (drawCanvasContext && size.width > 0 && size.height > 0) {
+        const imageData = drawCanvasContext.getImageData(
           position.x,
           position.y,
           size.width,
@@ -74,14 +73,6 @@ const DotController: FC<DotControllerProps> = ({
     setActiveTarget(activeType);
   } });
 
-  // 初始化 context
-  useEffect(() => {
-    if (drawCanvasElement) {
-      contextRef.current = drawCanvasElement.getContext('2d', {
-        willReadFrequently: true,
-      });
-    }
-  }, [drawCanvasElement]);
 
   return (
     <div

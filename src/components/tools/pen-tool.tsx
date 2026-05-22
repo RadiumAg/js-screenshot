@@ -27,6 +27,7 @@ export const PenTool: FC<PenToolProps> = ({
     activeTarget,
     operateHistory,
     drawCanvasElement,
+    drawCanvasContext,
     dotControllerSize,
     toolsConfig,
     setActiveTarget,
@@ -35,6 +36,7 @@ export const PenTool: FC<PenToolProps> = ({
     activeTarget: state.activeTarget,
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
+    drawCanvasContext: state.drawCanvasContext,
     dotControllerSize: state.dotControllerSize,
     toolsConfig: state.toolsConfig,
     setActiveTarget: state.setActiveTarget,
@@ -42,7 +44,6 @@ export const PenTool: FC<PenToolProps> = ({
   })));
 
   const isMouseDownRef = useRef(false);
-  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pointsRef = useRef<Array<{ x: number, y: number }>>([]);
 
@@ -60,7 +61,7 @@ export const PenTool: FC<PenToolProps> = ({
 
   const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
-      if (activeTarget !== ACTIVE_TYPE.pen || !contextRef.current)
+      if (activeTarget !== ACTIVE_TYPE.pen || !drawCanvasContext)
         return;
 
       if (
@@ -77,7 +78,7 @@ export const PenTool: FC<PenToolProps> = ({
         const points = pointsRef.current;
         points.push({ x: event.clientX, y: event.clientY });
 
-        contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 2;
+        drawCanvasContext.lineWidth = toolsConfig.pen?.lineWidth ?? 2;
 
         // 增量绘制：每次只画最新一段曲线，使用中点贝塞尔保证平滑连接
         const len = points.length;
@@ -94,14 +95,14 @@ export const PenTool: FC<PenToolProps> = ({
           const prevMidX = (prev.x + ctrl.x) / 2;
           const prevMidY = (prev.y + ctrl.y) / 2;
 
-          contextRef.current.beginPath();
-          contextRef.current.moveTo(prevMidX, prevMidY);
-          contextRef.current.quadraticCurveTo(ctrl.x, ctrl.y, midX, midY);
-          contextRef.current.stroke();
+          drawCanvasContext.beginPath();
+          drawCanvasContext.moveTo(prevMidX, prevMidY);
+          drawCanvasContext.quadraticCurveTo(ctrl.x, ctrl.y, midX, midY);
+          drawCanvasContext.stroke();
         }
         else if (len === 2) {
-          contextRef.current.lineTo(event.clientX, event.clientY);
-          contextRef.current.stroke();
+          drawCanvasContext.lineTo(event.clientX, event.clientY);
+          drawCanvasContext.stroke();
         }
       }
     },
@@ -109,7 +110,7 @@ export const PenTool: FC<PenToolProps> = ({
 
   const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
-      if (activeTarget !== ACTIVE_TYPE.pen || !contextRef.current)
+      if (activeTarget !== ACTIVE_TYPE.pen || !drawCanvasContext)
         return;
 
       if (
@@ -126,12 +127,12 @@ export const PenTool: FC<PenToolProps> = ({
         isMouseDownRef.current = true;
         pointsRef.current = [{ x: event.clientX, y: event.clientY }];
 
-        contextRef.current.strokeStyle = toolsConfig.pen?.color ?? 'red';
-        contextRef.current.lineWidth = toolsConfig.pen?.lineWidth ?? 2;
-        contextRef.current.lineCap = 'round';
-        contextRef.current.lineJoin = 'round';
-        contextRef.current.beginPath();
-        contextRef.current.moveTo(event.clientX, event.clientY);
+        drawCanvasContext.strokeStyle = toolsConfig.pen?.color ?? 'red';
+        drawCanvasContext.lineWidth = toolsConfig.pen?.lineWidth ?? 2;
+        drawCanvasContext.lineCap = 'round';
+        drawCanvasContext.lineJoin = 'round';
+        drawCanvasContext.beginPath();
+        drawCanvasContext.moveTo(event.clientX, event.clientY);
       }
       else {
         if (canvasRef.current) {
@@ -142,10 +143,10 @@ export const PenTool: FC<PenToolProps> = ({
   );
 
   const handleMouseUp = useMemoizedFn(() => {
-    if (isMouseDownRef.current && contextRef.current && drawCanvasElement) {
+    if (isMouseDownRef.current && drawCanvasContext && drawCanvasElement) {
       // pen 直接画像素，完成后更新 operateHistory[0] 基础快照
       // 这样其他工具的 redraw 从基础快照恢复时就包含 pen 的内容
-      const fullImageData = contextRef.current.getImageData(
+      const fullImageData = drawCanvasContext.getImageData(
         0,
         0,
         drawCanvasElement.width,
@@ -184,9 +185,6 @@ export const PenTool: FC<PenToolProps> = ({
   useEffect(() => {
     if (drawCanvasElement) {
       canvasRef.current = drawCanvasElement;
-      contextRef.current = drawCanvasElement.getContext('2d', {
-        willReadFrequently: true,
-      });
     }
   }, [drawCanvasElement]);
 

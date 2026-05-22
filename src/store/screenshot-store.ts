@@ -92,6 +92,7 @@ export interface ScreenshotStore {
 
   // Canvas 元素
   drawCanvasElement: HTMLCanvasElement | null
+  drawCanvasContext: CanvasRenderingContext2D | null
   sourceCanvasElement: HTMLCanvasElement | null
   videoElement: HTMLVideoElement | null
 
@@ -161,6 +162,7 @@ export const useScreenshotStore = create<ScreenshotStore>()(
       // 初始状态
       container: null,
       drawCanvasElement: null,
+      drawCanvasContext: null,
       sourceCanvasElement: null,
       videoElement: null,
       operateHistory: new OperateHistory(),
@@ -184,7 +186,10 @@ export const useScreenshotStore = create<ScreenshotStore>()(
       setContainer: container => set({ container }),
 
       // 设置 Canvas 元素
-      setDrawCanvasElement: drawCanvasElement => set({ drawCanvasElement }),
+      setDrawCanvasElement: (drawCanvasElement) => {
+        const drawCanvasContext = drawCanvasElement?.getContext('2d', { willReadFrequently: true }) ?? null;
+        set({ drawCanvasElement, drawCanvasContext });
+      },
       setSourceCanvasElement: sourceCanvasElement => set({ sourceCanvasElement }),
       setVideoElement: videoElement => set({ videoElement }),
 

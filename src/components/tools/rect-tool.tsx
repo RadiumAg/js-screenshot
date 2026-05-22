@@ -24,6 +24,7 @@ export const RectTool: FC<RectToolProps> = (_props) => {
   const {
     activeTarget,
     drawCanvasElement,
+    drawCanvasContext,
     toolsConfig,
     operateHistory,
     setActiveTarget,
@@ -33,6 +34,7 @@ export const RectTool: FC<RectToolProps> = (_props) => {
   } = useScreenshotStore(useShallow(state => ({
     activeTarget: state.activeTarget,
     drawCanvasElement: state.drawCanvasElement,
+    drawCanvasContext: state.drawCanvasContext,
     toolsConfig: state.toolsConfig,
     operateHistory: state.operateHistory,
     setActiveTarget: state.setActiveTarget,
@@ -43,20 +45,11 @@ export const RectTool: FC<RectToolProps> = (_props) => {
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
-  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const shiftPressedRef = useRef(false);
   const tempShapeRef = useRef<RectShape | null>(null);
 
   const rectColor = toolsConfig.rect?.color ?? 'red';
   const rectWidth = toolsConfig.rect?.lineWidth ?? 2;
-
-  useEffect(() => {
-    if (drawCanvasElement) {
-      contextRef.current = drawCanvasElement.getContext('2d', {
-        willReadFrequently: true,
-      });
-    }
-  }, [drawCanvasElement]);
 
   // 监听 Shift 键
   useEffect(() => {
@@ -82,25 +75,25 @@ export const RectTool: FC<RectToolProps> = (_props) => {
    * 重绘画布：恢复背景 + 已有图形 + 临时图形
    */
   const redraw = useMemoizedFn((tempShape?: RectShape | null) => {
-    if (!contextRef.current)
+    if (!drawCanvasContext)
       return;
 
     // 恢复完整画面（含遮罩），operateHistory[0] 是整个 canvas 的快照
     if (operateHistory.length > 0) {
       const initialEntry = operateHistory[0];
-      contextRef.current.putImageData(initialEntry.imageData, initialEntry.position.x, initialEntry.position.y);
+      drawCanvasContext.putImageData(initialEntry.imageData, initialEntry.position.x, initialEntry.position.y);
     }
 
     // 渲染已确认的图形（从 store 获取最新 shapes，避免闭包过时）
     const currentShapes = useScreenshotStore.getState().shapes;
-    renderAllShapes(contextRef.current, currentShapes);
+    renderAllShapes(drawCanvasContext, currentShapes);
 
     // 渲染临时图形（正在绘制中的）
     if (tempShape) {
-      contextRef.current.beginPath();
-      contextRef.current.strokeStyle = tempShape.style.color;
-      contextRef.current.lineWidth = tempShape.style.lineWidth;
-      contextRef.current.strokeRect(tempShape.x, tempShape.y, tempShape.width, tempShape.height);
+      drawCanvasContext.beginPath();
+      drawCanvasContext.strokeStyle = tempShape.style.color;
+      drawCanvasContext.lineWidth = tempShape.style.lineWidth;
+      drawCanvasContext.strokeRect(tempShape.x, tempShape.y, tempShape.width, tempShape.height);
     }
   });
 
@@ -112,7 +105,7 @@ export const RectTool: FC<RectToolProps> = (_props) => {
 
   const handleMouseDown = useMemoizedFn(
     (event: MouseEvent) => {
-      if (!contextRef.current)
+      if (!drawCanvasContext)
         return;
       if (activeTarget !== ACTIVE_TYPE.rect)
         return;
@@ -124,7 +117,7 @@ export const RectTool: FC<RectToolProps> = (_props) => {
 
   const handleMouseMove = useMemoizedFn(
     (event: MouseEvent) => {
-      if (!contextRef.current)
+      if (!drawCanvasContext)
         return;
       if (!isDrawing || activeTarget !== ACTIVE_TYPE.rect)
         return;
@@ -169,9 +162,9 @@ export const RectTool: FC<RectToolProps> = (_props) => {
 
       // 重绘最终画面并保存历史（包含 shapes 快照）
       redraw(null);
-      if (contextRef.current && operateHistory.length > 0) {
+      if (drawCanvasContext && operateHistory.length > 0) {
         const initialEntry = operateHistory[0];
-        const imageData = contextRef.current.getImageData(
+        const imageData = drawCanvasContext.getImageData(
           initialEntry.position.x,
           initialEntry.position.y,
           initialEntry.imageData.width,

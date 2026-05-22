@@ -2,7 +2,7 @@ import type { FC } from 'preact/compat';
 import mosaic from '@screenshots/assets/images/mosaic.svg';
 import Style from '@screenshots/theme/mosaic.module.scss';
 import { useMemoizedFn, useMount } from 'ahooks';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 import { ACTIVE_TYPE } from '../utils/share';
@@ -27,6 +27,7 @@ export const MosaicTool: FC<MosaicToolProps> = ({
     activeTarget,
     operateHistory,
     drawCanvasElement,
+    drawCanvasContext,
     toolsConfig,
     setActiveTarget,
     setIsLock,
@@ -34,22 +35,14 @@ export const MosaicTool: FC<MosaicToolProps> = ({
     activeTarget: state.activeTarget,
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
+    drawCanvasContext: state.drawCanvasContext,
     toolsConfig: state.toolsConfig,
     setActiveTarget: state.setActiveTarget,
     setIsLock: state.setIsLock,
   })));
 
   const [isDrawing, setIsDrawing] = useState(false);
-  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const mosaicSize = toolsConfig.mosaic?.blockSize ?? 10;
-
-  useEffect(() => {
-    if (drawCanvasElement) {
-      contextRef.current = drawCanvasElement.getContext('2d', {
-        willReadFrequently: true,
-      });
-    }
-  }, [drawCanvasElement]);
 
   const isCurrentArea = useMemoizedFn(
     (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
@@ -100,19 +93,19 @@ export const MosaicTool: FC<MosaicToolProps> = ({
       height: number,
       color: { r: number, g: number, b: number, a: number },
     ) => {
-      if (!contextRef.current)
+      if (!drawCanvasContext)
         return;
 
-      contextRef.current.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${
+      drawCanvasContext.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${
         color.a / 255
       })`;
-      contextRef.current.fillRect(x, y, width, height);
+      drawCanvasContext.fillRect(x, y, width, height);
     },
   );
 
   const applyMosaic = useMemoizedFn(
     (x: number, y: number) => {
-      if (!contextRef.current)
+      if (!drawCanvasContext)
         return;
 
       const brushSize = toolsConfig.mosaic?.brushSize ?? 20;
@@ -122,7 +115,7 @@ export const MosaicTool: FC<MosaicToolProps> = ({
       x = Math.min(x, cutoutBoxX + cutoutBoxWidth - brushSize);
       y = Math.min(y, cutoutBoxY + cutoutBoxHeight - brushSize);
 
-      const imageData = contextRef.current.getImageData(x, y, brushSize, brushSize);
+      const imageData = drawCanvasContext.getImageData(x, y, brushSize, brushSize);
       const pixels = imageData.data;
 
       const blocksX = Math.ceil(brushSize / mosaicSize);
@@ -187,12 +180,12 @@ export const MosaicTool: FC<MosaicToolProps> = ({
   );
 
   const handleMouseUp = useMemoizedFn(() => {
-    if (!isDrawing || activeTarget !== ACTIVE_TYPE.mosaic || !contextRef.current)
+    if (!isDrawing || activeTarget !== ACTIVE_TYPE.mosaic || !drawCanvasContext)
       return;
 
     setIsDrawing(false);
 
-    const imageData = contextRef.current.getImageData(
+    const imageData = drawCanvasContext.getImageData(
       cutoutBoxX,
       cutoutBoxY,
       cutoutBoxWidth,

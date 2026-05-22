@@ -2,7 +2,7 @@ import type { FC } from 'preact/compat';
 import textBox from '@screenshots/assets/images/text-box.svg';
 import Style from '@screenshots/theme/text-box.module.scss';
 import { useMemoizedFn, useMount } from 'ahooks';
-import { useEffect, useRef } from 'preact/hooks';
+import { useRef } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
 import { ShapeType } from '../shapes/types';
@@ -30,6 +30,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     themeColor,
     operateHistory,
     drawCanvasElement,
+    drawCanvasContext,
     dotControllerSize,
     toolsConfig,
     setActiveTarget,
@@ -42,6 +43,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     isLock: state.isLock,
     operateHistory: state.operateHistory,
     drawCanvasElement: state.drawCanvasElement,
+    drawCanvasContext: state.drawCanvasContext,
     dotControllerSize: state.dotControllerSize,
     toolsConfig: state.toolsConfig,
     setActiveTarget: state.setActiveTarget,
@@ -50,7 +52,6 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
     getShapesSnapshot: state.getShapesSnapshot,
   })));
 
-  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const preTextareaRef = useRef<HTMLDivElement | null>(null);
 
   const fontSize = toolsConfig.textBox?.fontSize ?? 20;
@@ -69,14 +70,6 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
   /* 最小尺寸：保证空内容时文本框仍可见、可点击 */
   const minWidth = 40;
   const minHeight = lineHeight + shifting.paddingTopBottom * 2;
-
-  useEffect(() => {
-    if (drawCanvasElement) {
-      contextRef.current = drawCanvasElement.getContext('2d', {
-        willReadFrequently: true,
-      });
-    }
-  }, [drawCanvasElement]);
 
   const isCurrentArea = useMemoizedFn(
     (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
@@ -213,7 +206,7 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
         return;
       if (activeTarget !== ACTIVE_TYPE.textBox)
         return;
-      if (!contextRef.current)
+      if (!drawCanvasContext)
         return;
 
       if (
@@ -257,8 +250,8 @@ export const TextBoxTool: FC<TextBoxToolProps> = ({
           addShape(textShape);
 
           // 保存历史记录快照
-          if (contextRef.current) {
-            const imageData = contextRef.current.getImageData(
+          if (drawCanvasContext) {
+            const imageData = drawCanvasContext.getImageData(
               cutoutBoxX,
               cutoutBoxY,
               cutoutBoxWidth,

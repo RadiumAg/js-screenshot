@@ -26,6 +26,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
   const {
     container,
     drawCanvasElement,
+    drawCanvasContext,
     sourceCanvasElement,
     operateHistory,
     activeTarget,
@@ -39,6 +40,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
   } = useScreenshotStore(useShallow(state => ({
     container: state.container,
     drawCanvasElement: state.drawCanvasElement,
+    drawCanvasContext: state.drawCanvasContext,
     sourceCanvasElement: state.sourceCanvasElement,
     operateHistory: state.operateHistory,
     activeTarget: state.activeTarget,
@@ -56,7 +58,6 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
   const oldPositionRef = useRef({ x: 0, y: 0 });
   const oldClientRef = useRef({ x: 0, y: 0 });
-  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const sourceContextRef = useRef<CanvasRenderingContext2D | null>(null);
   const [selectionCreated, setSelectionCreated] = useState(false);
   const [isDrawingSelection, setIsDrawingSelection] = useState(false);
@@ -67,7 +68,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       if (!sourceContextRef.current) {
         return;
       }
-      if (!contextRef.current) {
+      if (!drawCanvasContext) {
         return;
       }
       fn(...args);
@@ -78,14 +79,14 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
    * 设置半透明遮罩
    */
   const setMask = useMemoizedFn(() => {
-    if (!contextRef.current)
+    if (!drawCanvasContext)
       return;
 
     if (!drawCanvasElement)
       return;
 
-    contextRef.current.fillStyle = 'rgba(0,0,0,0.5)';
-    contextRef.current.fillRect(
+    drawCanvasContext.fillStyle = 'rgba(0,0,0,0.5)';
+    drawCanvasContext.fillRect(
       0,
       0,
       drawCanvasElement.width,
@@ -100,14 +101,14 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     if (!sourceContextRef.current)
       return;
 
-    if (!contextRef.current)
+    if (!drawCanvasContext)
       return;
 
     if (!drawCanvasElement)
       return;
 
     // 清除所有内容
-    contextRef.current.clearRect(
+    drawCanvasContext.clearRect(
       0,
       0,
       drawCanvasElement.width,
@@ -122,7 +123,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       drawCanvasElement.height,
     );
 
-    contextRef.current.putImageData(documentArea, 0, 0);
+    drawCanvasContext.putImageData(documentArea, 0, 0);
     setMask();
   });
 
@@ -133,7 +134,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     if (!sourceContextRef.current)
       return;
 
-    if (!contextRef.current) {
+    if (!drawCanvasContext) {
       return;
     }
 
@@ -149,7 +150,7 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       size.width || 1,
       size.height || 1,
     );
-    contextRef.current.putImageData(imgData, position.x, position.y);
+    drawCanvasContext.putImageData(imgData, position.x, position.y);
   });
 
   // 使用节流的更新函数
@@ -236,11 +237,11 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
    * 保存截图
    */
   const handleSave = useMemoizedFn(() => {
-    if (!drawCanvasElement || !contextRef.current || !selectionCreated)
+    if (!drawCanvasElement || !drawCanvasContext || !selectionCreated)
       return;
 
     const { exportFormat, exportQuality, exportFilename } = useScreenshotStore.getState();
-    const screenShotData = contextRef.current.getImageData(
+    const screenShotData = drawCanvasContext.getImageData(
       position.x,
       position.y,
       size.width,
@@ -324,8 +325,8 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
       // 撤销: Ctrl/Cmd+Z (不按 Shift)
       if (isModifier && event.key === 'z' && !event.shiftKey) {
         const preEntry = operateHistory.prev();
-        if (preEntry && contextRef.current) {
-          contextRef.current.putImageData(preEntry.imageData, preEntry.position.x, preEntry.position.y);
+        if (preEntry && drawCanvasContext) {
+          drawCanvasContext.putImageData(preEntry.imageData, preEntry.position.x, preEntry.position.y);
           if (preEntry.shapes) {
             restoreShapesSnapshot(preEntry.shapes);
           }
@@ -340,8 +341,8 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
         || (isModifier && event.key === 'y')
       ) {
         const nextEntry = operateHistory.next();
-        if (nextEntry && contextRef.current) {
-          contextRef.current.putImageData(nextEntry.imageData, nextEntry.position.x, nextEntry.position.y);
+        if (nextEntry && drawCanvasContext) {
+          drawCanvasContext.putImageData(nextEntry.imageData, nextEntry.position.x, nextEntry.position.y);
           if (nextEntry.shapes) {
             restoreShapesSnapshot(nextEntry.shapes);
           }
@@ -406,8 +407,8 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
 
   // 首次锁定截图框时，保存整个 canvas 的完整快照（含遮罩），供各工具 redraw 恢复完整画面
   useEffect(() => {
-    if (isLock && operateHistory.length === 0 && contextRef.current && drawCanvasElement) {
-      const imageData = contextRef.current.getImageData(
+    if (isLock && operateHistory.length === 0 && drawCanvasContext && drawCanvasElement) {
+      const imageData = drawCanvasContext.getImageData(
         0,
         0,
         drawCanvasElement.width,
@@ -469,13 +470,8 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 只在组件卸载时执行清理
   }, []);
 
-  // 初始化 context
+  // 初始化 sourceContext
   useMount(() => {
-    if (drawCanvasElement) {
-      contextRef.current = drawCanvasElement.getContext('2d', {
-        willReadFrequently: true,
-      });
-    }
     if (sourceCanvasElement) {
       sourceContextRef.current = sourceCanvasElement.getContext('2d', {
         willReadFrequently: true,
