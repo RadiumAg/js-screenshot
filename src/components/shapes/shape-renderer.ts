@@ -32,20 +32,18 @@ function renderArrow(ctx: CanvasRenderingContext2D, shape: ArrowShape): void {
     const angle = Math.atan2(endY - startY, endX - startX);
     const headLength = arrowSize * style.lineWidth / 2;
 
-    // 箭头三角形底边中点（线段终止于此，与三角形无缝衔接）
-    const baseX = endX - headLength * Math.cos(angle);
-    const baseY = endY - headLength * Math.sin(angle);
+    const lineEndX = endX - (headLength * 0.5) * Math.cos(angle);
+    const lineEndY = endY - (headLength * 0.5) * Math.sin(angle);
 
-    // 画线段：从起点到三角形底边中点
     ctx.beginPath();
     ctx.strokeStyle = style.color;
     ctx.lineWidth = style.lineWidth;
-    ctx.lineCap = 'round';
+    ctx.lineCap = 'butt';
     ctx.moveTo(startX, startY);
-    ctx.lineTo(baseX, baseY);
+    ctx.lineTo(lineEndX, lineEndY);
     ctx.stroke();
 
-    // 画箭头三角形
+    // 画箭头三角形（覆盖住线段末端）
     ctx.beginPath();
     ctx.fillStyle = style.color;
     ctx.moveTo(endX, endY);
