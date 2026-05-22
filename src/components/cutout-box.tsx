@@ -2,7 +2,7 @@ import type { AnyFun } from '@screenshots/utils';
 import type { FC } from 'preact/compat';
 import Style from '@screenshots/theme/cutout-box.module.scss';
 import { animateThrottleFn } from '@screenshots/utils';
-import { useMemoizedFn, useMount } from 'ahooks';
+import { useEventListener, useMemoizedFn, useMount } from 'ahooks';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../store/screenshot-store';
@@ -434,27 +434,13 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     }
   });
 
-  // 设置事件监听
-  useMount(() => {
-    drawCanvasElement?.addEventListener('mouseup', handleMouseUp);
-    container?.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('mouseup', handleDocumentMouseUp);
-    drawCanvasElement?.addEventListener('mousedown', handleCanvasDrawDown);
-    drawCanvasElement?.addEventListener('mousemove', handleCanvasDrawMove);
-    drawCanvasElement?.addEventListener('mouseup', handleCanvasDrawUp);
-
-    return () => {
-      drawCanvasElement?.removeEventListener('mouseup', handleMouseUp);
-      container?.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('mouseup', handleDocumentMouseUp);
-      drawCanvasElement?.removeEventListener('mousedown', handleCanvasDrawDown);
-      drawCanvasElement?.removeEventListener('mousemove', handleCanvasDrawMove);
-      drawCanvasElement?.removeEventListener('mouseup', handleCanvasDrawUp);
-      document.body.style.cursor = '';
-    };
-  });
+  useEventListener('mouseup', handleMouseUp, { target: () => drawCanvasElement });
+  useEventListener('mousemove', handleMouseMove, { target: () => container });
+  useEventListener('keydown', handleKeyDown, { target: () => document });
+  useEventListener('mouseup', handleDocumentMouseUp, { target: () => document });
+  useEventListener('mousedown', handleCanvasDrawDown, { target: () => drawCanvasElement });
+  useEventListener('mousemove', handleCanvasDrawMove, { target: () => drawCanvasElement });
+  useEventListener('mouseup', handleCanvasDrawUp, { target: () => drawCanvasElement });
 
   // 清理函数 - 只在组件卸载时执行
   useEffect(() => {
