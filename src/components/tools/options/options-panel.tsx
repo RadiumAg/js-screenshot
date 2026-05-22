@@ -1,11 +1,11 @@
 import type { ComponentChildren } from 'preact';
 import type { FC } from 'preact/compat';
+import { useScreenshotStore } from '@screenshots/store/screenshot-store';
 import Style from '@screenshots/theme/arrow-options.module.scss';
 import { getPanelStyle, resolveTheme } from '@screenshots/theme/tokens';
 import { createPortal } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
-import { useScreenshotStore } from '../../../store/screenshot-store';
 
 export interface OptionsPanelProps {
   activeType: string
