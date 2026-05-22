@@ -51,6 +51,11 @@
   &.active {
     background-color: rgba(var(--ss-accent-rgb), 0.18);
   }
+
+  &.filledActive {
+    background-color: var(--ss-btn-active-bg);
+    box-shadow: 0 0 6px rgba(var(--ss-accent-rgb), 0.45);
+  }
 }
 
 .lineIcon {

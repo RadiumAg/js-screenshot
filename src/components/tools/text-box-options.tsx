@@ -46,13 +46,13 @@ export const TextBoxOptions: FC = () => {
 
       <div class={Style.section}>
         <div
-          class={`${Style.optionBtn} ${filled ? Style.active : ''}`}
+          class={`${Style.optionBtn} ${filled ? Style.filledActive : ''}`}
           onClick={handleToggleFilled}
           title="填充背景"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <rect x="1" y="1" width="14" height="14" rx="2" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5" />
-            <text x="8" y="12" textAnchor="middle" fill={filled ? 'var(--ss-surface, #fff)' : 'currentColor'} fontSize="9" fontWeight="bold">A</text>
+            <rect x="1.5" y="1.5" width="13" height="13" rx="2" fill={filled ? 'rgba(var(--ss-accent-rgb), 0.2)' : 'none'} stroke={filled ? 'var(--ss-accent)' : 'currentColor'} strokeWidth="1.5" />
+            <text x="8" y="12" textAnchor="middle" fill={filled ? 'var(--ss-accent)' : 'currentColor'} fontSize="9" fontWeight="bold">A</text>
           </svg>
         </div>
       </div>
