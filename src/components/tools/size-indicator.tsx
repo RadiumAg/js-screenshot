@@ -1,6 +1,9 @@
 import type { FC } from 'preact/compat';
+import { useScreenshotStore } from '@screenshots/store/screenshot-store';
 import Style from '@screenshots/theme/size-indicator.module.scss';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { getPanelStyle, resolveTheme } from '@screenshots/theme/tokens';
+import { useMemo } from 'preact/hooks';
+import { useShallow } from 'zustand/react/shallow';
 
 export interface SizeIndicatorProps {
   width: number
@@ -9,38 +12,39 @@ export interface SizeIndicatorProps {
   dotControllerY: number
 }
 
-/**
- * 尺寸指示器组件
- */
-export const SizeIndicator: FC<SizeIndicatorProps> = ({
-  width,
-  height,
-  dotControllerX,
-  dotControllerY,
-}) => {
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-  const elRef = useRef<HTMLDivElement>(null);
+const FLIP_THRESHOLD = 32;
 
-  useEffect(() => {
-    setPosition({
-      top: dotControllerY,
-      left: dotControllerX,
-    });
-  }, [dotControllerX, dotControllerY]);
+export const SizeIndicator: FC<SizeIndicatorProps> = (props) => {
+  const { width, height, dotControllerX, dotControllerY } = props;
+
+  const { uiTheme, themeColor } = useScreenshotStore(useShallow(state => ({
+    uiTheme: state.uiTheme,
+    themeColor: state.themeColor,
+  })));
+
+  const resolvedTheme = useMemo(() => resolveTheme(uiTheme), [uiTheme]);
+  const panelTokens = useMemo(
+    () => getPanelStyle(resolvedTheme, themeColor),
+    [resolvedTheme, themeColor],
+  );
+
+  // 顶部空间不足时翻到选区内侧底部
+  const placement = dotControllerY < FLIP_THRESHOLD ? 'inside' : 'outside';
 
   return (
     <div
-      ref={elRef}
-      class={Style.sizeIndicator}
+      class={`${Style.sizeIndicator} ${Style[placement]}`}
       style={{
-        position: 'fixed',
-        top: `${position.top}px`,
-        left: `${position.left}px`,
-      }}
+        ...panelTokens,
+        top: `${dotControllerY}px`,
+        left: `${dotControllerX}px`,
+      } as any}
+      role="status"
+      aria-label={`尺寸 ${width} × ${height}`}
     >
-      {width}
-      *
-      {height}
+      <span>{width}</span>
+      <span class={Style.separator}>×</span>
+      <span>{height}</span>
     </div>
   );
 };

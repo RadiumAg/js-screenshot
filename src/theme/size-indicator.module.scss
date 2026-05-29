@@ -1,11 +1,37 @@
-@use './common.scss' as common;
+.sizeIndicator {
+  position: fixed;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.2px;
+  color: var(--ss-text-primary, rgba(255, 255, 255, 0.92));
+  background: var(--ss-surface, rgba(15, 23, 42, 0.85));
+  border: 1px solid var(--ss-border-subtle, rgba(255, 255, 255, 0.12));
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: transform 120ms ease-out;
+}
 
-.size-indicator {
-    color: #000;
-    position: fixed;
-    padding: 0 8px;
-    border-radius: 4px;
-    user-select: none;
-    background-color: #fff;
-    transform: translateY(calc(-100% - 10px));
+.separator {
+  opacity: 0.5;
+  font-weight: 400;
+}
+
+.outside {
+  transform: translateY(calc(-100% - 6px));
+}
+
+.inside {
+  transform: translateY(6px);
 }
