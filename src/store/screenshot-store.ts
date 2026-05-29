@@ -205,6 +205,7 @@ export const useScreenshotStore = create<ScreenshotStore>()(
             rect: { ...toolsConfig.rect, color },
             ellipse: { ...toolsConfig.ellipse, color },
             line: { ...toolsConfig.line, color },
+            textExtract: { ...toolsConfig.textExtract, color },
           },
         });
       },

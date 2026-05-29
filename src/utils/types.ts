@@ -39,6 +39,14 @@ interface LineToolConfig extends ToolConfig {
   lineWidth?: number
 }
 
+interface TextExtractToolConfig extends ToolConfig {
+  apiKey?: string
+  baseUrl?: string
+  model?: string
+  language?: string
+  customFetch?: typeof globalThis.fetch
+}
+
 type ExportFormat = 'image/png' | 'image/jpeg' | 'image/webp';
 
 interface ToolsConfig {
@@ -49,6 +57,7 @@ interface ToolsConfig {
   rect?: RectToolConfig
   ellipse?: EllipseToolConfig
   line?: LineToolConfig
+  textExtract?: TextExtractToolConfig
 }
 
 type ScreenShotTheme = 'dark' | 'light' | 'auto';
@@ -64,4 +73,4 @@ interface ScreenShotOptions {
   filename?: string
 }
 
-export type { AnyFun, EllipseToolConfig, ExportFormat, LineToolConfig, RectToolConfig, ScreenShotOptions, ScreenShotTheme, ToolsConfig };
+export type { AnyFun, EllipseToolConfig, ExportFormat, LineToolConfig, RectToolConfig, ScreenShotOptions, ScreenShotTheme, TextExtractToolConfig, ToolsConfig };

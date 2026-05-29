@@ -8,7 +8,7 @@
     "editor.formatOnSave": true
   },
   "[vue]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.defaultFormatter": "Vue.volar",
     "editor.formatOnSave": true
   }
 }

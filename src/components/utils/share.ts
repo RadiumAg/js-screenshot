@@ -8,6 +8,7 @@ enum ACTIVE_TYPE {
   rect = 'rect',
   ellipse = 'ellipse',
   line = 'line',
+  textExtract = 'textExtract',
 };
 
 export { ACTIVE_TYPE };
