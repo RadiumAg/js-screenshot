@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
-import '../../dist/esm/screen-shot.css';
 import ScreenShot from '../../dist/esm/screen-shot.js';
+import '../../dist/esm/screen-shot.css';
 
 type ExportFormat = 'image/png' | 'image/jpeg' | 'image/webp';
 type CaptureMode = 'snapdom' | 'media' | 'htmlInCanvas';
@@ -15,19 +15,19 @@ const config = reactive({
   theme: 'auto' as UITheme,
 });
 
-const formats: { value: ExportFormat; label: string }[] = [
+const formats: { value: ExportFormat, label: string }[] = [
   { value: 'image/png', label: 'PNG' },
   { value: 'image/jpeg', label: 'JPEG' },
   { value: 'image/webp', label: 'WebP' },
 ];
 
-const modes: { value: CaptureMode; label: string; desc: string }[] = [
+const modes: { value: CaptureMode, label: string, desc: string }[] = [
   { value: 'snapdom', label: 'SnapDOM', desc: '默认，DOM 截图无需授权' },
   { value: 'media', label: 'WebRTC', desc: '屏幕录制，需要用户授权' },
   { value: 'htmlInCanvas', label: 'HTML-in-Canvas', desc: 'Chrome 148+ drawElementImage' },
 ];
 
-const themes: { value: UITheme; label: string; desc: string }[] = [
+const themes: { value: UITheme, label: string, desc: string }[] = [
   { value: 'auto', label: 'Auto', desc: '跟随系统 prefers-color-scheme' },
   { value: 'dark', label: 'Dark', desc: '深色工具栏' },
   { value: 'light', label: 'Light', desc: '浅色工具栏' },
@@ -40,13 +40,12 @@ const handleStartShot = () => {
     exportFormat: config.format,
     quality: config.quality,
     filename: config.filename,
-    tools:{
-      textExtract:{
-        model:'mimo-v2.5',
-        baseUrl: 'https://token-plan-cn.xiaomimimo.com/v1',
-        apiKey: import.meta.env.VITE_API_KEY
-      }
-    }
+    tools: {
+      textExtract: {
+        baseUrl: 'https://radiumg.top/api/ai',
+        apiKey: 'key_1778076980169_ogd571qb6yr',
+      },
+    },
   });
   screenShot.shot();
 };
@@ -57,8 +56,10 @@ const handleStartShot = () => {
     <header class="demo-header">
       <div class="header-content">
         <div class="logo-badge">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round"
+          >
             <rect x="3" y="3" width="18" height="18" rx="2" />
             <circle cx="8.5" cy="8.5" r="1.5" />
             <polyline points="21 15 16 10 5 21" />
@@ -66,11 +67,14 @@ const handleStartShot = () => {
         </div>
         <h1>JS ScreenShot</h1>
         <p>轻量级网页截图工具 · 标注 · 导出</p>
-        <a href="https://github.com/RadiumAg/js-screenshot" target="_blank" rel="noopener noreferrer"
-          class="github-link" title="View on GitHub">
+        <a
+          href="https://github.com/RadiumAg/js-screenshot" target="_blank" rel="noopener noreferrer"
+          class="github-link" title="View on GitHub"
+        >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path
-              d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+              d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+            />
           </svg>
           <span class="github-text">GitHub</span>
           <span class="github-arrow">→</span>
@@ -81,40 +85,50 @@ const handleStartShot = () => {
     <main class="demo-main">
       <!-- 截图模式 -->
       <section class="config-section">
-        <h3 class="section-title">截图模式</h3>
+        <h3 class="section-title">
+          截图模式
+        </h3>
         <div class="segment-control">
-          <label v-for="m in modes" :key="m.value" class="segment-item" :class="{ active: config.mode === m.value }"
-            :title="m.desc">
+          <label
+            v-for="m in modes" :key="m.value" class="segment-item" :class="{ active: config.mode === m.value }"
+            :title="m.desc"
+          >
             <input v-model="config.mode" type="radio" :value="m.value" class="sr-only">
             <span>{{ m.label }}</span>
           </label>
         </div>
-        <p class="hint-text" v-if="config.mode === 'media'">
+        <p v-if="config.mode === 'media'" class="hint-text">
           需要用户授权屏幕共享权限
         </p>
-        <p class="hint-text" v-if="config.mode === 'htmlInCanvas'">
+        <p v-if="config.mode === 'htmlInCanvas'" class="hint-text">
           需要 Chrome 148+ 并启用 chrome://flags/#canvas-draw-element
         </p>
       </section>
 
       <!-- 工具栏主题 -->
       <section class="config-section">
-        <h3 class="section-title">工具栏主题</h3>
+        <h3 class="section-title">
+          工具栏主题
+        </h3>
         <div class="segment-control">
-          <label v-for="t in themes" :key="t.value" class="segment-item" :class="{ active: config.theme === t.value }"
-            :title="t.desc">
+          <label
+            v-for="t in themes" :key="t.value" class="segment-item" :class="{ active: config.theme === t.value }"
+            :title="t.desc"
+          >
             <input v-model="config.theme" type="radio" :value="t.value" class="sr-only">
             <span>{{ t.label }}</span>
           </label>
         </div>
-        <p class="hint-text" v-if="config.theme === 'auto'">
+        <p v-if="config.theme === 'auto'" class="hint-text">
           跟随系统 prefers-color-scheme 自动切换
         </p>
       </section>
 
       <!-- 导出设置 -->
       <section class="config-section">
-        <h3 class="section-title">导出设置</h3>
+        <h3 class="section-title">
+          导出设置
+        </h3>
 
         <div class="field-group">
           <label class="field-label">格式</label>
@@ -142,8 +156,10 @@ const handleStartShot = () => {
 
       <!-- CTA -->
       <button class="shot-button" @click="handleStartShot">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+        >
           <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
           <circle cx="12" cy="13" r="4" />
         </svg>

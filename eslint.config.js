@@ -3,6 +3,7 @@ import antfu from '@antfu/eslint-config';
 
 export default antfu({
   react: true,
+  vue: true,
   rules: {
     'style/semi': ['error', 'always'],
     'no-useless-return': 'off',
