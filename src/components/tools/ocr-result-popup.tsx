@@ -2,8 +2,9 @@ import type { FC } from 'preact/compat';
 import { useScreenshotStore } from '@screenshots/store/screenshot-store';
 import Style from '@screenshots/theme/ocr-result-popup.module.scss';
 import { getPanelStyle, resolveTheme } from '@screenshots/theme/tokens';
-import { useMemoizedFn } from 'ahooks';
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useEventListener, useMemoizedFn, useSize } from 'ahooks';
+import { createPortal } from 'preact/compat';
+import { useMemo, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 
 export interface OcrResultPopupProps {
@@ -16,8 +17,10 @@ export interface OcrResultPopupProps {
 }
 
 const POPUP_WIDTH = 320;
+const POPUP_MAX_HEIGHT = 380;
 const TOOL_BOX_OFFSET = 10;
 const POPUP_GAP = 8;
+const VIEWPORT_PADDING = 8;
 
 export const OcrResultPopup: FC<OcrResultPopupProps> = (props) => {
   const { text, cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, onClose } = props;
@@ -28,6 +31,7 @@ export const OcrResultPopup: FC<OcrResultPopupProps> = (props) => {
   })));
 
   const [copied, setCopied] = useState(false);
+  const viewport = useSize(typeof document !== 'undefined' ? document.documentElement : undefined);
 
   const resolvedTheme = useMemo(() => resolveTheme(uiTheme), [uiTheme]);
   const panelTokens = useMemo(
@@ -35,20 +39,29 @@ export const OcrResultPopup: FC<OcrResultPopupProps> = (props) => {
     [resolvedTheme, themeColor],
   );
 
-  // 横向紧贴 tool-box 右侧，顶部与 tool-box 对齐
+  // 横向：紧贴 tool-box 右侧，溢出则改放左侧，最后兜底钳制在视口内
+  // 纵向：与 tool-box 顶部对齐，溢出底部则贴底显示，最后兜底钳制在视口内
   const position = useMemo(() => {
-    const toolBoxTop = cutoutBoxY + cutoutBoxHeight + TOOL_BOX_OFFSET;
+    const vw = viewport?.width ?? window.innerWidth;
+    const vh = viewport?.height ?? window.innerHeight;
+
     const toolBoxRight = cutoutBoxX + cutoutBoxWidth;
+    const toolBoxTop = cutoutBoxY + cutoutBoxHeight + TOOL_BOX_OFFSET;
 
     let left = toolBoxRight + POPUP_GAP;
-    // 右侧放不下则改放 tool-box 左侧
-    if (left + POPUP_WIDTH > window.innerWidth - 8) {
+    if (left + POPUP_WIDTH > vw - VIEWPORT_PADDING) {
       left = cutoutBoxX - POPUP_GAP - POPUP_WIDTH;
     }
-    left = Math.max(8, Math.min(left, window.innerWidth - POPUP_WIDTH - 8));
+    left = Math.max(VIEWPORT_PADDING, Math.min(left, vw - POPUP_WIDTH - VIEWPORT_PADDING));
 
-    return { left, top: toolBoxTop };
-  }, [cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight]);
+    let top = toolBoxTop;
+    if (top + POPUP_MAX_HEIGHT > vh - VIEWPORT_PADDING) {
+      top = vh - POPUP_MAX_HEIGHT - VIEWPORT_PADDING;
+    }
+    top = Math.max(VIEWPORT_PADDING, top);
+
+    return { left, top };
+  }, [cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight, viewport?.width, viewport?.height]);
 
   const handleCopy = useMemoizedFn(async () => {
     try {
@@ -66,18 +79,14 @@ export const OcrResultPopup: FC<OcrResultPopupProps> = (props) => {
   });
 
   // ESC 关闭
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.stopPropagation();
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', onKeyDown, true);
-    return () => window.removeEventListener('keydown', onKeyDown, true);
-  }, [onClose]);
+  useEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      e.stopPropagation();
+      onClose();
+    }
+  }, { capture: true });
 
-  return (
+  return createPortal(
     <div
       class={Style.popup}
       style={{
@@ -105,6 +114,7 @@ export const OcrResultPopup: FC<OcrResultPopupProps> = (props) => {
           复制
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
