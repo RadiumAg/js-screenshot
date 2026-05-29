@@ -1,0 +1,314 @@
+---
+description: 截图工具组件的开发模式、图形系统和事件处理规范
+alwaysApply: true
+enabled: true
+---
+
+# 工具组件开发模式规范
+
+## 工具组件标准结构
+
+### 组件骨架
+每个工具组件**必须**遵循以下结构模式：
+
+```typescript
+import type { FC } from 'preact/compat';
+import toolIcon from '@screenshots/assets/images/tool-name.svg';
+import Style from '@screenshots/theme/tool-name.module.scss';
+import { useEventListener, useMemoizedFn } from 'ahooks';
+import { useRef } from 'preact/hooks';
+import { useShallow } from 'zustand/react/shallow';
+import { useScreenshotStore } from '../../store/screenshot-store';
+import { ACTIVE_TYPE } from '../utils/share';
+
+export interface ToolNameProps {
+  cutoutBoxX: number
+  cutoutBoxY: number
+  cutoutBoxWidth: number
+  cutoutBoxHeight: number
+}
+
+export const ToolName: FC<ToolNameProps> = ({
+  cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight,
+}) => {
+  // 1. 从 store 获取状态
+  const { activeTarget, drawCanvasElement, drawCanvasContext, ... } = useScreenshotStore(
+    useShallow(state => ({ ... }))
+  );
+
+  // 2. 本地 ref 状态
+  const isMouseDownRef = useRef(false);
+
+  // 3. 事件处理函数（使用 useMemoizedFn）
+  const handleClick = useMemoizedFn(() => {
+    setIsLock(true);
+    setActiveTarget(ACTIVE_TYPE.toolName);
+  });
+
+  const handleMouseDown = useMemoizedFn((event: MouseEvent) => { ... });
+  const handleMouseMove = useMemoizedFn((event: MouseEvent) => { ... });
+  const handleMouseUp = useMemoizedFn(() => { ... });
+
+  // 4. 事件绑定
+  useEventListener('mousedown', handleMouseDown, { target: () => drawCanvasElement });
+  useEventListener('mousemove', handleMouseMove, { target: () => drawCanvasElement });
+  useEventListener('mouseup', handleMouseUp, { target: () => drawCanvasElement });
+
+  // 5. 渲染工具按钮
+  return (
+    <div
+      data-tool-btn={ACTIVE_TYPE.toolName}
+      class={`${Style['tool-name']}${activeTarget === ACTIVE_TYPE.toolName ? ` ${Style.active}` : ''}`}
+      onClick={handleClick}
+    >
+      <img src={toolIcon} alt="tool-name" />
+    </div>
+  );
+};
+```
+
+### ACTIVE_TYPE 注册
+- 每个新工具**必须**在 `src/components/utils/share.ts` 的 `ACTIVE_TYPE` 枚举中注册
+- 枚举值使用 camelCase 命名
+- `activeTarget` 用于全局互斥：同一时刻只有一个工具处于激活状态
+
+```typescript
+// src/components/utils/share.ts
+enum ACTIVE_TYPE {
+  cutoutBox = 'cutoutBox',
+  mosaic = 'mosaic',
+  arrow = 'arrow',
+  pen = 'pen',
+  textBox = 'textBox',
+  dotController = 'dotController',
+  rect = 'rect',
+  ellipse = 'ellipse',
+  line = 'line',
+  // 新增工具在此添加
+};
+```
+
+### 工具激活流程
+- 点击工具按钮时**必须**调用 `setIsLock(true)` 锁定裁剪框
+- **必须**调用 `setActiveTarget(ACTIVE_TYPE.xxx)` 设置当前激活工具
+- 工具按钮通过 `data-tool-btn` 属性标识，用于样式和测试
+
+```typescript
+const handleClick = useMemoizedFn(() => {
+  setIsLock(true);
+  selectShape(null);  // 取消图形选中
+  setActiveTarget(ACTIVE_TYPE.arrow);
+});
+```
+
+## 区域检测规范
+
+### 裁剪框区域约束
+- 工具绘制操作**必须**限制在裁剪框区域内
+- **必须**考虑 `dotControllerSize` 的偏移量
+- 使用 `isCurrentArea` 函数进行区域检测
+
+```typescript
+// ✅ 正确做法
+const isCurrentArea = useMemoizedFn(
+  (minX: number, maxX: number, minY: number, maxY: number, x: number, y: number) => {
+    return x >= minX && x <= maxX && y >= minY && y <= maxY;
+  },
+);
+
+const isInCutoutBox = isCurrentArea(
+  cutoutBoxX + dotControllerSize / 2,
+  cutoutBoxX + cutoutBoxWidth - dotControllerSize / 2,
+  cutoutBoxY + dotControllerSize / 2,
+  cutoutBoxY + cutoutBoxHeight - dotControllerSize / 2,
+  event.clientX,
+  event.clientY,
+);
+```
+
+## 操作历史规范
+
+### operateHistory 使用
+- `operateHistory[0]` 始终存储初始完整画面快照（含遮罩）
+- 每次绘图操作完成后**必须**push 新的历史记录
+- 历史记录包含 `imageData`、`position` 和可选的 `shapes` 快照
+- 使用 `operateHistory.prev()` / `operateHistory.next()` 实现撤销/重做
+
+```typescript
+// ✅ 正确做法 - 保存操作历史
+const handleMouseUp = useMemoizedFn(() => {
+  if (!drawCanvasContext || !drawCanvasElement) return;
+
+  const imageData = drawCanvasContext.getImageData(
+    cutoutBoxX, cutoutBoxY, cutoutBoxWidth, cutoutBoxHeight,
+  );
+  operateHistory.push({
+    imageData,
+    position: { x: cutoutBoxX, y: cutoutBoxY },
+    shapes: getShapesSnapshot(), // 保存 shapes 快照
+  });
+});
+```
+
+### 直接绘制像素的工具（如 pen、mosaic）
+- 绘制完成后**必须**更新 `operateHistory[0]` 基础快照
+- 这样其他工具的 redraw 从基础快照恢复时就包含像素绘制内容
+
+```typescript
+// ✅ 正确做法 - pen 工具更新基础快照
+const fullImageData = drawCanvasContext.getImageData(0, 0, drawCanvasElement.width, drawCanvasElement.height);
+if (operateHistory.length > 0) {
+  operateHistory[0] = { imageData: fullImageData, position: { x: 0, y: 0 } };
+}
+operateHistory.push({ imageData: fullImageData, position: { x: 0, y: 0 } });
+```
+
+### 基于 shapes 的工具（如 arrow、rect、ellipse）
+- 绘制完成后**必须**将 shapes 快照保存到历史记录
+- 使用 `useScreenshotStore.getState().shapes` 获取最新 shapes
+- 使用 `JSON.parse(JSON.stringify(shapes))` 深拷贝 shapes
+
+```typescript
+// ✅ 正确做法
+const updatedShapes = useScreenshotStore.getState().shapes;
+operateHistory.push({
+  imageData,
+  position: { ...initialEntry.position },
+  shapes: JSON.parse(JSON.stringify(updatedShapes)),
+});
+```
+
+## 图形系统规范
+
+### Shape 类型定义
+- 每种图形**必须**定义独立的 `interface`（如 `RectShape`, `ArrowShape`）
+- **必须**使用 `ShapeType` 枚举作为 `type` 字段
+- 所有图形通过 `Shape` 联合类型统一管理
+
+```typescript
+// ✅ 正确做法
+export interface RectShape {
+  id: string
+  type: ShapeType.Rect
+  x: number
+  y: number
+  width: number
+  height: number
+  style: ShapeStyle
+}
+
+export type Shape = RectShape | EllipseShape | ArrowShape | LineShape | TextShape;
+```
+
+### Shape ID 生成
+- **必须**使用 `{type}-{timestamp}-{random}` 格式生成唯一 ID
+- 临时图形（绘制中）使用 `__temp__` 作为 ID
+
+```typescript
+// ✅ 正确做法
+const newShape: ArrowShape = {
+  ...tempShape,
+  id: `arrow-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+};
+```
+
+### 图形渲染
+- **必须**使用 `renderAllShapes()` 批量渲染所有已确认图形
+- **必须**使用 `renderShape()` 渲染单个临时图形
+- 渲染前**必须**从 `operateHistory[0]` 恢复背景
+
+```typescript
+// ✅ 正确做法 - 标准重绘流程
+const redraw = useMemoizedFn((tempShape?: Shape | null) => {
+  if (!drawCanvasContext) return;
+
+  // 1. 恢复背景
+  if (operateHistory.length > 0) {
+    const initialEntry = operateHistory[0];
+    drawCanvasContext.putImageData(initialEntry.imageData, initialEntry.position.x, initialEntry.position.y);
+  }
+
+  // 2. 渲染已确认图形
+  const currentShapes = useScreenshotStore.getState().shapes;
+  renderAllShapes(drawCanvasContext, currentShapes);
+
+  // 3. 渲染临时图形
+  if (tempShape) {
+    renderShape(drawCanvasContext, tempShape);
+  }
+});
+```
+
+### 命中检测
+- **必须**使用 `hitTestShape()` 检测图形命中
+- **必须**使用 `hitTestControlPoint()` 检测控制点命中
+- 检测顺序：控制点 > 选中图形 > 其他图形（从后往前）
+- 命中检测容差常量：`CONTROL_POINT_RADIUS = 6`, `LINE_HIT_TOLERANCE = 6`
+
+### 图形编辑事件优先级
+- ShapeEditor 使用 capture 阶段注册 mousedown，优先于工具处理
+- 命中图形时**必须**调用 `event.stopImmediatePropagation()` 阻止工具响应
+- 空白处点击取消选中：`selectShape(null)`
+
+## 工具配置规范
+
+### toolsConfig 读取
+- **必须**从 store 的 `toolsConfig` 读取工具配置
+- **必须**为每个配置项提供默认值（使用 `??` 空值合并）
+
+```typescript
+// ✅ 正确做法
+const arrowColor = toolsConfig.arrow?.color ?? 'red';
+const arrowWidth = toolsConfig.arrow?.lineWidth ?? 2;
+const arrowSize = toolsConfig.arrow?.arrowSize ?? 10;
+const lineType = toolsConfig.arrow?.lineType ?? 'arrow';
+```
+
+### currentColor 联动
+- 颜色选择器修改 `currentColor` 时，store 的 `setCurrentColor` 会同步更新所有工具的 `toolsConfig.xxx.color`
+
+## 节流与性能规范
+
+### animateThrottleFn
+- Canvas 频繁重绘操作**必须**使用 `animateThrottleFn` 节流
+- 该函数基于 `requestAnimationFrame` 实现帧级节流
+- 适用于裁剪框拖拽、控制点调整等高频操作
+
+```typescript
+// ✅ 正确做法
+const throttledUpdatePosition = useRef(
+  animateThrottleFn(() => {
+    updatePosition();
+  }),
+).current;
+```
+
+### 事件传播控制
+- 工具组件内的事件处理**必须**检查 `activeTarget` 是否为当前工具
+- 不匹配时直接 return，不处理事件
+
+```typescript
+// ✅ 正确做法
+const handleMouseDown = useMemoizedFn((event: MouseEvent) => {
+  if (activeTarget !== ACTIVE_TYPE.pen) return;
+  if (!drawCanvasContext) return;
+  // 处理逻辑
+});
+```
+
+## 键盘快捷键规范
+
+### 全局快捷键（在 CutoutBox 中处理）
+| 快捷键 | 功能 |
+|--------|------|
+| `Escape` | 取消截图 |
+| `Enter` | 保存截图（选区已创建时） |
+| `ArrowUp/Down/Left/Right` | 微调选区位置（1px，Shift+方向键 10px） |
+| `Ctrl/Cmd + Z` | 撤销 |
+| `Ctrl/Cmd + Shift + Z` / `Ctrl/Cmd + Y` | 重做 |
+| `Delete` / `Backspace` | 删除选中图形 |
+
+### 快捷键实现
+- **必须**使用 `event.ctrlKey || event.metaKey` 检测修饰键
+- **必须**在文本编辑状态下忽略 Enter/Delete 快捷键
+- 方向键操作**必须**调用 `event.preventDefault()` 阻止页面滚动

@@ -1,0 +1,418 @@
+---
+description: 
+alwaysApply: true
+enabled: true
+updatedAt: 2025-11-20T16:00:52.129Z
+provider: 
+---
+
+# Canvas 绘图标准规范
+
+## Canvas 上下文管理
+
+### 上下文获取和验证
+- **必须**在每次使用前检查 `context` 是否为 `null`
+- **必须**使用类型守卫确保上下文有效性
+- **必须**在组件销毁时清理上下文引用
+
+```typescript
+// ✅ 正确做法
+private getContext(): CanvasRenderingContext2D {
+  if (this.context === null) {
+    throw new Error('Canvas context is not available');
+  }
+  return this.context;
+}
+
+private drawLine(x1: number, y1: number, x2: number, y2: number): void {
+  const ctx = this.getContext();
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+
+// ❌ 错误做法
+private drawLine(x1: number, y1: number, x2: number, y2: number): void {
+  this.context.beginPath(); // 可能导致 Cannot read property of null
+  this.context.moveTo(x1, y1);
+  this.context.lineTo(x2, y2);
+  this.context.stroke();
+}
+```
+
+### 上下文状态管理
+- **必须**使用 `save()` 和 `restore()` 管理绘图状态
+- **必须**在修改状态前保存当前状态
+- **必须**在操作完成后恢复原始状态
+
+```typescript
+// ✅ 正确做法
+private drawWithCustomStyle(): void {
+  const ctx = this.getContext();
+  ctx.save(); // 保存当前状态
+  
+  // 修改样式
+  ctx.strokeStyle = 'red';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  
+  // 执行绘图
+  this.drawComplexShape();
+  
+  ctx.restore(); // 恢复原始状态
+}
+
+// ❌ 错误做法
+private drawWithCustomStyle(): void {
+  // 修改样式但不恢复
+  this.context.strokeStyle = 'red';
+  this.context.lineWidth = 3;
+  this.drawComplexShape();
+  // 状态被永久修改
+}
+```
+
+## 绘图操作规范
+
+### 路径绘制
+- **必须**使用 `beginPath()` 开始新路径
+- **必须**使用 `closePath()` 闭合路径（如果需要）
+- **必须**在路径完成后立即调用 `stroke()` 或 `fill()`
+
+```typescript
+// ✅ 正确做法
+private drawRectangle(x: number, y: number, width: number, height: number): void {
+  const ctx = this.getContext();
+  ctx.beginPath();
+  ctx.rect(x, y, width, height);
+  ctx.stroke();
+}
+
+private drawCircle(x: number, y: number, radius: number): void {
+  const ctx = this.getContext();
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// ❌ 错误做法
+private drawShapes(): void {
+  this.context.beginPath();
+  this.context.rect(10, 10, 50, 50);
+  this.context.arc(100, 100, 20, 0, Math.PI * 2);
+  // 未调用 stroke() 或 fill()
+  // 路径混合在一起
+}
+```
+
+### 样式设置
+- **必须**在绘图前设置所有必要的样式
+- **必须**使用语义化的颜色值
+- **必须**避免频繁修改相同的样式属性
+
+```typescript
+// ✅ 正确做法
+private setupDrawingStyle(color: string, lineWidth: number): void {
+  const ctx = this.getContext();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+}
+
+private drawLine(x1: number, y1: number, x2: number, y2: number): void {
+  const ctx = this.getContext();
+  this.setupDrawingStyle('#000000', 2);
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+
+// ❌ 错误做法
+private drawLine(x1: number, y1: number, x2: number, y2: number): void {
+  this.context.strokeStyle = 'blue';
+  this.context.lineWidth = 15;
+  this.context.lineCap = 'round';
+  this.context.beginPath();
+  this.context.moveTo(x1, y1);
+  this.context.lineTo(x2, y2);
+  this.context.stroke();
+}
+```
+
+## 性能优化规范
+
+### 批量操作
+- **必须**使用批量操作减少重绘次数
+- **必须**使用 `requestAnimationFrame` 进行动画
+- **必须**避免在循环中单独调用绘图方法
+
+```typescript
+// ✅ 正确做法
+private drawMultipleLines(lines: Line[]): void {
+  const ctx = this.getContext();
+  ctx.beginPath();
+  
+  lines.forEach(line => {
+    ctx.moveTo(line.x1, line.y1);
+    ctx.lineTo(line.x2, line.y2);
+  });
+  
+  ctx.stroke(); // 一次性绘制所有线条
+}
+
+// ❌ 错误做法
+private drawMultipleLines(lines: Line[]): void {
+  lines.forEach(line => {
+    this.drawLine(line.x1, line.y1, line.x2, line.y2); // 每次都重绘
+  });
+}
+```
+
+### 区域裁剪
+- **必须**使用 `clip()` 限制绘图区域
+- **必须**在复杂绘图前设置裁剪区域
+- **必须**使用 `save()` 和 `restore()` 管理裁剪状态
+
+```typescript
+// ✅ 正确做法
+private drawInArea(x: number, y: number, width: number, height: number): void {
+  const ctx = this.getContext();
+  ctx.save();
+  
+  // 设置裁剪区域
+  ctx.beginPath();
+  ctx.rect(x, y, width, height);
+  ctx.clip();
+  
+  // 在裁剪区域内绘图
+  this.drawComplexContent();
+  
+  ctx.restore();
+}
+
+// ❌ 错误做法
+private drawInArea(x: number, y: number, width: number, height: number): void {
+  // 没有裁剪限制，可能绘制到区域外
+  this.drawComplexContent();
+}
+```
+
+## 图像处理规范
+
+### 图像数据操作
+- **必须**检查 `getImageData()` 的返回值
+- **必须**处理图像数据的边界情况
+- **必须**在操作完成后保存到历史记录
+
+```typescript
+// ✅ 正确做法
+private saveCanvasState(): void {
+  const ctx = this.getContext();
+  try {
+    const imageData = ctx.getImageData(
+      this.cutoutBox.x,
+      this.cutoutBox.y,
+      this.cutoutBox.width,
+      this.cutoutBox.height
+    );
+    
+    if (imageData && imageData.data.length > 0) {
+      operateHistory.push(imageData);
+    }
+  } catch (error) {
+    console.error('Failed to save canvas state:', error);
+  }
+}
+
+// ❌ 错误做法
+private saveCanvasState(): void {
+  const imageData = this.context.getImageData(
+    this.cutoutBox.x,
+    this.cutoutBox.y,
+    this.cutoutBox.width,
+    this.cutoutBox.height
+  );
+  operateHistory.push(imageData); // 未检查返回值
+}
+```
+
+### 图像渲染
+- **必须**在图像加载完成后进行渲染
+- **必须**处理图像加载失败的情况
+- **必须**使用适当的图像缩放算法
+
+```typescript
+// ✅ 正确做法
+private async renderImage(src: string, x: number, y: number): Promise<void> {
+  const ctx = this.getContext();
+  
+  try {
+    const img = await this.loadImage(src);
+    ctx.drawImage(img, x, y);
+  } catch (error) {
+    console.error('Failed to render image:', error);
+    // 绘制占位符或错误提示
+    this.drawErrorPlaceholder(x, y);
+  }
+}
+
+// ❌ 错误做法
+private renderImage(src: string, x: number, y: number): void {
+  const img = new Image();
+  img.src = src;
+  this.context.drawImage(img, x, y); // 可能在图像加载前执行
+}
+```
+
+## 交互处理规范
+
+### 鼠标事件处理
+- **必须**检查鼠标位置是否在有效区域内
+- **必须**使用坐标转换处理相对位置
+- **必须**处理鼠标状态的一致性
+
+```typescript
+// ✅ 正确做法
+private handleMouseDown(event: MouseEvent): void {
+  const { clientX, clientY } = event;
+  
+  if (!this.isInValidArea(clientX, clientY)) {
+    return;
+  }
+  
+  this.isMouseDown = true;
+  this.startDrawing(clientX, clientY);
+}
+
+private isInValidArea(x: number, y: number): boolean {
+  return this.isCurrentArea(
+    this.cutoutBox.x + dotControllerSize / 2,
+    this.cutoutBox.x + this.cutoutBox.width - dotControllerSize / 2,
+    this.cutoutBox.y + dotControllerSize / 2,
+    this.cutoutBox.y + this.cutoutBox.height - dotControllerSize / 2,
+    x,
+    y
+  );
+}
+
+// ❌ 错误做法
+private handleMouseDown(event: MouseEvent): void {
+  this.isMouseDown = true;
+  this.startDrawing(event.clientX, event.clientY); // 未检查区域
+}
+```
+
+### 触摸事件支持
+- **必须**同时支持鼠标和触摸事件
+- **必须**处理多点触控的情况
+- **必须**使用触摸事件的坐标转换
+
+```typescript
+// ✅ 正确做法
+private handleTouchStart(event: TouchEvent): void {
+  event.preventDefault();
+  
+  const touch = event.touches[0];
+  if (!touch) return;
+  
+  const { clientX, clientY } = touch;
+  this.handleMouseDown({ clientX, clientY } as MouseEvent);
+}
+
+// ❌ 错误做法
+private handleTouchStart(event: TouchEvent): void {
+  // 未处理触摸坐标
+  this.handleMouseDown(event as MouseEvent);
+}
+```
+
+## 历史记录管理
+
+### 操作历史
+- **必须**在每次操作后保存状态
+- **必须**限制历史记录的大小
+- **必须**提供撤销和重做功能
+
+```typescript
+// ✅ 正确做法
+private saveToHistory(): void {
+  const ctx = this.getContext();
+  const imageData = ctx.getImageData(
+    this.cutoutBox.x,
+    this.cutoutBox.y,
+    this.cutoutBox.width,
+    this.cutoutBox.height
+  );
+  
+  operateHistory.push(imageData);
+  
+  // 限制历史记录大小
+  if (operateHistory.length > MAX_HISTORY_SIZE) {
+    operateHistory.shift();
+  }
+}
+
+// ❌ 错误做法
+private saveToHistory(): void {
+  // 无限制保存，可能导致内存泄漏
+  operateHistory.push(this.context.getImageData(...));
+}
+```
+
+## 错误处理和调试
+
+### 错误处理
+- **必须**使用 try-catch 包装绘图操作
+- **必须**提供有意义的错误信息
+- **必须**在错误发生时恢复状态
+
+```typescript
+// ✅ 正确做法
+private safeDraw(callback: () => void): void {
+  try {
+    const ctx = this.getContext();
+    callback();
+  } catch (error) {
+    console.error('Drawing operation failed:', error);
+    // 恢复到安全状态
+    this.restoreSafeState();
+  }
+}
+
+// ❌ 错误做法
+private drawComplexShape(): void {
+  // 复杂绘图操作没有错误处理
+  this.context.beginPath();
+  // ... 复杂操作
+}
+```
+
+### 调试支持
+- **必须**提供调试模式开关
+- **必须**在开发环境输出调试信息
+- **必须**提供可视化调试工具
+
+```typescript
+// ✅ 正确做法
+private debugDrawArea(x: number, y: number, width: number, height: number): void {
+  if (!DEBUG_MODE) return;
+  
+  const ctx = this.getContext();
+  ctx.save();
+  ctx.strokeStyle = 'red';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 5]);
+  ctx.strokeRect(x, y, width, height);
+  ctx.restore();
+}
+
+// ❌ 错误做法
+private debugDrawArea(x: number, y: number, width: number, height: number): void {
+  // 生产环境中的调试代码
+  this.context.strokeStyle = 'red';
+  this.context.strokeRect(x, y, width, height);
+}
+```

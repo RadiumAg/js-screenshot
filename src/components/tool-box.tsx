@@ -16,6 +16,7 @@ import { SaveButton } from './tools/save-button';
 import { ShapeOptions } from './tools/shape-options';
 import { TextBoxOptions } from './tools/text-box-options';
 import { TextBoxTool } from './tools/text-box-tool';
+import { TextExtractTool } from './tools/text-extract-tool';
 
 export interface ToolBoxProps {
   cutoutBoxX: number
@@ -145,6 +146,12 @@ export const ToolBox: FC<ToolBoxProps> = ({
         cutoutBoxHeight={cutoutBoxHeight}
       />
       <SaveButton
+        cutoutBoxX={cutoutBoxX}
+        cutoutBoxY={cutoutBoxY}
+        cutoutBoxWidth={cutoutBoxWidth}
+        cutoutBoxHeight={cutoutBoxHeight}
+      />
+      <TextExtractTool
         cutoutBoxX={cutoutBoxX}
         cutoutBoxY={cutoutBoxY}
         cutoutBoxWidth={cutoutBoxWidth}
