@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useCanvas } from '../hooks/use-canvas';
 import { useScreenshotStore } from '../store/screenshot-store';
-import { Z_INDEX } from '../../theme/z-index';
+import { Z_INDEX } from '../theme/z-index';
 import { CutoutBox } from './cutout-box';
 
 export interface ScreenShotProps {

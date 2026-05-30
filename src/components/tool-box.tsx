@@ -151,6 +151,7 @@ export const ToolBox: FC<ToolBoxProps> = ({
           cutoutBoxHeight={cutoutBoxHeight}
         />
       </Tooltip>
+      <div class={Style.separator} />
       <Tooltip text="取消">
         <RefuseButton onCancel={onCancel} />
       </Tooltip>
@@ -170,6 +171,7 @@ export const ToolBox: FC<ToolBoxProps> = ({
           cutoutBoxHeight={cutoutBoxHeight}
         />
       </Tooltip>
+      <div class={Style.separator} />
       <Tooltip text="文字识别">
         <TextExtractTool
           cutoutBoxX={cutoutBoxX}

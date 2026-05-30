@@ -14,6 +14,14 @@
   backdrop-filter: blur(8px);
 }
 
+.separator {
+  width: 1px;
+  align-self: stretch;
+  background: var(--ss-separator-color);
+  margin: 4px 2px;
+  flex-shrink: 0;
+}
+
 // Dark theme (default)
 .tool-box.dark {
   --ss-toolbar-bg: #1e293b;
@@ -22,7 +30,9 @@
   --ss-icon-filter: brightness(0) invert(1);
   --ss-icon-opacity: 0.85;
   --ss-icon-hover-opacity: 1;
-  --ss-separator-color: rgba(255, 255, 255, 0.1);
+  --ss-separator-color: rgba(255, 255, 255, 0.2);
+  --ss-tooltip-bg: rgba(15, 23, 42, 0.92);
+  --ss-tooltip-fg: #ffffff;
 }
 
 // Light theme
@@ -33,5 +43,7 @@
   --ss-icon-filter: none;
   --ss-icon-opacity: 0.65;
   --ss-icon-hover-opacity: 0.9;
-  --ss-separator-color: rgba(0, 0, 0, 0.08);
+  --ss-separator-color: rgba(0, 0, 0, 0.15);
+  --ss-tooltip-bg: rgba(255, 255, 255, 0.95);
+  --ss-tooltip-fg: #0f172a;
 }

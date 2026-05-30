@@ -9,8 +9,8 @@
   bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.75);
-  color: #fff;
+  background: var(--ss-tooltip-bg, rgba(0, 0, 0, 0.75));
+  color: var(--ss-tooltip-fg, #fff);
   font-size: 12px;
   padding: 2px 8px;
   border-radius: 4px;

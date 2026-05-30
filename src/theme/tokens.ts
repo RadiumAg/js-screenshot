@@ -16,19 +16,19 @@ function hexToRgb(hex: string): string {
   return `${r}, ${g}, ${b}`;
 }
 
-const Z_INDEX_TOKENS = {
-  '--ss-z-sourceCanvas': Z_INDEX.sourceCanvas,
-  '--ss-z-toolbar': Z_INDEX.toolbar,
-  '--ss-z-colorPicker': Z_INDEX.colorPicker,
-  '--ss-z-textBox': Z_INDEX.textBox,
-  '--ss-z-cutoutBox': Z_INDEX.cutoutBox,
-  '--ss-z-optionsPanel': Z_INDEX.optionsPanel,
-  '--ss-z-tooltip': Z_INDEX.tooltip,
-  '--ss-z-popup': Z_INDEX.popup,
-  '--ss-z-dotController': Z_INDEX.dotController,
-  '--ss-z-loading': Z_INDEX.loading,
-  '--ss-z-shapeEditor': Z_INDEX.shapeEditor,
-} as const;
+const Z_INDEX_TOKENS: Record<string, string> = {
+  '--ss-z-sourceCanvas': String(Z_INDEX.sourceCanvas),
+  '--ss-z-toolbar': String(Z_INDEX.toolbar),
+  '--ss-z-colorPicker': String(Z_INDEX.colorPicker),
+  '--ss-z-textBox': String(Z_INDEX.textBox),
+  '--ss-z-cutoutBox': String(Z_INDEX.cutoutBox),
+  '--ss-z-optionsPanel': String(Z_INDEX.optionsPanel),
+  '--ss-z-tooltip': String(Z_INDEX.tooltip),
+  '--ss-z-popup': String(Z_INDEX.popup),
+  '--ss-z-dotController': String(Z_INDEX.dotController),
+  '--ss-z-loading': String(Z_INDEX.loading),
+  '--ss-z-shapeEditor': String(Z_INDEX.shapeEditor),
+};
 
 const BASE_TOKENS = {
   dark: {
