@@ -180,20 +180,26 @@ export const MosaicTool: FC<MosaicToolProps> = ({
   );
 
   const handleMouseUp = useMemoizedFn(() => {
-    if (!isDrawing || activeTarget !== ACTIVE_TYPE.mosaic || !drawCanvasContext)
+    if (!isDrawing || activeTarget !== ACTIVE_TYPE.mosaic || !drawCanvasContext || !drawCanvasElement)
       return;
 
     setIsDrawing(false);
 
-    const imageData = drawCanvasContext.getImageData(
-      cutoutBoxX,
-      cutoutBoxY,
-      cutoutBoxWidth,
-      cutoutBoxHeight,
+    const fullImageData = drawCanvasContext.getImageData(
+      0,
+      0,
+      drawCanvasElement.width,
+      drawCanvasElement.height,
     );
+    if (operateHistory.length > 0) {
+      operateHistory[0] = {
+        imageData: fullImageData,
+        position: { x: 0, y: 0 },
+      };
+    }
     operateHistory.push({
-      imageData,
-      position: { x: cutoutBoxX, y: cutoutBoxY },
+      imageData: fullImageData,
+      position: { x: 0, y: 0 },
     });
   });
 
