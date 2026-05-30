@@ -8,6 +8,7 @@ import { ACTIVE_TYPE } from '../utils/share';
 import { hitTestControlPoint, hitTestShape } from './hit-test';
 import { getShapeBoundingBox, renderAllShapes, renderSelection } from './shape-renderer';
 import { ControlPointPosition, ShapeType } from './types';
+import { Z_INDEX } from '../../theme/z-index';
 
 export interface ShapeEditorProps {
   cutoutBoxX: number
@@ -342,7 +343,7 @@ export const ShapeEditor: FC<ShapeEditorProps> = (_props) => {
     editDiv.style.border = `2px solid ${themeColor}`;
     editDiv.style.borderRadius = '6px';
     editDiv.style.outline = 'none';
-    editDiv.style.zIndex = '10000';
+    editDiv.style.zIndex = String(Z_INDEX.shapeEditor);
     editDiv.style.background = 'white';
     editDiv.style.whiteSpace = 'pre-wrap';
     editDiv.style.wordBreak = 'break-word';

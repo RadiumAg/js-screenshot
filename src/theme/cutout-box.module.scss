@@ -1,7 +1,7 @@
 .cutout-box {
     cursor: move;
     position: fixed;
-    z-index: 999;
+    z-index: var(--ss-z-cutoutBox);
     box-sizing: border-box;
     user-select: none;
 }

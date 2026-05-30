@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useCanvas } from '../hooks/use-canvas';
 import { useScreenshotStore } from '../store/screenshot-store';
+import { Z_INDEX } from '../../theme/z-index';
 import { CutoutBox } from './cutout-box';
 
 export interface ScreenShotProps {
@@ -178,7 +179,7 @@ const ScreenShotInner: FC<ScreenShotProps> = ({ options, onComplete, onError }) 
     sourceCanvasElement.style.width = `${width}px`;
     sourceCanvasElement.style.height = `${height}px`;
     sourceCanvasElement.style.pointerEvents = 'none';
-    sourceCanvasElement.style.zIndex = '-1';
+    sourceCanvasElement.style.zIndex = String(Z_INDEX.sourceCanvas);
     sourceCanvasElement.style.opacity = '0';
 
     // 创建页面内容的容器作为 canvas 子元素

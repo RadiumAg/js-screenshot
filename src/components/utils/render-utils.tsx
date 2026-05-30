@@ -1,5 +1,6 @@
 import type { ComponentChildren, VNode } from 'preact';
 import { cloneElement, render } from 'preact';
+import { Z_INDEX } from '../../theme/z-index';
 
 /**
  * 渲染 Preact 组件到指定容器
@@ -20,7 +21,7 @@ export function createAndRenderComponent(component: VNode): HTMLElement {
   container.style.height = '100%';
   container.style.left = '0';
   container.style.pointerEvents = 'none';
-  container.style.zIndex = '9999';
+  container.style.zIndex = String(Z_INDEX.loading);
 
   document.body.appendChild(container);
   // eslint-disable-next-line react/no-clone-element

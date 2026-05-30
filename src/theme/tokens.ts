@@ -5,6 +5,7 @@
  *
  * Palette source: UI Pro Max — Developer Tool palette
  */
+import { Z_INDEX } from './z-index';
 
 /** Convert hex color (#RRGGBB) to "R, G, B" string */
 function hexToRgb(hex: string): string {
@@ -15,8 +16,23 @@ function hexToRgb(hex: string): string {
   return `${r}, ${g}, ${b}`;
 }
 
+const Z_INDEX_TOKENS = {
+  '--ss-z-sourceCanvas': Z_INDEX.sourceCanvas,
+  '--ss-z-toolbar': Z_INDEX.toolbar,
+  '--ss-z-colorPicker': Z_INDEX.colorPicker,
+  '--ss-z-textBox': Z_INDEX.textBox,
+  '--ss-z-cutoutBox': Z_INDEX.cutoutBox,
+  '--ss-z-optionsPanel': Z_INDEX.optionsPanel,
+  '--ss-z-tooltip': Z_INDEX.tooltip,
+  '--ss-z-popup': Z_INDEX.popup,
+  '--ss-z-dotController': Z_INDEX.dotController,
+  '--ss-z-loading': Z_INDEX.loading,
+  '--ss-z-shapeEditor': Z_INDEX.shapeEditor,
+} as const;
+
 const BASE_TOKENS = {
   dark: {
+    ...Z_INDEX_TOKENS,
     '--ss-muted-fg': '#94a3b8',
     '--ss-surface': 'rgba(15, 23, 42, 0.92)',
     '--ss-surface-shadow': '0 8px 32px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2)',
@@ -28,6 +44,7 @@ const BASE_TOKENS = {
     '--ss-icon-opacity': '0.85',
   },
   light: {
+    ...Z_INDEX_TOKENS,
     '--ss-muted-fg': '#64748b',
     '--ss-surface': 'rgba(255, 255, 255, 0.95)',
     '--ss-surface-shadow': '0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06)',

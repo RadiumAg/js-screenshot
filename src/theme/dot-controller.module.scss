@@ -1,5 +1,5 @@
 .dot-controller-container {
-  z-index: 1000;
+  z-index: var(--ss-z-dotController);
   position: fixed;
   padding: 10px;
   transform: translate(-15px, -15px);

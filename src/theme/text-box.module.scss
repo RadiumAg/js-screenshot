@@ -14,7 +14,7 @@
 
 .text-box-input {
   /* 颜色、字号、行高、border 颜色全部由 JS 注入，与 canvas 渲染保持一致 */
-  z-index: 77;
+  z-index: var(--ss-z-textBox);
   resize: none;
   outline: none;
   position: fixed;

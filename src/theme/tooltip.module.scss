@@ -16,7 +16,7 @@
   border-radius: 4px;
   white-space: nowrap;
   pointer-events: none;
-  z-index: 1001;
+  z-index: var(--ss-z-tooltip);
   animation: tooltipIn 0.15s ease-out;
 }
 
