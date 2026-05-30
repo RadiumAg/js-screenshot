@@ -17,6 +17,7 @@ import { ShapeOptions } from './tools/shape-options';
 import { TextBoxOptions } from './tools/text-box-options';
 import { TextBoxTool } from './tools/text-box-tool';
 import { TextExtractTool } from './tools/text-extract-tool';
+import { Tooltip } from './tools/tooltip';
 
 export interface ToolBoxProps {
   cutoutBoxX: number
@@ -102,61 +103,81 @@ export const ToolBox: FC<ToolBoxProps> = ({
         ...panelTokens,
       } as any}
     >
-      <TextBoxTool
-        cutoutBoxX={cutoutBoxX}
-        cutoutBoxY={cutoutBoxY}
-        cutoutBoxWidth={cutoutBoxWidth}
-        cutoutBoxHeight={cutoutBoxHeight}
-      />
-      <PenTool
-        cutoutBoxX={cutoutBoxX}
-        cutoutBoxY={cutoutBoxY}
-        cutoutBoxWidth={cutoutBoxWidth}
-        cutoutBoxHeight={cutoutBoxHeight}
-      />
-      <ArrowTool
-        cutoutBoxX={cutoutBoxX}
-        cutoutBoxY={cutoutBoxY}
-        cutoutBoxWidth={cutoutBoxWidth}
-        cutoutBoxHeight={cutoutBoxHeight}
-      />
-      <RectTool
-        cutoutBoxX={cutoutBoxX}
-        cutoutBoxY={cutoutBoxY}
-        cutoutBoxWidth={cutoutBoxWidth}
-        cutoutBoxHeight={cutoutBoxHeight}
-      />
-      <EllipseTool
-        cutoutBoxX={cutoutBoxX}
-        cutoutBoxY={cutoutBoxY}
-        cutoutBoxWidth={cutoutBoxWidth}
-        cutoutBoxHeight={cutoutBoxHeight}
-      />
-      <MosaicTool
-        cutoutBoxX={cutoutBoxX}
-        cutoutBoxY={cutoutBoxY}
-        cutoutBoxWidth={cutoutBoxWidth}
-        cutoutBoxHeight={cutoutBoxHeight}
-      />
-      <RefuseButton onCancel={onCancel} />
-      <CopyButton
-        cutoutBoxX={cutoutBoxX}
-        cutoutBoxY={cutoutBoxY}
-        cutoutBoxWidth={cutoutBoxWidth}
-        cutoutBoxHeight={cutoutBoxHeight}
-      />
-      <SaveButton
-        cutoutBoxX={cutoutBoxX}
-        cutoutBoxY={cutoutBoxY}
-        cutoutBoxWidth={cutoutBoxWidth}
-        cutoutBoxHeight={cutoutBoxHeight}
-      />
-      <TextExtractTool
-        cutoutBoxX={cutoutBoxX}
-        cutoutBoxY={cutoutBoxY}
-        cutoutBoxWidth={cutoutBoxWidth}
-        cutoutBoxHeight={cutoutBoxHeight}
-      />
+      <Tooltip text="文本">
+        <TextBoxTool
+          cutoutBoxX={cutoutBoxX}
+          cutoutBoxY={cutoutBoxY}
+          cutoutBoxWidth={cutoutBoxWidth}
+          cutoutBoxHeight={cutoutBoxHeight}
+        />
+      </Tooltip>
+      <Tooltip text="画笔">
+        <PenTool
+          cutoutBoxX={cutoutBoxX}
+          cutoutBoxY={cutoutBoxY}
+          cutoutBoxWidth={cutoutBoxWidth}
+          cutoutBoxHeight={cutoutBoxHeight}
+        />
+      </Tooltip>
+      <Tooltip text="箭头">
+        <ArrowTool
+          cutoutBoxX={cutoutBoxX}
+          cutoutBoxY={cutoutBoxY}
+          cutoutBoxWidth={cutoutBoxWidth}
+          cutoutBoxHeight={cutoutBoxHeight}
+        />
+      </Tooltip>
+      <Tooltip text="矩形">
+        <RectTool
+          cutoutBoxX={cutoutBoxX}
+          cutoutBoxY={cutoutBoxY}
+          cutoutBoxWidth={cutoutBoxWidth}
+          cutoutBoxHeight={cutoutBoxHeight}
+        />
+      </Tooltip>
+      <Tooltip text="椭圆">
+        <EllipseTool
+          cutoutBoxX={cutoutBoxX}
+          cutoutBoxY={cutoutBoxY}
+          cutoutBoxWidth={cutoutBoxWidth}
+          cutoutBoxHeight={cutoutBoxHeight}
+        />
+      </Tooltip>
+      <Tooltip text="马赛克">
+        <MosaicTool
+          cutoutBoxX={cutoutBoxX}
+          cutoutBoxY={cutoutBoxY}
+          cutoutBoxWidth={cutoutBoxWidth}
+          cutoutBoxHeight={cutoutBoxHeight}
+        />
+      </Tooltip>
+      <Tooltip text="取消">
+        <RefuseButton onCancel={onCancel} />
+      </Tooltip>
+      <Tooltip text="复制">
+        <CopyButton
+          cutoutBoxX={cutoutBoxX}
+          cutoutBoxY={cutoutBoxY}
+          cutoutBoxWidth={cutoutBoxWidth}
+          cutoutBoxHeight={cutoutBoxHeight}
+        />
+      </Tooltip>
+      <Tooltip text="保存">
+        <SaveButton
+          cutoutBoxX={cutoutBoxX}
+          cutoutBoxY={cutoutBoxY}
+          cutoutBoxWidth={cutoutBoxWidth}
+          cutoutBoxHeight={cutoutBoxHeight}
+        />
+      </Tooltip>
+      <Tooltip text="文字识别">
+        <TextExtractTool
+          cutoutBoxX={cutoutBoxX}
+          cutoutBoxY={cutoutBoxY}
+          cutoutBoxWidth={cutoutBoxWidth}
+          cutoutBoxHeight={cutoutBoxHeight}
+        />
+      </Tooltip>
       <TextBoxOptions />
       <ShapeOptions activeType="rect" configKey="rect" />
       <ShapeOptions activeType="ellipse" configKey="ellipse" />
