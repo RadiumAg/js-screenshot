@@ -40,9 +40,10 @@ export const ToolBox: FC<ToolBoxProps> = ({
   const elRef = useRef<HTMLDivElement>(null);
   const positionRef = useRef({ x: 0, y: 0 });
 
-  const { uiTheme, themeColor } = useScreenshotStore(useShallow(state => ({
+  const { uiTheme, themeColor, toolsConfig } = useScreenshotStore(useShallow(state => ({
     uiTheme: state.uiTheme,
     themeColor: state.themeColor,
+    toolsConfig: state.toolsConfig,
   })));
 
   // 解析实际主题：auto 模式跟随系统 prefers-color-scheme
@@ -171,15 +172,19 @@ export const ToolBox: FC<ToolBoxProps> = ({
           cutoutBoxHeight={cutoutBoxHeight}
         />
       </Tooltip>
-      <div class={Style.separator} />
-      <Tooltip text="文字识别">
-        <TextExtractTool
-          cutoutBoxX={cutoutBoxX}
-          cutoutBoxY={cutoutBoxY}
-          cutoutBoxWidth={cutoutBoxWidth}
-          cutoutBoxHeight={cutoutBoxHeight}
-        />
-      </Tooltip>
+      {toolsConfig.textExtract && (
+        <>
+          <div class={Style.separator} />
+          <Tooltip text="文字识别">
+            <TextExtractTool
+              cutoutBoxX={cutoutBoxX}
+              cutoutBoxY={cutoutBoxY}
+              cutoutBoxWidth={cutoutBoxWidth}
+              cutoutBoxHeight={cutoutBoxHeight}
+            />
+          </Tooltip>
+        </>
+      )}
       <TextBoxOptions />
       <ShapeOptions activeType="rect" configKey="rect" />
       <ShapeOptions activeType="ellipse" configKey="ellipse" />
