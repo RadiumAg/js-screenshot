@@ -35,7 +35,8 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     setIsLock,
     setIsFirstInit,
     setActiveTarget,
-    restoreShapesSnapshot,
+    undo,
+    redo,
   } = useScreenshotStore(useShallow(state => ({
     container: state.container,
     drawCanvasElement: state.drawCanvasElement,
@@ -49,7 +50,8 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
     setIsLock: state.setIsLock,
     setIsFirstInit: state.setIsFirstInit,
     setActiveTarget: state.setActiveTarget,
-    restoreShapesSnapshot: state.restoreShapesSnapshot,
+    undo: state.undo,
+    redo: state.redo,
   })));
   const miniDotControllerSize = dotControllerSize * 3;
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -321,32 +323,14 @@ export const CutoutBox: FC<CutoutBoxProps> = ({ onComplete }) => {
 
       // 撤销: Ctrl/Cmd+Z (不按 Shift)
       if (isModifier && event.key === 'z' && !event.shiftKey) {
-        const preEntry = operateHistory.prev();
-        if (preEntry && drawCanvasContext) {
-          drawCanvasContext.putImageData(preEntry.imageData, preEntry.position.x, preEntry.position.y);
-          if (preEntry.shapes) {
-            restoreShapesSnapshot(preEntry.shapes);
-          }
-          else {
-            restoreShapesSnapshot([]);
-          }
-        }
+        undo();
       }
       // 重做: Ctrl/Cmd+Shift+Z 或 Ctrl/Cmd+Y
       else if (
         (isModifier && event.shiftKey && event.key === 'Z')
         || (isModifier && event.key === 'y')
       ) {
-        const nextEntry = operateHistory.next();
-        if (nextEntry && drawCanvasContext) {
-          drawCanvasContext.putImageData(nextEntry.imageData, nextEntry.position.x, nextEntry.position.y);
-          if (nextEntry.shapes) {
-            restoreShapesSnapshot(nextEntry.shapes);
-          }
-          else {
-            restoreShapesSnapshot([]);
-          }
-        }
+        redo();
       }
     },
   );

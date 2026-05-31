@@ -73,7 +73,6 @@ const DotController: FC<DotControllerProps> = ({
     setActiveTarget(activeType);
   } });
 
-
   return (
     <div
       ref={elRef}

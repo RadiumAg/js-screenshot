@@ -1,6 +1,6 @@
 import type { FC } from 'preact/compat';
-import { useState } from 'preact/hooks';
 import Style from '@screenshots/theme/tooltip.module.scss';
+import { useState } from 'preact/hooks';
 
 interface TooltipProps {
   text: string

@@ -11,6 +11,7 @@ import { EllipseTool } from './tools/ellipse-tool';
 import { MosaicTool } from './tools/mosaic-tool';
 import { PenTool } from './tools/pen-tool';
 import { RectTool } from './tools/rect-tool';
+import { RedoButton } from './tools/redo-button';
 import { RefuseButton } from './tools/refuse-button';
 import { SaveButton } from './tools/save-button';
 import { ShapeOptions } from './tools/shape-options';
@@ -18,6 +19,7 @@ import { TextBoxOptions } from './tools/text-box-options';
 import { TextBoxTool } from './tools/text-box-tool';
 import { TextExtractTool } from './tools/text-extract-tool';
 import { Tooltip } from './tools/tooltip';
+import { UndoButton } from './tools/undo-button';
 
 export interface ToolBoxProps {
   cutoutBoxX: number
@@ -151,6 +153,13 @@ export const ToolBox: FC<ToolBoxProps> = ({
           cutoutBoxWidth={cutoutBoxWidth}
           cutoutBoxHeight={cutoutBoxHeight}
         />
+      </Tooltip>
+      <div class={Style.separator} />
+      <Tooltip text="撤销">
+        <UndoButton />
+      </Tooltip>
+      <Tooltip text="重做">
+        <RedoButton />
       </Tooltip>
       <div class={Style.separator} />
       <Tooltip text="取消">

@@ -66,18 +66,15 @@ function getBuildConfig(format: ModuleFormat) {
     esm: {
       format: 'esm',
       file: resolve(outputDist, './esm/screen-shot.js'),
-      globals: { html2canvas: 'html2canvas' },
     },
     cjs: {
       format: 'cjs',
       file: resolve(outputDist, './cjs/screen-shot.js'),
-      globals: { html2canvas: 'html2canvas' },
     },
     iife: {
       format: 'iife',
       name: 'ScreenShot',
       file: resolve(outputDist, './iife/screen-shot.js'),
-      globals: { html2canvas: 'html2canvas' },
     },
   } as Record<string, OutputOptions>;
 
@@ -135,7 +132,7 @@ function getBuildConfig(format: ModuleFormat) {
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       }),
     ] as any,
-    external: ['html2canvas'],
+    external: [],
     output: output[format],
   };
 

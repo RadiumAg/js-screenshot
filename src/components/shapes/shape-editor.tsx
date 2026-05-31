@@ -4,11 +4,11 @@ import { useMemoizedFn } from 'ahooks';
 import { useEffect, useRef } from 'preact/hooks';
 import { useShallow } from 'zustand/react/shallow';
 import { useScreenshotStore } from '../../store/screenshot-store';
+import { Z_INDEX } from '../../theme/z-index';
 import { ACTIVE_TYPE } from '../utils/share';
 import { hitTestControlPoint, hitTestShape } from './hit-test';
 import { getShapeBoundingBox, renderAllShapes, renderSelection } from './shape-renderer';
 import { ControlPointPosition, ShapeType } from './types';
-import { Z_INDEX } from '../../theme/z-index';
 
 export interface ShapeEditorProps {
   cutoutBoxX: number

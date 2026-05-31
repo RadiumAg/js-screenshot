@@ -38,7 +38,6 @@
     "@preact/compat": "^18.3.1",
     "@zumer/snapdom": "^2.12.0",
     "ahooks": "^3.9.7",
-    "html2canvas": "^1.4.1",
     "preact": "^10.27.2",
     "zustand": "^5.0.8"
   },

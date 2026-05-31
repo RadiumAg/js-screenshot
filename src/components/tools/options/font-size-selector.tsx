@@ -19,7 +19,10 @@ export const FontSizeSelector: FC<FontSizeSelectorProps> = (props) => {
         onChange={e => onChange(Number((e.target as HTMLSelectElement).value))}
       >
         {FONT_SIZES.map(size => (
-          <option key={size} value={size}>{size}px</option>
+          <option key={size} value={size}>
+            {size}
+            px
+          </option>
         ))}
       </select>
     </div>

@@ -138,6 +138,9 @@ export interface ScreenshotStore {
   getShapesSnapshot: () => Shape[]
   restoreShapesSnapshot: (snapshot: Shape[]) => void
 
+  undo: () => void
+  redo: () => void
+
   resetState: () => void
 }
 
@@ -235,6 +238,23 @@ export const useScreenshotStore = create<ScreenshotStore>()(
       },
       restoreShapesSnapshot: (snapshot) => {
         set({ shapes: snapshot, selectedShapeId: null });
+      },
+
+      undo: () => {
+        const { operateHistory, drawCanvasContext, restoreShapesSnapshot } = get();
+        const entry = operateHistory.prev();
+        if (entry && drawCanvasContext) {
+          drawCanvasContext.putImageData(entry.imageData, entry.position.x, entry.position.y);
+          restoreShapesSnapshot(entry.shapes ?? []);
+        }
+      },
+      redo: () => {
+        const { operateHistory, drawCanvasContext, restoreShapesSnapshot } = get();
+        const entry = operateHistory.next();
+        if (entry && drawCanvasContext) {
+          drawCanvasContext.putImageData(entry.imageData, entry.position.x, entry.position.y);
+          restoreShapesSnapshot(entry.shapes ?? []);
+        }
       },
 
       resetState: () => {
